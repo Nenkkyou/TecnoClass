@@ -1,0 +1,181 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    color: #333;
+}
+#appHeader {
+    background: #2196F3;
+    color: #fff;
+    padding: 1em;
+}
+#appHeader h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+#topbar {
+    margin-top: 0.5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+#topbar button {
+    background: #fff;
+    color: #2196F3;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    flex: 1 1 auto;
+    text-align: center;
+}
+#topbar button:hover {
+    background: #e0e0e0;
+}
+section {
+    max-width: 800px;
+    margin: 2em auto;
+    background: #fff;
+    padding: 1.5em;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+#loginSection h2 {
+    text-align: center;
+}
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#loginForm input {
+    width: 80%;
+    padding: 0.5em;
+    margin: 0.5em;
+    font-size: 1em;
+}
+#loginForm button {
+    width: 50%;
+    padding: 0.5em;
+    font-size: 1em;
+    margin-top: 0.5em;
+    background: #2196F3;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#loginForm button:hover {
+    background: #1976D2;
+}
+#toggleLoginRegister {
+    text-align: center;
+    margin-top: 1em;
+}
+#toggleLoginRegister a {
+    cursor: pointer;
+    color: #2196F3;
+    text-decoration: none;
+}
+#toggleLoginRegister a:hover {
+    text-decoration: underline;
+}
+#loginMessage {
+    text-align: center;
+    margin-top: 0.5em;
+}
+#topicsList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+#topicsList li {
+    background: #2196F3;
+    border-radius: 4px;
+}
+#topicsList a {
+    display: block;
+    padding: 0.5em 1em;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+#topicsList a:hover {
+    background: #1976D2;
+}
+section h2 {
+    color: #2196F3;
+    margin-top: 0;
+}
+section p {
+    line-height: 1.6;
+}
+.quiz-question {
+    margin-bottom: 1em;
+    background: #f9f9f9;
+    padding: 1em;
+    border-radius: 4px;
+}
+.quiz-question p {
+    margin-top: 0;
+}
+.feedback {
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+#reminderForm {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 1em;
+}
+#reminderForm input[type="text"] {
+    flex: 1;
+    padding: 0.5em;
+}
+#reminderForm input[type="datetime-local"] {
+    padding: 0.3em;
+}
+#reminderForm button {
+    padding: 0.5em 1em;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#reminderForm button:hover {
+    background: #388E3C;
+}
+#reminderList {
+    list-style: none;
+    padding: 0;
+}
+#reminderList li {
+    padding: 0.5em;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#reminderList li.due {
+    background: #ffebee;
+    color: #c62828;
+}
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: #c62828;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.delete-btn:hover {
+    color: #ff1744;
+}
+#noRemindersMsg {
+    font-style: italic;
+    color: #777;
+}
