@@ -1,357 +1,852 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App Educacional Offline</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduApp Offline - Aprimorado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados adicionais (se necessário) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Cinza claro de fundo */
+        }
+        /* Esconde seções por padrão */
+        .app-section {
+            display: none;
+        }
+        /* Estilo para lembretes vencidos */
+        .due-reminder {
+            color: #dc2626; /* Vermelho */
+            font-weight: bold;
+        }
+        /* Feedback do Quiz */
+        .quiz-feedback {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .quiz-feedback.correct {
+            color: #16a34a; /* Verde */
+        }
+        .quiz-feedback.incorrect {
+            color: #dc2626; /* Vermelho */
+        }
+        .quiz-feedback.info {
+            color: #f59e0b; /* Laranja/Amarelo */
+        }
+        /* Estilo para botão de deletar lembrete */
+        .delete-btn {
+            margin-left: 0.5rem;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1;
+            border-radius: 9999px; /* Círculo */
+            background-color: #ef4444; /* Vermelho */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .delete-btn:hover {
+            background-color: #dc2626;
+        }
+        /* Mensagem de notificação */
+        #notificationArea {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2937; /* Cinza escuro */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none; /* Começa escondido */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #notificationArea.show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-100">
 
-<div id="appHeader" style="display:none;">
-  <h1>EduApp Offline</h1>
-  <div id="topbar">
-    <button id="homeBtn">Início</button>
-    <button id="syncBtn">Sincronizar</button>
-    <button id="logoutBtn">Sair</button>
-  </div>
-</div>
+    <header id="appHeader" class="w-full max-w-4xl mb-4 hidden">
+        <div class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-indigo-600">EduApp Offline</h1>
+            <nav id="topbar" class="space-x-2">
+                <button id="homeBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200">Início</button>
+                <button id="syncBtn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200">Sincronizar</button>
+                <button id="logoutBtn" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200">Sair</button>
+            </nav>
+        </div>
+    </header>
 
-<section id="loginSection">
-  <h2 id="loginTitle">Login</h2>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="Usuário" required />
-    <input type="password" id="password" placeholder="Senha" required />
-    <button type="submit" id="loginBtn">Entrar</button>
-  </form>
-  <p id="toggleLoginRegister">Não tem uma conta? <a href="#" id="registerLink">Registre-se</a></p>
-  <p id="loginMessage"></p>
-</section>
+    <main class="w-full max-w-4xl bg-white p-6 rounded-lg shadow-md">
+        <section id="loginSection" class="app-section">
+            <h2 id="loginTitle" class="text-xl font-semibold mb-4 text-center">Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 sr-only">Usuário</label>
+                    <input type="text" id="username" placeholder="Usuário" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 sr-only">Senha</label>
+                    <input type="password" id="password" placeholder="Senha" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <button type="submit" id="loginBtn"
+                        class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                    Entrar
+                </button>
+            </form>
+            <p id="toggleLoginRegister" class="mt-4 text-center text-sm text-gray-600">
+                Não tem uma conta? <a href="#" id="registerLink" class="font-medium text-indigo-600 hover:text-indigo-500">Registre-se</a>
+            </p>
+            <p id="loginMessage" class="mt-2 text-center text-sm text-red-600"></p> </section>
 
-<section id="homeSection" style="display:none;">
-  <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
-  <p>Escolha um dos tópicos abaixo para estudar:</p>
-  <ul id="topicsList">
-    <li><a href="#" data-target="programacaoSection" class="navLink">Programação</a></li>
-    <li><a href="#" data-target="cibersegurancaSection" class="navLink">Cibersegurança</a></li>
-    <li><a href="#" data-target="iaSection" class="navLink">Inteligência Artificial Generativa</a></li>
-    <li><a href="#" data-target="productOwnerSection" class="navLink">Product Owner (PO)</a></li>
-    <li><a href="#" data-target="quizSection" class="navLink">Quiz</a></li>
-    <li><a href="#" data-target="remindersSection" class="navLink">Lembretes</a></li>
-  </ul>
-  <p><em>Dica:</em> Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
-</section>
+        <section id="homeSection" class="app-section">
+            <h2 class="text-xl font-semibold mb-2">Bem-vindo(a), <span id="welcomeName" class="text-indigo-600"></span>!</h2>
+            <p class="text-gray-700 mb-4">Escolha um dos tópicos abaixo para estudar:</p>
+            <ul id="topicsList" class="space-y-2 list-disc list-inside">
+                <li><a href="#" data-target="programacaoSection" class="navLink text-indigo-600 hover:underline">Programação</a></li>
+                <li><a href="#" data-target="cibersegurancaSection" class="navLink text-indigo-600 hover:underline">Cibersegurança</a></li>
+                <li><a href="#" data-target="iaSection" class="navLink text-indigo-600 hover:underline">Inteligência Artificial Generativa</a></li>
+                <li><a href="#" data-target="productOwnerSection" class="navLink text-indigo-600 hover:underline">Product Owner (PO)</a></li>
+                <li><a href="#" data-target="quizSection" class="navLink text-indigo-600 hover:underline">Quiz</a></li>
+                <li><a href="#" data-target="remindersSection" class="navLink text-indigo-600 hover:underline">Lembretes</a></li>
+            </ul>
+            <p class="mt-6 text-sm text-gray-500 italic">
+                Dica: Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.
+            </p>
+        </section>
 
-<section id="programacaoSection" style="display:none;"></section>
-<section id="cibersegurancaSection" style="display:none;"></section>
-<section id="iaSection" style="display:none;"></section>
-<section id="productOwnerSection" style="display:none;"></section>
+        <section id="programacaoSection" class="app-section prose max-w-none"></section>
+        <section id="cibersegurancaSection" class="app-section prose max-w-none"></section>
+        <section id="iaSection" class="app-section prose max-w-none"></section>
+        <section id="productOwnerSection" class="app-section prose max-w-none"></section>
 
-<section id="quizSection" style="display:none;">
-  <h2>Quiz</h2>
-  <div class="quiz-question">
-    <p><strong>1.</strong> Programação serve principalmente para:</p>
-    <label><input type="radio" name="q1" value="a" /> Traduzir linguagens humanas literalmente para o computador.</label><br/>
-    <label><input type="radio" name="q1" value="b" /> Instruir o computador a realizar tarefas.</label><br/>
-    <label><input type="radio" name="q1" value="c" /> Construir equipamentos de hardware.</label><br/>
-    <label><input type="radio" name="q1" value="d" /> Proteger dados contra ataques.</label><br/>
-    <button onclick="checkQuiz('q1','b')">Verificar</button>
-    <p class="feedback" id="q1Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>2.</strong> Qual das alternativas <u>não</u> é um exemplo de ameaça cibernética?</p>
-    <label><input type="radio" name="q2" value="a" /> Phishing</label><br/>
-    <label><input type="radio" name="q2" value="b" /> Ransomware</label><br/>
-    <label><input type="radio" name="q2" value="c" /> DDoS</label><br/>
-    <label><input type="radio" name="q2" value="d" /> Backup de dados</label><br/>
-    <button onclick="checkQuiz('q2','d')">Verificar</button>
-    <p class="feedback" id="q2Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>3.</strong> O ChatGPT é um exemplo de:</p>
-    <label><input type="radio" name="q3" value="a" /> Malware de inteligência artificial.</label><br/>
-    <label><input type="radio" name="q3" value="b" /> Chatbot baseado em IA generativa.</label><br/>
-    <label><input type="radio" name="q3" value="c" /> Ataque de phishing em larga escala.</label><br/>
-    <label><input type="radio" name="q3" value="d" /> Aplicativo de programação em bloco.</label><br/>
-    <button onclick="checkQuiz('q3','b')">Verificar</button>
-    <p class="feedback" id="q3Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>4.</strong> No contexto do Scrum, o Product Owner é responsável por:</p>
-    <label><input type="radio" name="q4" value="a" /> Escrever todo o código do produto.</label><br/>
-    <label><input type="radio" name="q4" value="b" /> Representar os interesses do cliente e priorizar funcionalidades.</label><br/>
-    <label><input type="radio" name="q4" value="c" /> Gerenciar diretamente a equipe de desenvolvedores.</label><br/>
-    <label><input type="radio" name="q4" value="d" /> Garantir a segurança cibernética do projeto.</label><br/>
-    <button onclick="checkQuiz('q4','b')">Verificar</button>
-    <p class="feedback" id="q4Feedback"></p>
-  </div>
-</section>
+        <section id="quizSection" class="app-section">
+            <h2 class="text-xl font-semibold mb-4">Quiz</h2>
+            <div class="space-y-6">
+                <div class="quiz-question border p-4 rounded-md shadow-sm" data-question="q1" data-correct="b">
+                    <p class="font-medium mb-2"><strong>1.</strong> Programação serve principalmente para:</p>
+                    <div class="space-y-1">
+                        <label class="flex items-center"><input type="radio" name="q1" value="a" class="mr-2" /> Traduzir linguagens humanas literalmente para o computador.</label>
+                        <label class="flex items-center"><input type="radio" name="q1" value="b" class="mr-2" /> Instruir o computador a realizar tarefas.</label>
+                        <label class="flex items-center"><input type="radio" name="q1" value="c" class="mr-2" /> Construir equipamentos de hardware.</label>
+                        <label class="flex items-center"><input type="radio" name="q1" value="d" class="mr-2" /> Proteger dados contra ataques.</label>
+                    </div>
+                    <button class="quiz-check-btn mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">Verificar</button>
+                    <p class="quiz-feedback" id="q1Feedback"></p>
+                </div>
+                <div class="quiz-question border p-4 rounded-md shadow-sm" data-question="q2" data-correct="d">
+                    <p class="font-medium mb-2"><strong>2.</strong> Qual das alternativas <u>não</u> é um exemplo de ameaça cibernética?</p>
+                     <div class="space-y-1">
+                        <label class="flex items-center"><input type="radio" name="q2" value="a" class="mr-2" /> Phishing</label>
+                        <label class="flex items-center"><input type="radio" name="q2" value="b" class="mr-2" /> Ransomware</label>
+                        <label class="flex items-center"><input type="radio" name="q2" value="c" class="mr-2" /> DDoS</label>
+                        <label class="flex items-center"><input type="radio" name="q2" value="d" class="mr-2" /> Backup de dados</label>
+                    </div>
+                    <button class="quiz-check-btn mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">Verificar</button>
+                    <p class="quiz-feedback" id="q2Feedback"></p>
+                </div>
+                 <div class="quiz-question border p-4 rounded-md shadow-sm" data-question="q3" data-correct="b">
+                    <p class="font-medium mb-2"><strong>3.</strong> O ChatGPT é um exemplo de:</p>
+                     <div class="space-y-1">
+                        <label class="flex items-center"><input type="radio" name="q3" value="a" class="mr-2" /> Malware de inteligência artificial.</label>
+                        <label class="flex items-center"><input type="radio" name="q3" value="b" class="mr-2" /> Chatbot baseado em IA generativa.</label>
+                        <label class="flex items-center"><input type="radio" name="q3" value="c" class="mr-2" /> Ataque de phishing em larga escala.</label>
+                        <label class="flex items-center"><input type="radio" name="q3" value="d" class="mr-2" /> Aplicativo de programação em bloco.</label>
+                    </div>
+                    <button class="quiz-check-btn mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">Verificar</button>
+                    <p class="quiz-feedback" id="q3Feedback"></p>
+                </div>
+                 <div class="quiz-question border p-4 rounded-md shadow-sm" data-question="q4" data-correct="b">
+                    <p class="font-medium mb-2"><strong>4.</strong> No contexto do Scrum, o Product Owner é responsável por:</p>
+                     <div class="space-y-1">
+                        <label class="flex items-center"><input type="radio" name="q4" value="a" class="mr-2" /> Escrever todo o código do produto.</label>
+                        <label class="flex items-center"><input type="radio" name="q4" value="b" class="mr-2" /> Representar os interesses do cliente e priorizar funcionalidades.</label>
+                        <label class="flex items-center"><input type="radio" name="q4" value="c" class="mr-2" /> Gerenciar diretamente a equipe de desenvolvedores.</label>
+                        <label class="flex items-center"><input type="radio" name="q4" value="d" class="mr-2" /> Garantir a segurança cibernética do projeto.</label>
+                    </div>
+                    <button class="quiz-check-btn mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">Verificar</button>
+                    <p class="quiz-feedback" id="q4Feedback"></p>
+                </div>
+            </div>
+        </section>
 
-<section id="remindersSection" style="display:none;">
-  <h2>Lembretes</h2>
-  <form id="reminderForm">
-    <input type="text" id="reminderText" placeholder="Digite um lembrete..." required />
-    <input type="datetime-local" id="reminderDate" />
-    <button type="submit">Adicionar</button>
-  </form>
-  <ul id="reminderList"></ul>
-  <p id="noRemindersMsg">Nenhum lembrete adicionado.</p>
-</section>
+        <section id="remindersSection" class="app-section">
+            <h2 class="text-xl font-semibold mb-4">Lembretes</h2>
+            <form id="reminderForm" class="flex flex-col sm:flex-row gap-2 mb-4">
+                <input type="text" id="reminderText" placeholder="Digite um lembrete..." required
+                       class="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="datetime-local" id="reminderDate"
+                       class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                    Adicionar
+                </button>
+            </form>
+            <ul id="reminderList" class="space-y-2">
+                </ul>
+            <p id="noRemindersMsg" class="mt-4 text-gray-500 italic hidden">Nenhum lembrete adicionado.</p>
+        </section>
+    </main>
+
+    <div id="notificationArea"></div>
 
 <script>
 "use strict";
-// Dados persistentes
-let users = JSON.parse(localStorage.getItem('users') || '{}');
-let currentUser = localStorage.getItem('loggedInUser') || null;
-let contentData = JSON.parse(localStorage.getItem('contentData') || 'null');
 
-// Conteúdo educacional padrão, caso ainda não esteja salvo localmente
-if (!contentData) {
-  contentData = {
-    programacao: `<h2>Programação</h2>
-      <p>Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer [oai_citation_attribution:0‡idocode.com.br](https://idocode.com.br/blog/programacao/o-que-e-programacao/#:~:text=De%20forma%20geral%2C%20a%20programa%C3%A7%C3%A3o,m%C3%A1quina%20e%20atendem%20diversas%20finalidades). Ela está por trás da maioria das tecnologias digitais que usamos diariamente, desde aplicativos de celular até sistemas bancários e controle de tráfego.</p>
-      <p>A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet [oai_citation_attribution:1‡idocode.com.br](https://idocode.com.br/blog/programacao/o-que-e-programacao/#:~:text=Al%C3%A9m%20do%20uso%20pessoal%2C%20atualmente,por%20programadores%2C%20entre%20outras%20%C3%A1reas).</p>
-      <p>Com programação, podemos criar desde pequenos scripts (roteiros de código) para automatizar tarefas simples até aplicativos completos utilizados por milhões de pessoas. Por exemplo, um programador pode escrever um script para organizar arquivos no computador ou desenvolver um app móvel de mensagens – ambos são resultados de códigos escritos para resolver problemas ou facilitar tarefas.</p>`,
-    ciberseguranca: `<h2>Cibersegurança</h2>
-      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais [oai_citation_attribution:2‡akamai.com](https://www.akamai.com/pt/glossary/what-is-cybersecurity#:~:text=A%20ciberseguran%C3%A7a%20%C3%A9%20a%20pr%C3%A1tica,perda%20de%20neg%C3%B3cios%20e%20reputa%C3%A7%C3%A3o). Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura [oai_citation_attribution:3‡esr.rnp.br](https://esr.rnp.br/seguranca/profissoes-de-ciberseguranca/#:~:text=A%20ciberseguran%C3%A7a%20compreende%20a%C3%A7%C3%B5es%20e,proteger%20institui%C3%A7%C3%B5es%20das%20amea%C3%A7as%20cibern%C3%A9ticas).</p>
-      <p>Algumas ameaças comuns e dicas de proteção:</p>
-      <ul>
-        <li><strong>DDoS:</strong> ataque distribuído de negação de serviço, sobrecarrega servidores para tirá-los do ar. Proteção: monitorar o tráfego de rede e usar filtros/firewalls que limitem conexões suspeitas, evitando sobrecarga.</li>
-        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim) [oai_citation_attribution:4‡fortinet.com](https://www.fortinet.com/br/resources/cyberglossary/how-to-prevent-ransomware#:~:text=1,n%C3%A3o%20verificados).</li>
-        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações [oai_citation_attribution:5‡infoprotect.com.br](https://infoprotect.com.br/como-se-proteger-de-ataques-phishing/#:~:text=Seguindo%20algumas%20pr%C3%A1ticas%20simples%2C%20voc%C3%AA,se%20proteger%20melhor%20contra%20phishing).</li>
-      </ul>`,
-    ia: `<h2>Inteligência Artificial Generativa</h2>
-      <p>A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados [oai_citation_attribution:6‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=A%20IA%20generativa%2C%20%C3%A0s%20vezes,prompt%20ou%20solicita%C3%A7%C3%A3o%20do%20usu%C3%A1rio). Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
-      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma [oai_citation_attribution:7‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=A%20IA%20tem%20sido%20um,em%20pelo%20menos%20uma%20fun%C3%A7%C3%A3o). A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa [oai_citation_attribution:8‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=uma%20pesquisa%20da%20empresa%20de,2), o que demonstra seu enorme impacto potencial na sociedade.</p>`,
-    productOwner: `<h2>Product Owner (PO)</h2>
-      <p><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento [oai_citation_attribution:9‡clarify.com.br](https://clarify.com.br/blog/importancia-product-owner/#:~:text=O%20Product%20Owner%20%C3%A9%20o,trabalhando%20nas%20atividades%20mais%20importantes). Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
-      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico [oai_citation_attribution:10‡rangel.com](https://www.rangel.com/pt/blog/importancia-product-owner/#:~:text=Esta%20fun%C3%A7%C3%A3o%20est%C3%A1%20muito%20associada,poss%C3%ADvel%20a%20um%20custo%20m%C3%ADnimo). Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
-  };
-  localStorage.setItem('contentData', JSON.stringify(contentData));
-}
+// --- Seletores de Elementos DOM ---
+const appHeader = document.getElementById('appHeader');
+const loginSection = document.getElementById('loginSection');
+const homeSection = document.getElementById('homeSection');
+const loginForm = document.getElementById('loginForm');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const loginMessage = document.getElementById('loginMessage');
+const loginTitle = document.getElementById('loginTitle');
+const loginBtn = document.getElementById('loginBtn');
+const toggleLoginRegister = document.getElementById('toggleLoginRegister');
+const welcomeName = document.getElementById('welcomeName');
+const topicsList = document.getElementById('topicsList');
+const reminderForm = document.getElementById('reminderForm');
+const reminderText = document.getElementById('reminderText');
+const reminderDate = document.getElementById('reminderDate');
+const reminderList = document.getElementById('reminderList');
+const noRemindersMsg = document.getElementById('noRemindersMsg');
+const notificationArea = document.getElementById('notificationArea');
+const mainContentArea = document.querySelector('main'); // Para event delegation
 
-// Insere o conteúdo nas seções de tópico
-function loadContent() {
-  document.getElementById('programacaoSection').innerHTML = contentData.programacao;
-  document.getElementById('cibersegurancaSection').innerHTML = contentData.ciberseguranca;
-  document.getElementById('iaSection').innerHTML = contentData.ia;
-  document.getElementById('productOwnerSection').innerHTML = contentData.productOwner;
-}
-
-// Mostra uma seção e esconde as demais
-function showSection(sectionId) {
-  const sections = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection'];
-  sections.forEach(id => {
-    document.getElementById(id).style.display = (id === sectionId ? 'block' : 'none');
-  });
-}
-
-// Verificação do Quiz
-function checkQuiz(qName, correctValue) {
-  const options = document.getElementsByName(qName);
-  let selected = null;
-  for (let opt of options) {
-    if (opt.checked) { selected = opt.value; break; }
-  }
-  const feedbackEl = document.getElementById(qName + 'Feedback');
-  if (selected === null) {
-    feedbackEl.style.color = 'orange';
-    feedbackEl.textContent = 'Por favor, selecione uma opção.';
-  } else if (selected === correctValue) {
-    feedbackEl.style.color = 'green';
-    feedbackEl.textContent = 'Correto!';
-  } else {
-    feedbackEl.style.color = 'red';
-    feedbackEl.textContent = 'Incorreto. Tente novamente.';
-  }
-}
-
-// Lembretes
-let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-function renderReminders() {
-  const listEl = document.getElementById('reminderList');
-  const noMsg = document.getElementById('noRemindersMsg');
-  listEl.innerHTML = '';
-  if (reminders.length === 0) {
-    noMsg.style.display = 'block';
-  } else {
-    noMsg.style.display = 'none';
-    reminders.forEach((rem, index) => {
-      const li = document.createElement('li');
-      let text = rem.text;
-      if (rem.due) {
-        const dueDate = new Date(rem.due);
-        text += ' – ' + dueDate.toLocaleString();
-        if (dueDate.getTime() <= Date.now()) {
-          li.classList.add('due');
-        }
-      }
-      li.textContent = text;
-      // botão de exclusão
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '✖';
-      delBtn.className = 'delete-btn';
-      delBtn.onclick = () => {
-        reminders.splice(index, 1);
-        localStorage.setItem('reminders', JSON.stringify(reminders));
-        renderReminders();
-      };
-      li.appendChild(delBtn);
-      listEl.appendChild(li);
-    });
-  }
-}
-
-// Verifica lembretes vencidos e alerta uma vez
-function checkDueReminders() {
-  reminders.forEach((rem, idx) => {
-    if (!rem.notified && rem.due) {
-      if (new Date(rem.due).getTime() <= Date.now()) {
-        alert('Lembrete: ' + rem.text + ' - estava agendado para agora.');
-        reminders[idx].notified = true;
-      }
-    }
-  });
-  localStorage.setItem('reminders', JSON.stringify(reminders));
-}
-
-// Eventos de interface
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  const messageEl = document.getElementById('loginMessage');
-  if (user === '' || pass === '') {
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'Por favor, preencha usuário e senha.';
-    return;
-  }
-  if (registerMode) {
-    // Fluxo de registro
-    if (users[user]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'Usuário já existe. Escolha outro nome.';
-    } else {
-      // Cria novo usuário
-      // Hash simples da senha (para não salvar texto puro)
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        users[user] = hashHex;
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('loggedInUser', user);
-        currentUser = user;
-        messageEl.textContent = '';
-        startApp();
-      });
-    }
-  } else {
-    // Fluxo de login
-    if (!users[user]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'Usuário não encontrado. Verifique o nome ou registre-se.';
-    } else {
-      // Verifica senha
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        if (users[user] === hashHex) {
-          localStorage.setItem('loggedInUser', user);
-          currentUser = user;
-          messageEl.textContent = '';
-          startApp();
-        } else {
-          messageEl.style.color = 'red';
-          messageEl.textContent = 'Senha incorreta. Tente novamente.';
-        }
-      });
-    }
-  }
-});
+// --- Estado da Aplicação ---
+let users = {}; // { username: { salt: '...', hash: '...' } }
+let currentUser = null;
+let contentData = null;
+let reminders = [];
 let registerMode = false;
-document.getElementById('registerLink').addEventListener('click', function(e) {
-  e.preventDefault();
-  const title = document.getElementById('loginTitle');
-  const loginBtn = document.getElementById('loginBtn');
-  const toggleText = document.getElementById('toggleLoginRegister');
-  if (!registerMode) {
-    registerMode = true;
-    title.textContent = 'Registrar';
-    loginBtn.textContent = 'Registrar';
-    toggleText.innerHTML = 'Já tem conta? <a href="#" id="registerLinkBack">Entrar</a>';
-    // altera id do link
-    this.id = 'registerLinkBack';
-  } else {
-    registerMode = false;
-    title.textContent = 'Login';
-    loginBtn.textContent = 'Entrar';
-    toggleText.innerHTML = 'Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>';
-    this.id = 'registerLink';
-  }
-});
-document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('navLink')) {
-    e.preventDefault();
-    showSection(e.target.dataset.target);
-  }
-});
-document.getElementById('homeBtn').addEventListener('click', function() {
-  showSection('homeSection');
-});
-document.getElementById('logoutBtn').addEventListener('click', function() {
-  localStorage.removeItem('loggedInUser');
-  currentUser = null;
-  location.reload();
-});
-document.getElementById('syncBtn').addEventListener('click', function() {
-  if (!navigator.onLine) {
-    alert('Você está offline no momento. Conecte-se à internet para sincronizar.');
-    return;
-  }
-  // Simula busca de conteúdo atualizado (em app real, faria uma requisição ao servidor)
-  alert('Sincronizando conteúdo...');
-  // Em um app real, aqui poderia ser feito fetch em uma API e atualizar contentData
-  // No demo, apenas garantimos que contentData está salvo localmente
-  localStorage.setItem('contentData', JSON.stringify(contentData));
-  alert('Conteúdo atualizado com sucesso!');
-});
-document.getElementById('reminderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const text = document.getElementById('reminderText').value;
-  const date = document.getElementById('reminderDate').value;
-  if (text.trim() === '') return;
-  const newRem = { text: text.trim() };
-  if (date) newRem.due = date;
-  newRem.notified = false;
-  reminders.push(newRem);
-  localStorage.setItem('reminders', JSON.stringify(reminders));
-  document.getElementById('reminderText').value = '';
-  document.getElementById('reminderDate').value = '';
-  renderReminders();
-});
+let reminderCheckInterval = null; // Para guardar o ID do intervalo
 
-// Inicia o app após login
+// --- Constantes ---
+const USERS_KEY = 'eduAppUsers_v2'; // Chave diferente para evitar conflito com dados antigos
+const LOGGED_IN_USER_KEY = 'eduAppLoggedInUser_v2';
+const CONTENT_DATA_KEY = 'eduAppContentData_v2';
+const REMINDERS_KEY = 'eduAppReminders_v2';
+const SALT_LENGTH = 16; // Tamanho do salt em bytes
+
+// --- Conteúdo Padrão ---
+const defaultContentData = {
+    programacao: `<h2 class="text-xl font-semibold mb-3">Programação</h2>
+      <p class="mb-3">Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer. Ela está por trás da maioria das tecnologias digitais que usamos diariamente, desde aplicativos de celular até sistemas bancários e controle de tráfego.</p>
+      <p class="mb-3">A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet.</p>
+      <p>Com programação, podemos criar desde pequenos scripts (roteiros de código) para automatizar tarefas simples até aplicativos completos utilizados por milhões de pessoas. Por exemplo, um programador pode escrever um script para organizar arquivos no computador ou desenvolver um app móvel de mensagens – ambos são resultados de códigos escritos para resolver problemas ou facilitar tarefas.</p>`,
+    ciberseguranca: `<h2 class="text-xl font-semibold mb-3">Cibersegurança</h2>
+      <p class="mb-3">Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais. Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura.</p>
+      <p class="mb-3">Algumas ameaças comuns e dicas de proteção:</p>
+      <ul class="list-disc list-inside space-y-2">
+        <li><strong>DDoS:</strong> ataque distribuído de negação de serviço, sobrecarrega servidores para tirá-los do ar. Proteção: monitorar o tráfego de rede e usar filtros/firewalls que limitem conexões suspeitas, evitando sobrecarga.</li>
+        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim).</li>
+        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações.</li>
+      </ul>`,
+    ia: `<h2 class="text-xl font-semibold mb-3">Inteligência Artificial Generativa</h2>
+      <p class="mb-3">A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados. Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
+      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma. A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa, o que demonstra seu enorme impacto potencial na sociedade.</p>`,
+    productOwner: `<h2 class="text-xl font-semibold mb-3">Product Owner (PO)</h2>
+      <p class="mb-3"><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento. Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
+      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico. Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
+};
+
+// --- Funções Utilitárias ---
+
+/**
+ * Lê dados do localStorage de forma segura.
+ * @param {string} key A chave para ler.
+ * @param {*} defaultValue O valor padrão a retornar se a chave não existir ou ocorrer erro.
+ * @returns {*} O valor do localStorage ou o valor padrão.
+ */
+function safeGetLocalStorage(key, defaultValue) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+        console.error(`Erro ao ler localStorage chave "${key}":`, error);
+        return defaultValue;
+    }
+}
+
+/**
+ * Salva dados no localStorage de forma segura.
+ * @param {string} key A chave para salvar.
+ * @param {*} value O valor a ser salvo (será convertido para JSON).
+ */
+function safeSetLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.error(`Erro ao salvar localStorage chave "${key}":`, error);
+        showNotification('Erro ao salvar dados localmente. O armazenamento pode estar cheio.', 'error');
+    }
+}
+
+/**
+ * Gera um salt aleatório.
+ * @returns {Uint8Array} Um array de bytes aleatórios.
+ */
+function generateSalt() {
+    return crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+}
+
+/**
+ * Converte um ArrayBuffer para uma string hexadecimal.
+ * @param {ArrayBuffer} buffer O buffer a ser convertido.
+ * @returns {string} A representação hexadecimal.
+ */
+function bufferToHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+/**
+ * Converte uma string hexadecimal para um Uint8Array.
+ * @param {string} hexString A string hexadecimal.
+ * @returns {Uint8Array} O array de bytes.
+ */
+function hexToUint8Array(hexString) {
+    if (hexString.length % 2 !== 0) {
+        throw new Error("Invalid hex string");
+    }
+    const byteArray = new Uint8Array(hexString.length / 2);
+    for (let i = 0; i < hexString.length; i += 2) {
+        byteArray[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+    }
+    return byteArray;
+}
+
+/**
+ * Gera o hash de uma senha usando PBKDF2 com salt.
+ * @param {string} password A senha em texto plano.
+ * @param {Uint8Array} salt O salt a ser usado.
+ * @returns {Promise<string>} Uma promessa que resolve com o hash em hexadecimal.
+ */
+async function hashPassword(password, salt) {
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits', 'deriveKey']
+    );
+    const derivedBits = await crypto.subtle.deriveBits(
+        {
+            name: 'PBKDF2',
+            salt: salt,
+            iterations: 100000, // Número de iterações (ajuste conforme necessário)
+            hash: 'SHA-256'
+        },
+        keyMaterial,
+        256 // Tamanho do hash em bits
+    );
+    return bufferToHex(derivedBits);
+}
+
+/**
+ * Verifica se a senha fornecida corresponde ao hash armazenado.
+ * @param {string} password A senha fornecida pelo usuário.
+ * @param {string} saltHex O salt armazenado (hexadecimal).
+ * @param {string} hashHex O hash armazenado (hexadecimal).
+ * @returns {Promise<boolean>} Uma promessa que resolve com true se a senha for válida, false caso contrário.
+ */
+async function verifyPassword(password, saltHex, hashHex) {
+    try {
+        const salt = hexToUint8Array(saltHex);
+        const providedHash = await hashPassword(password, salt);
+        return providedHash === hashHex;
+    } catch (error) {
+        console.error("Erro ao verificar senha:", error);
+        return false;
+    }
+}
+
+/**
+ * Mostra uma notificação na parte inferior da tela.
+ * @param {string} message A mensagem a ser exibida.
+ * @param {'info' | 'success' | 'error'} type O tipo de notificação (afeta a cor, opcional).
+ * @param {number} duration Quanto tempo a notificação fica visível em ms.
+ */
+function showNotification(message, type = 'info', duration = 3000) {
+    notificationArea.textContent = message;
+    notificationArea.className = 'show'; // Remove classes de tipo anteriores e adiciona 'show'
+
+    // Aplica classes de cor baseadas no tipo
+    switch (type) {
+        case 'success':
+            notificationArea.classList.add('bg-green-600');
+            break;
+        case 'error':
+            notificationArea.classList.add('bg-red-600');
+            break;
+        default: // info
+            notificationArea.classList.add('bg-blue-600');
+            break;
+    }
+
+    // Esconde a notificação após a duração
+    setTimeout(() => {
+        notificationArea.style.opacity = '0';
+        // Espera a transição terminar antes de esconder completamente
+        setTimeout(() => {
+            notificationArea.classList.remove('show');
+            notificationArea.style.opacity = '1'; // Reseta opacidade para próxima exibição
+             // Limpa classes de tipo
+             notificationArea.classList.remove('bg-green-600', 'bg-red-600', 'bg-blue-600');
+        }, 500); // Duração da transição de opacidade
+    }, duration);
+}
+
+
+// --- Funções Principais da Aplicação ---
+
+/**
+ * Carrega os dados iniciais do localStorage.
+ */
+function loadInitialData() {
+    users = safeGetLocalStorage(USERS_KEY, {});
+    currentUser = safeGetLocalStorage(LOGGED_IN_USER_KEY, null);
+    contentData = safeGetLocalStorage(CONTENT_DATA_KEY, null);
+    reminders = safeGetLocalStorage(REMINDERS_KEY, []);
+
+    // Se não houver conteúdo local, usa o padrão e salva
+    if (!contentData) {
+        contentData = defaultContentData;
+        safeSetLocalStorage(CONTENT_DATA_KEY, contentData);
+    }
+}
+
+/**
+ * Insere o conteúdo educacional nas seções HTML correspondentes.
+ */
+function loadContentSections() {
+    try {
+        document.getElementById('programacaoSection').innerHTML = contentData?.programacao || '<p>Conteúdo não disponível.</p>';
+        document.getElementById('cibersegurancaSection').innerHTML = contentData?.ciberseguranca || '<p>Conteúdo não disponível.</p>';
+        document.getElementById('iaSection').innerHTML = contentData?.ia || '<p>Conteúdo não disponível.</p>';
+        document.getElementById('productOwnerSection').innerHTML = contentData?.productOwner || '<p>Conteúdo não disponível.</p>';
+    } catch (error) {
+        console.error("Erro ao carregar conteúdo nas seções:", error);
+        showNotification("Erro ao exibir o conteúdo educacional.", "error");
+    }
+}
+
+/**
+ * Mostra uma seção específica e esconde as outras.
+ * @param {string} sectionId O ID da seção a ser mostrada.
+ */
+function showSection(sectionId) {
+    document.querySelectorAll('.app-section').forEach(section => {
+        section.style.display = section.id === sectionId ? 'block' : 'none';
+    });
+    // Garante que a seção de login/registro seja escondida se outra for mostrada
+    if (sectionId !== 'loginSection') {
+        loginSection.style.display = 'none';
+    }
+}
+
+/**
+ * Renderiza a lista de lembretes na interface.
+ */
+function renderReminders() {
+    reminderList.innerHTML = ''; // Limpa a lista atual
+    if (reminders.length === 0) {
+        noRemindersMsg.style.display = 'block';
+    } else {
+        noRemindersMsg.style.display = 'none';
+        reminders.forEach((rem, index) => {
+            const li = document.createElement('li');
+            li.className = 'flex justify-between items-center p-2 border-b border-gray-200';
+            li.dataset.index = index; // Guarda o índice para facilitar a exclusão
+
+            const span = document.createElement('span');
+            let textContent = rem.text;
+            let isDue = false;
+
+            if (rem.due) {
+                const dueDate = new Date(rem.due);
+                // Formata a data e hora de forma mais legível
+                const formattedDate = dueDate.toLocaleString('pt-BR', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                textContent += ` – ${formattedDate}`;
+                if (!rem.notified && dueDate.getTime() <= Date.now()) {
+                    isDue = true;
+                    li.classList.add('due-reminder'); // Adiciona classe para estilo de vencido
+                }
+            }
+            span.textContent = textContent;
+            li.appendChild(span);
+
+            // Botão de exclusão
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '✖';
+            delBtn.className = 'delete-btn'; // Usa classe CSS para estilo
+            delBtn.setAttribute('aria-label', `Excluir lembrete: ${rem.text}`);
+            li.appendChild(delBtn);
+
+            reminderList.appendChild(li);
+        });
+    }
+}
+
+/**
+ * Verifica lembretes vencidos e mostra notificações (uma vez por lembrete).
+ */
+function checkDueReminders() {
+    let updated = false;
+    reminders.forEach((rem, idx) => {
+        if (!rem.notified && rem.due) {
+            const dueDate = new Date(rem.due);
+            if (dueDate.getTime() <= Date.now()) {
+                showNotification(`Lembrete vencido: ${rem.text}`, 'info', 5000);
+                reminders[idx].notified = true; // Marca como notificado
+                updated = true;
+            }
+        }
+    });
+    if (updated) {
+        safeSetLocalStorage(REMINDERS_KEY, reminders);
+        renderReminders(); // Re-renderiza para remover o destaque se necessário
+    }
+}
+
+/**
+ * Inicia a aplicação principal após o login bem-sucedido.
+ */
 function startApp() {
-  // Mostra header e tela inicial
-  document.getElementById('appHeader').style.display = 'block';
-  document.getElementById('loginSection').style.display = 'none';
-  document.getElementById('homeSection').style.display = 'block';
-  // Carrega conteúdo e informações do usuário
-  document.getElementById('welcomeName').innerText = currentUser;
-  loadContent();
-  renderReminders();
-  // Solicita armazenamento persistente (evita perda de dados pelo navegador)
-  if (navigator.storage && navigator.storage.persist) {
-    navigator.storage.persist().catch(console.error);
-  }
-  // Inicia verificação periódica de lembretes
-  setInterval(checkDueReminders, 60000);
+    // Mostra cabeçalho e seção inicial, esconde login
+    appHeader.style.display = 'block'; // Ou 'flex' dependendo do layout desejado
+    loginSection.style.display = 'none';
+    showSection('homeSection');
+
+    // Carrega conteúdo e informações do usuário
+    welcomeName.textContent = currentUser;
+    loadContentSections();
+    renderReminders();
+
+    // Solicita armazenamento persistente (melhor chance de não perder dados)
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().then(persisted => {
+            if (persisted) {
+                console.log("Armazenamento persistente concedido.");
+            } else {
+                console.warn("Armazenamento persistente NÃO concedido.");
+            }
+        }).catch(error => console.error("Erro ao solicitar armazenamento persistente:", error));
+    }
+
+    // Inicia verificação periódica de lembretes (a cada minuto)
+    if (reminderCheckInterval) clearInterval(reminderCheckInterval); // Limpa intervalo anterior se houver
+    reminderCheckInterval = setInterval(checkDueReminders, 60000);
+    checkDueReminders(); // Verifica imediatamente ao iniciar
 }
 
-// Login automático se o usuário já estava autenticado
-if (currentUser) {
-  startApp();
+/**
+ * Limpa os dados de login e recarrega a página.
+ */
+function logout() {
+    localStorage.removeItem(LOGGED_IN_USER_KEY);
+    currentUser = null;
+    if (reminderCheckInterval) clearInterval(reminderCheckInterval); // Para o timer
+    location.reload(); // Recarrega para voltar à tela de login
 }
+
+/**
+ * Alterna entre os modos de Login e Registro na interface.
+ */
+function toggleRegisterMode() {
+    registerMode = !registerMode;
+    loginMessage.textContent = ''; // Limpa mensagens de erro
+    if (registerMode) {
+        loginTitle.textContent = 'Registrar';
+        loginBtn.textContent = 'Registrar';
+        toggleLoginRegister.innerHTML = 'Já tem conta? <a href="#" id="loginLink" class="font-medium text-indigo-600 hover:text-indigo-500">Entrar</a>';
+    } else {
+        loginTitle.textContent = 'Login';
+        loginBtn.textContent = 'Entrar';
+        toggleLoginRegister.innerHTML = 'Não tem uma conta? <a href="#" id="registerLink" class="font-medium text-indigo-600 hover:text-indigo-500">Registre-se</a>';
+    }
+    // Adiciona/remove ouvintes específicos para os links de toggle, se necessário,
+    // mas a delegação no #toggleLoginRegister é mais eficiente.
+}
+
+// --- Manipuladores de Eventos ---
+
+/**
+ * Manipula o envio do formulário de login/registro.
+ * @param {Event} e O objeto do evento.
+ */
+async function handleLoginRegisterSubmit(e) {
+    e.preventDefault();
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+        loginMessage.textContent = 'Por favor, preencha usuário e senha.';
+        return;
+    }
+
+    loginMessage.textContent = ''; // Limpa mensagem anterior
+    loginBtn.disabled = true; // Desabilita botão durante o processamento
+    loginBtn.textContent = 'Processando...';
+
+    try {
+        if (registerMode) {
+            // --- Registro ---
+            if (users[username]) {
+                loginMessage.textContent = 'Usuário já existe. Escolha outro nome.';
+            } else {
+                const salt = generateSalt();
+                const saltHex = bufferToHex(salt);
+                const hashHex = await hashPassword(password, salt);
+
+                users[username] = { salt: saltHex, hash: hashHex };
+                safeSetLocalStorage(USERS_KEY, users);
+
+                currentUser = username;
+                safeSetLocalStorage(LOGGED_IN_USER_KEY, currentUser);
+                startApp();
+            }
+        } else {
+            // --- Login ---
+            const userData = users[username];
+            if (!userData) {
+                loginMessage.textContent = 'Usuário não encontrado.';
+            } else {
+                const isValid = await verifyPassword(password, userData.salt, userData.hash);
+                if (isValid) {
+                    currentUser = username;
+                    safeSetLocalStorage(LOGGED_IN_USER_KEY, currentUser);
+                    startApp();
+                } else {
+                    loginMessage.textContent = 'Senha incorreta.';
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Erro durante login/registro:", error);
+        loginMessage.textContent = 'Ocorreu um erro. Tente novamente.';
+        showNotification('Erro no processo de autenticação.', 'error');
+    } finally {
+        // Reabilita o botão e restaura o texto original
+        loginBtn.disabled = false;
+        loginBtn.textContent = registerMode ? 'Registrar' : 'Entrar';
+    }
+}
+
+/**
+ * Manipula cliques nos links de navegação de tópicos.
+ * @param {Event} e O objeto do evento.
+ */
+function handleNavLinkClick(e) {
+    if (e.target.classList.contains('navLink')) {
+        e.preventDefault();
+        const targetSectionId = e.target.dataset.target;
+        if (targetSectionId) {
+            showSection(targetSectionId);
+        }
+    }
+}
+
+/**
+ * Manipula cliques nos botões de verificação do quiz.
+ * @param {Event} e O objeto do evento.
+ */
+function handleQuizCheckClick(e) {
+    if (e.target.classList.contains('quiz-check-btn')) {
+        const questionDiv = e.target.closest('.quiz-question');
+        if (!questionDiv) return;
+
+        const qName = questionDiv.dataset.question;
+        const correctValue = questionDiv.dataset.correct;
+        const feedbackEl = questionDiv.querySelector('.quiz-feedback');
+        const options = questionDiv.querySelectorAll(`input[name="${qName}"]`);
+        let selectedValue = null;
+
+        options.forEach(opt => {
+            if (opt.checked) {
+                selectedValue = opt.value;
+            }
+        });
+
+        feedbackEl.classList.remove('correct', 'incorrect', 'info'); // Limpa classes anteriores
+
+        if (selectedValue === null) {
+            feedbackEl.textContent = 'Por favor, selecione uma opção.';
+            feedbackEl.classList.add('info');
+        } else if (selectedValue === correctValue) {
+            feedbackEl.textContent = 'Correto!';
+            feedbackEl.classList.add('correct');
+        } else {
+            feedbackEl.textContent = 'Incorreto. A resposta correta foi marcada (se aplicável).'; // Pode-se adicionar lógica para destacar a correta
+            feedbackEl.classList.add('incorrect');
+        }
+    }
+}
+
+/**
+ * Manipula o envio do formulário de adicionar lembrete.
+ * @param {Event} e O objeto do evento.
+ */
+function handleReminderSubmit(e) {
+    e.preventDefault();
+    const text = reminderText.value.trim();
+    const dateValue = reminderDate.value;
+
+    if (!text) {
+        showNotification('Por favor, digite o texto do lembrete.', 'info');
+        return;
+    }
+
+    const newReminder = {
+        id: Date.now().toString(), // ID simples baseado no timestamp
+        text: text,
+        due: dateValue || null, // Salva null se não houver data
+        notified: false
+    };
+
+    reminders.push(newReminder);
+    safeSetLocalStorage(REMINDERS_KEY, reminders);
+
+    reminderText.value = '';
+    reminderDate.value = '';
+    renderReminders();
+    showNotification('Lembrete adicionado com sucesso!', 'success');
+}
+
+/**
+ * Manipula cliques nos botões de excluir lembrete.
+ * @param {Event} e O objeto do evento.
+ */
+function handleReminderDeleteClick(e) {
+    if (e.target.classList.contains('delete-btn')) {
+        const listItem = e.target.closest('li');
+        if (!listItem) return;
+
+        const index = parseInt(listItem.dataset.index, 10);
+        if (!isNaN(index) && index >= 0 && index < reminders.length) {
+            reminders.splice(index, 1); // Remove o lembrete do array
+            safeSetLocalStorage(REMINDERS_KEY, reminders); // Salva a lista atualizada
+            renderReminders(); // Re-renderiza a lista
+            showNotification('Lembrete excluído.', 'info');
+        } else {
+            console.error("Índice inválido para exclusão de lembrete:", listItem.dataset.index);
+            showNotification('Erro ao excluir lembrete.', 'error');
+        }
+    }
+}
+
+/**
+ * Manipula o clique no botão de sincronizar.
+ */
+function handleSyncClick() {
+    const syncBtn = document.getElementById('syncBtn');
+    if (!navigator.onLine) {
+        showNotification('Você está offline. Conecte-se à internet para sincronizar.', 'info');
+        return;
+    }
+
+    syncBtn.disabled = true;
+    syncBtn.textContent = 'Sincronizando...';
+    showNotification('Sincronizando conteúdo...', 'info');
+
+    // Simulação de sincronização:
+    // Em um app real, aqui você faria fetch() para uma API.
+    // Para este exemplo, apenas garantimos que os dados padrão (ou os últimos "buscados")
+    // estão salvos localmente. Poderíamos até recarregar os dados padrão aqui.
+    setTimeout(() => {
+        try {
+            // Exemplo: Forçar recarga do conteúdo padrão (ou buscar de uma API)
+            // contentData = await fetchContentFromAPI(); // Função hipotética
+            // Por ora, apenas re-salvamos o que já temos ou o padrão
+            if (!contentData) contentData = defaultContentData;
+            safeSetLocalStorage(CONTENT_DATA_KEY, contentData);
+            loadContentSections(); // Recarrega o conteúdo na tela
+            showNotification('Conteúdo atualizado com sucesso!', 'success');
+        } catch (error) {
+            console.error("Erro durante a sincronização:", error);
+            showNotification('Falha ao sincronizar conteúdo.', 'error');
+        } finally {
+            syncBtn.disabled = false;
+            syncBtn.textContent = 'Sincronizar';
+        }
+    }, 1500); // Simula um delay de rede
+}
+
+// --- Inicialização e Adição de Event Listeners ---
+
+/**
+ * Função de inicialização principal da aplicação.
+ */
+function initializeApp() {
+    loadInitialData();
+
+    // Adiciona Listeners Globais (usando delegação sempre que possível)
+    loginForm.addEventListener('submit', handleLoginRegisterSubmit);
+    reminderForm.addEventListener('submit', handleReminderSubmit);
+
+    // Delegação para links de navegação, toggle login/registro, quiz e exclusão de lembretes
+    mainContentArea.addEventListener('click', (e) => {
+        // Links de Navegação de Tópicos
+        if (e.target.matches('.navLink')) {
+            handleNavLinkClick(e);
+        }
+        // Botões de Verificar Quiz
+        else if (e.target.matches('.quiz-check-btn')) {
+            handleQuizCheckClick(e);
+        }
+        // Botões de Excluir Lembrete
+        else if (e.target.matches('.delete-btn')) {
+            handleReminderDeleteClick(e);
+        }
+    });
+
+    // Delegação para o link de toggle Login/Registro
+    toggleLoginRegister.addEventListener('click', (e) => {
+         if (e.target.matches('#registerLink') || e.target.matches('#loginLink')) {
+            e.preventDefault();
+            toggleRegisterMode();
+        }
+    });
+
+
+    // Listeners do Cabeçalho (se o cabeçalho for visível)
+    document.getElementById('homeBtn').addEventListener('click', () => showSection('homeSection'));
+    document.getElementById('syncBtn').addEventListener('click', handleSyncClick);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+
+    // Verifica se o usuário já está logado
+    if (currentUser) {
+        startApp();
+    } else {
+        // Se não estiver logado, mostra apenas a seção de login
+        showSection('loginSection');
+        appHeader.style.display = 'none'; // Garante que o header esteja escondido
+    }
+}
+
+// Inicia a aplicação quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', initializeApp);
+
 </script>
 
 </body>
