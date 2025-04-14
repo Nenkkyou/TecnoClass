@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Educacional Offline</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="appHeader" style="display:none;">
+  <h1>EduApp Offline</h1>
+  <div id="topbar">
+    <button id="homeBtn">Início</button>
+    <button id="syncBtn">Sincronizar</button>
+    <button id="logoutBtn">Sair</button>
+  </div>
+</div>
+
+<section id="loginSection">
+  <h2 id="loginTitle">Login</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Usuário" required />
+    <input type="password" id="password" placeholder="Senha" required />
+    <button type="submit" id="loginBtn">Entrar</button>
+  </form>
+  <p id="toggleLoginRegister">Não tem uma conta? <a href="#" id="registerLink">Registre-se</a></p>
+  <p id="loginMessage"></p>
+</section>
+
+<section id="homeSection" style="display:none;">
+  <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
+  <p>Escolha um dos tópicos abaixo para estudar:</p>
+  <ul id="topicsList">
+    <li><a href="#" data-target="programacaoSection" class="navLink">Programação</a></li>
+    <li><a href="#" data-target="cibersegurancaSection" class="navLink">Cibersegurança</a></li>
+    <li><a href="#" data-target="iaSection" class="navLink">Inteligência Artificial Generativa</a></li>
+    <li><a href="#" data-target="productOwnerSection" class="navLink">Product Owner (PO)</a></li>
+    <li><a href="#" data-target="quizSection" class="navLink">Quiz</a></li>
+    <li><a href="#" data-target="remindersSection" class="navLink">Lembretes</a></li>
+  </ul>
+  <p><em>Dica:</em> Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
+</section>
+
+<section id="programacaoSection" style="display:none;"></section>
+<section id="cibersegurancaSection" style="display:none;"></section>
+<section id="iaSection" style="display:none;"></section>
+<section id="productOwnerSection" style="display:none;"></section>
+
+<section id="quizSection" style="display:none;">
+  <h2>Quiz</h2>
+  <div class="quiz-question">
+    <p><strong>1.</strong> Programação serve principalmente para:</p>
+    <label><input type="radio" name="q1" value="a" /> Traduzir linguagens humanas literalmente para o computador.</label><br/>
+    <label><input type="radio" name="q1" value="b" /> Instruir o computador a realizar tarefas.</label><br/>
+    <label><input type="radio" name="q1" value="c" /> Construir equipamentos de hardware.</label><br/>
+    <label><input type="radio" name="q1" value="d" /> Proteger dados contra ataques.</label><br/>
+    <button onclick="checkQuiz('q1','b')">Verificar</button>
+    <p class="feedback" id="q1Feedback"></p>
+  </div>
+  <div class="quiz-question">
+    <p><strong>2.</strong> Qual das alternativas <u>não</u> é um exemplo de ameaça cibernética?</p>
+    <label><input type="radio" name="q2" value="a" /> Phishing</label><br/>
+    <label><input type="radio" name="q2" value="b" /> Ransomware</label><br/>
+    <label><input type="radio" name="q2" value="c" /> DDoS</label><br/>
+    <label><input type="radio" name="q2" value="d" /> Backup de dados</label><br/>
+    <button onclick="checkQuiz('q2','d')">Verificar</button>
+    <p class="feedback" id="q2Feedback"></p>
+  </div>
+  <div class="quiz-question">
+    <p><strong>3.</strong> O ChatGPT é um exemplo de:</p>
+    <label><input type="radio" name="q3" value="a" /> Malware de inteligência artificial.</label><br/>
+    <label><input type="radio" name="q3" value="b" /> Chatbot baseado em IA generativa.</label><br/>
+    <label><input type="radio" name="q3" value="c" /> Ataque de phishing em larga escala.</label><br/>
+    <label><input type="radio" name="q3" value="d" /> Aplicativo de programação em bloco.</label><br/>
+    <button onclick="checkQuiz('q3','b')">Verificar</button>
+    <p class="feedback" id="q3Feedback"></p>
+  </div>
+  <div class="quiz-question">
+    <p><strong>4.</strong> No contexto do Scrum, o Product Owner é responsável por:</p>
+    <label><input type="radio" name="q4" value="a" /> Escrever todo o código do produto.</label><br/>
+    <label><input type="radio" name="q4" value="b" /> Representar os interesses do cliente e priorizar funcionalidades.</label><br/>
+    <label><input type="radio" name="q4" value="c" /> Gerenciar diretamente a equipe de desenvolvedores.</label><br/>
+    <label><input type="radio" name="q4" value="d" /> Garantir a segurança cibernética do projeto.</label><br/>
+    <button onclick="checkQuiz('q4','b')">Verificar</button>
+    <p class="feedback" id="q4Feedback"></p>
+  </div>
+</section>
+
+<section id="remindersSection" style="display:none;">
+  <h2>Lembretes</h2>
+  <form id="reminderForm">
+    <input type="text" id="reminderText" placeholder="Digite um lembrete..." required />
+    <input type="datetime-local" id="reminderDate" />
+    <button type="submit">Adicionar</button>
+  </form>
+  <ul id="reminderList"></ul>
+  <p id="noRemindersMsg">Nenhum lembrete adicionado.</p>
+</section>
+
+<script>
+"use strict";
+// Dados persistentes
+let users = JSON.parse(localStorage.getItem('users') || '{}');
+let currentUser = localStorage.getItem('loggedInUser') || null;
+let contentData = JSON.parse(localStorage.getItem('contentData') || 'null');
+
+// Conteúdo educacional padrão, caso ainda não esteja salvo localmente
+if (!contentData) {
+  contentData = {
+    programacao: `<h2>Programação</h2>
+      <p>Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer [oai_citation_attribution:0‡idocode.com.br](https://idocode.com.br/blog/programacao/o-que-e-programacao/#:~:text=De%20forma%20geral%2C%20a%20programa%C3%A7%C3%A3o,m%C3%A1quina%20e%20atendem%20diversas%20finalidades). Ela está por trás da maioria das tecnologias digitais que usamos diariamente, desde aplicativos de celular até sistemas bancários e controle de tráfego.</p>
+      <p>A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet [oai_citation_attribution:1‡idocode.com.br](https://idocode.com.br/blog/programacao/o-que-e-programacao/#:~:text=Al%C3%A9m%20do%20uso%20pessoal%2C%20atualmente,por%20programadores%2C%20entre%20outras%20%C3%A1reas).</p>
+      <p>Com programação, podemos criar desde pequenos scripts (roteiros de código) para automatizar tarefas simples até aplicativos completos utilizados por milhões de pessoas. Por exemplo, um programador pode escrever um script para organizar arquivos no computador ou desenvolver um app móvel de mensagens – ambos são resultados de códigos escritos para resolver problemas ou facilitar tarefas.</p>`,
+    ciberseguranca: `<h2>Cibersegurança</h2>
+      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais [oai_citation_attribution:2‡akamai.com](https://www.akamai.com/pt/glossary/what-is-cybersecurity#:~:text=A%20ciberseguran%C3%A7a%20%C3%A9%20a%20pr%C3%A1tica,perda%20de%20neg%C3%B3cios%20e%20reputa%C3%A7%C3%A3o). Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura [oai_citation_attribution:3‡esr.rnp.br](https://esr.rnp.br/seguranca/profissoes-de-ciberseguranca/#:~:text=A%20ciberseguran%C3%A7a%20compreende%20a%C3%A7%C3%B5es%20e,proteger%20institui%C3%A7%C3%B5es%20das%20amea%C3%A7as%20cibern%C3%A9ticas).</p>
+      <p>Algumas ameaças comuns e dicas de proteção:</p>
+      <ul>
+        <li><strong>DDoS:</strong> ataque distribuído de negação de serviço, sobrecarrega servidores para tirá-los do ar. Proteção: monitorar o tráfego de rede e usar filtros/firewalls que limitem conexões suspeitas, evitando sobrecarga.</li>
+        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim) [oai_citation_attribution:4‡fortinet.com](https://www.fortinet.com/br/resources/cyberglossary/how-to-prevent-ransomware#:~:text=1,n%C3%A3o%20verificados).</li>
+        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações [oai_citation_attribution:5‡infoprotect.com.br](https://infoprotect.com.br/como-se-proteger-de-ataques-phishing/#:~:text=Seguindo%20algumas%20pr%C3%A1ticas%20simples%2C%20voc%C3%AA,se%20proteger%20melhor%20contra%20phishing).</li>
+      </ul>`,
+    ia: `<h2>Inteligência Artificial Generativa</h2>
+      <p>A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados [oai_citation_attribution:6‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=A%20IA%20generativa%2C%20%C3%A0s%20vezes,prompt%20ou%20solicita%C3%A7%C3%A3o%20do%20usu%C3%A1rio). Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
+      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma [oai_citation_attribution:7‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=A%20IA%20tem%20sido%20um,em%20pelo%20menos%20uma%20fun%C3%A7%C3%A3o). A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa [oai_citation_attribution:8‡ibm.com](https://www.ibm.com/br-pt/topics/generative-ai#:~:text=uma%20pesquisa%20da%20empresa%20de,2), o que demonstra seu enorme impacto potencial na sociedade.</p>`,
+    productOwner: `<h2>Product Owner (PO)</h2>
+      <p><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento [oai_citation_attribution:9‡clarify.com.br](https://clarify.com.br/blog/importancia-product-owner/#:~:text=O%20Product%20Owner%20%C3%A9%20o,trabalhando%20nas%20atividades%20mais%20importantes). Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
+      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico [oai_citation_attribution:10‡rangel.com](https://www.rangel.com/pt/blog/importancia-product-owner/#:~:text=Esta%20fun%C3%A7%C3%A3o%20est%C3%A1%20muito%20associada,poss%C3%ADvel%20a%20um%20custo%20m%C3%ADnimo). Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
+  };
+  localStorage.setItem('contentData', JSON.stringify(contentData));
+}
+
+// Insere o conteúdo nas seções de tópico
+function loadContent() {
+  document.getElementById('programacaoSection').innerHTML = contentData.programacao;
+  document.getElementById('cibersegurancaSection').innerHTML = contentData.ciberseguranca;
+  document.getElementById('iaSection').innerHTML = contentData.ia;
+  document.getElementById('productOwnerSection').innerHTML = contentData.productOwner;
+}
+
+// Mostra uma seção e esconde as demais
+function showSection(sectionId) {
+  const sections = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection'];
+  sections.forEach(id => {
+    document.getElementById(id).style.display = (id === sectionId ? 'block' : 'none');
+  });
+}
+
+// Verificação do Quiz
+function checkQuiz(qName, correctValue) {
+  const options = document.getElementsByName(qName);
+  let selected = null;
+  for (let opt of options) {
+    if (opt.checked) { selected = opt.value; break; }
+  }
+  const feedbackEl = document.getElementById(qName + 'Feedback');
+  if (selected === null) {
+    feedbackEl.style.color = 'orange';
+    feedbackEl.textContent = 'Por favor, selecione uma opção.';
+  } else if (selected === correctValue) {
+    feedbackEl.style.color = 'green';
+    feedbackEl.textContent = 'Correto!';
+  } else {
+    feedbackEl.style.color = 'red';
+    feedbackEl.textContent = 'Incorreto. Tente novamente.';
+  }
+}
+
+// Lembretes
+let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+function renderReminders() {
+  const listEl = document.getElementById('reminderList');
+  const noMsg = document.getElementById('noRemindersMsg');
+  listEl.innerHTML = '';
+  if (reminders.length === 0) {
+    noMsg.style.display = 'block';
+  } else {
+    noMsg.style.display = 'none';
+    reminders.forEach((rem, index) => {
+      const li = document.createElement('li');
+      let text = rem.text;
+      if (rem.due) {
+        const dueDate = new Date(rem.due);
+        text += ' – ' + dueDate.toLocaleString();
+        if (dueDate.getTime() <= Date.now()) {
+          li.classList.add('due');
+        }
+      }
+      li.textContent = text;
+      // botão de exclusão
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '✖';
+      delBtn.className = 'delete-btn';
+      delBtn.onclick = () => {
+        reminders.splice(index, 1);
+        localStorage.setItem('reminders', JSON.stringify(reminders));
+        renderReminders();
+      };
+      li.appendChild(delBtn);
+      listEl.appendChild(li);
+    });
+  }
+}
+
+// Verifica lembretes vencidos e alerta uma vez
+function checkDueReminders() {
+  reminders.forEach((rem, idx) => {
+    if (!rem.notified && rem.due) {
+      if (new Date(rem.due).getTime() <= Date.now()) {
+        alert('Lembrete: ' + rem.text + ' - estava agendado para agora.');
+        reminders[idx].notified = true;
+      }
+    }
+  });
+  localStorage.setItem('reminders', JSON.stringify(reminders));
+}
+
+// Eventos de interface
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+  const messageEl = document.getElementById('loginMessage');
+  if (user === '' || pass === '') {
+    messageEl.style.color = 'red';
+    messageEl.textContent = 'Por favor, preencha usuário e senha.';
+    return;
+  }
+  if (registerMode) {
+    // Fluxo de registro
+    if (users[user]) {
+      messageEl.style.color = 'red';
+      messageEl.textContent = 'Usuário já existe. Escolha outro nome.';
+    } else {
+      // Cria novo usuário
+      // Hash simples da senha (para não salvar texto puro)
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        users[user] = hashHex;
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('loggedInUser', user);
+        currentUser = user;
+        messageEl.textContent = '';
+        startApp();
+      });
+    }
+  } else {
+    // Fluxo de login
+    if (!users[user]) {
+      messageEl.style.color = 'red';
+      messageEl.textContent = 'Usuário não encontrado. Verifique o nome ou registre-se.';
+    } else {
+      // Verifica senha
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        if (users[user] === hashHex) {
+          localStorage.setItem('loggedInUser', user);
+          currentUser = user;
+          messageEl.textContent = '';
+          startApp();
+        } else {
+          messageEl.style.color = 'red';
+          messageEl.textContent = 'Senha incorreta. Tente novamente.';
+        }
+      });
+    }
+  }
+});
+let registerMode = false;
+document.getElementById('registerLink').addEventListener('click', function(e) {
+  e.preventDefault();
+  const title = document.getElementById('loginTitle');
+  const loginBtn = document.getElementById('loginBtn');
+  const toggleText = document.getElementById('toggleLoginRegister');
+  if (!registerMode) {
+    registerMode = true;
+    title.textContent = 'Registrar';
+    loginBtn.textContent = 'Registrar';
+    toggleText.innerHTML = 'Já tem conta? <a href="#" id="registerLinkBack">Entrar</a>';
+    // altera id do link
+    this.id = 'registerLinkBack';
+  } else {
+    registerMode = false;
+    title.textContent = 'Login';
+    loginBtn.textContent = 'Entrar';
+    toggleText.innerHTML = 'Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>';
+    this.id = 'registerLink';
+  }
+});
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('navLink')) {
+    e.preventDefault();
+    showSection(e.target.dataset.target);
+  }
+});
+document.getElementById('homeBtn').addEventListener('click', function() {
+  showSection('homeSection');
+});
+document.getElementById('logoutBtn').addEventListener('click', function() {
+  localStorage.removeItem('loggedInUser');
+  currentUser = null;
+  location.reload();
+});
+document.getElementById('syncBtn').addEventListener('click', function() {
+  if (!navigator.onLine) {
+    alert('Você está offline no momento. Conecte-se à internet para sincronizar.');
+    return;
+  }
+  // Simula busca de conteúdo atualizado (em app real, faria uma requisição ao servidor)
+  alert('Sincronizando conteúdo...');
+  // Em um app real, aqui poderia ser feito fetch em uma API e atualizar contentData
+  // No demo, apenas garantimos que contentData está salvo localmente
+  localStorage.setItem('contentData', JSON.stringify(contentData));
+  alert('Conteúdo atualizado com sucesso!');
+});
+document.getElementById('reminderForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const text = document.getElementById('reminderText').value;
+  const date = document.getElementById('reminderDate').value;
+  if (text.trim() === '') return;
+  const newRem = { text: text.trim() };
+  if (date) newRem.due = date;
+  newRem.notified = false;
+  reminders.push(newRem);
+  localStorage.setItem('reminders', JSON.stringify(reminders));
+  document.getElementById('reminderText').value = '';
+  document.getElementById('reminderDate').value = '';
+  renderReminders();
+});
+
+// Inicia o app após login
+function startApp() {
+  // Mostra header e tela inicial
+  document.getElementById('appHeader').style.display = 'block';
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('homeSection').style.display = 'block';
+  // Carrega conteúdo e informações do usuário
+  document.getElementById('welcomeName').innerText = currentUser;
+  loadContent();
+  renderReminders();
+  // Solicita armazenamento persistente (evita perda de dados pelo navegador)
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(console.error);
+  }
+  // Inicia verificação periódica de lembretes
+  setInterval(checkDueReminders, 60000);
+}
+
+// Login automático se o usuário já estava autenticado
+if (currentUser) {
+  startApp();
+}
+</script>
+
+</body>
+</html>
