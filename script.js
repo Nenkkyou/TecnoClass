@@ -2,7 +2,7 @@
 
 // Dados persistentes (LocalStorage)
 let users = JSON.parse(localStorage.getItem('users') || '{}');        // { email: {salt:..., hash:...}, ... }
-let userData = JSON.parse(localStorage.getItem('userData') || '{}');  // { email: { completedTopics:[], reminders:[], favorites:[], achievements:[], highScore:0 }, ... }
+let userData = JSON.parse(localStorage.getItem('userData') || '{}');  // { email: { completedTopics:[], reminders:[], favorites:[], achievements:[], highScore:0, notes:{} }, ... }
 let currentUser = localStorage.getItem('loggedInUser') || null;
 let contentData = JSON.parse(localStorage.getItem('contentData') || 'null');
 const CONTENT_VERSION = 2;  // Versão do conteúdo para controle de atualização
@@ -50,7 +50,7 @@ const defaultContentData = {
     "productOwner": {
       "title": "Product Owner (PO)",
       "body": `
-        <p>O Product Owner é a pessoa responsável por representar os interesses do cliente ou usuário em projetos que usam metodologias ágeis, como o Scrum. Ele atua como o “dono” do produto dentro do time.</p>
+        <p>O Product Owner é a pessoa responsável por representar os interesses do cliente ou usuário em projetos que usam metodologias ágeis, como o Scrum. Ele atua como o "dono" do produto dentro do time.</p>
         <p>Seu papel inclui gerenciar e priorizar o <em>backlog</em> — a lista de funcionalidades e tarefas — garantindo que a equipe trabalhe nas entregas de maior valor para o projeto.</p>
         <p>O PO é um elo entre os objetivos do negócio, as necessidades dos usuários e o trabalho do time técnico. Ele toma decisões sobre o que deve ser feito primeiro, ajusta o planejamento com base em feedbacks e assegura que o produto final tenha qualidade e gere impacto positivo.</p>
         <p><em>Exemplo visual:</em></p>
@@ -126,6 +126,8 @@ let quizTimer = null;
 let quizTimePerQuestion = 15;  // segundos por pergunta no quiz final
 let currentQuestionIndex = 0;
 let quizStartTime = null;
+let lastActivity = Date.now(); // Adicionar rastreamento de atividade do usuário
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutos em milissegundos
 
 // Lista dinâmica de seções (para showSection)
 let sectionIds = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection','favoritesSection','profileSection','adminSection'];
@@ -260,7 +262,7 @@ const explanations = {
 
 // Configura IDs para parágrafos e adiciona botão de favoritos e outros eventos nas seções de conteúdo
 function setupContentInteractions() {
-  // Para cada seção de conteúdo, atribuir IDs únicos aos parágrafos e itens de lista, e configurar botão de favoritos
+  // Para cada seção de conteúdo, atribuir IDs únicos aos parágrafos e itens de lista, e configurar botão de favorito
   const contentSections = ['programacaoSection','cibersegurancaSection','iaSection','productOwnerSection'];
   contentSections.forEach(secId => {
     const sec = document.getElementById(secId);
@@ -478,8 +480,28 @@ document.getElementById('languageSelect').addEventListener('change', function() 
   if (document.getElementById('favoritesSection').style.display !== 'none') renderFavorites();
 });
 
-// Mostra uma seção e esconde as demais
+// Função para limpar recursos ao mudar de seção
+function cleanupResources() {
+  // Parar leitura de texto
+  window.speechSynthesis.cancel();
+  
+  // Limpar timer do quiz se ativo
+  if (quizTimer) {
+    clearInterval(quizTimer);
+    quizTimer = null;
+  }
+  
+  // Parar reprodução de vídeos
+  document.querySelectorAll('video').forEach(video => {
+    if (!video.paused) video.pause();
+  });
+}
+
+// Versão melhorada de showSection com limpeza de recursos
 function showSection(sectionId) {
+  // Limpar recursos da seção anterior
+  cleanupResources();
+  
   sectionIds.forEach(id => {
     const secEl = document.getElementById(id);
     if (!secEl) return;
@@ -493,15 +515,53 @@ function showSection(sectionId) {
       secEl.style.display = 'none';
     }
   });
+  
+  currentSectionId = sectionId.endsWith('Section') && 
+                    sectionId !== 'homeSection' && 
+                    sectionId !== 'loginSection' ? sectionId : null;
+  
   // Ações especiais ao mostrar certas seções
   if (sectionId === 'adminSection') renderAdminPanel();
   if (sectionId === 'profileSection') renderProfile();
   if (sectionId === 'favoritesSection') renderFavorites();
   if (sectionId === 'homeSection') {
     renderTopicsList();
-    // Parar qualquer leitura em voz se voltar ao início
-    window.speechSynthesis.cancel();
   }
+  
+  // Configurar temporizador do quiz
+  if (sectionId === 'quizSection') {
+    // Limpar resultados anteriores
+    document.getElementById('quizResult').style.display = 'none';
+    
+    // Reiniciar timer
+    quizTimeRemaining = quizTimePerQuestion * 4; // 4 perguntas
+    document.getElementById('timerDisplay').innerText = formatTime(quizTimeRemaining);
+    
+    quizTimer = setInterval(() => {
+      quizTimeRemaining--;
+      document.getElementById('timerDisplay').innerText = formatTime(quizTimeRemaining);
+      
+      if (quizTimeRemaining <= 0) {
+        clearInterval(quizTimer);
+        quizTimer = null;
+        finishQuiz();
+        showNotification("Tempo do quiz encerrado.");
+      }
+    }, 1000);
+  }
+  
+  // Verificar lembretes ao entrar na seção de lembretes
+  if (sectionId === 'remindersSection') {
+    renderReminders();
+    checkDueReminders();
+  }
+}
+
+// Função auxiliar para formatar tempo em MM:SS
+function formatTime(seconds) {
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const ss = String(seconds % 60).padStart(2, '0');
+  return mm + ":" + ss;
 }
 
 // Função de verificação do Quiz (tanto revisão quanto quiz final)
@@ -513,21 +573,30 @@ function checkQuiz(qName, correctValue) {
   }
   const feedbackEl = document.getElementById(qName + 'Feedback');
   if (!feedbackEl) return;
+  
   if (selected === null) {
     feedbackEl.style.color = 'orange';
     feedbackEl.textContent = 'Por favor, selecione uma opção.';
-  } else if (selected === correctValue) {
-    feedbackEl.style.color = 'green';
-    feedbackEl.textContent = 'Correto! ' + (explanations[qName] || '');
-    // Marcar conquista se for questão de revisão respondida correta de primeira? (Opcional)
-    // No quiz final, incrementar score
-    if (qName.startsWith('q')) {
-      // Atualiza score
+    return false; // Adicionado retorno para verificar se resposta foi selecionada
+  } 
+  
+  const isCorrect = selected === correctValue;
+  feedbackEl.style.color = isCorrect ? 'green' : 'red';
+  feedbackEl.textContent = isCorrect ? 
+    'Correto! ' + (explanations[qName] || '') : 
+    'Incorreto. ' + (explanations[qName] || '');
+    
+  // Atualizar estatísticas para quiz final
+  if (qName.startsWith('q') && currentUser && userData[currentUser]) {
+    if (!userData[currentUser].quizStats) {
+      userData[currentUser].quizStats = { attempts: 0, correct: 0 };
     }
-  } else {
-    feedbackEl.style.color = 'red';
-    feedbackEl.textContent = 'Incorreto. ' + (explanations[qName] || '');
+    userData[currentUser].quizStats.attempts++;
+    if (isCorrect) userData[currentUser].quizStats.correct++;
+    localStorage.setItem('userData', JSON.stringify(userData));
   }
+  
+  return isCorrect;
 }
 
 // Dados de lembretes específicos do usuário atual
@@ -569,35 +638,68 @@ function renderReminders() {
   }
 }
 
-// Verifica lembretes vencidos e notifica
-function checkDueReminders() {
+// Verificação melhorada de lembretes com alerta sonoro configurável
+function checkDueReminders(suppressNotification = false) {
   if (!currentUser || !userData[currentUser]) return;
+  
   let notifiedThisCycle = false;
+  let dueCounted = 0;
+  
   userData[currentUser].reminders.forEach((rem, idx) => {
-    if (!rem.notified && rem.due && new Date(rem.due).getTime() <= Date.now()) {
-      showNotification('Lembrete: ' + rem.text + ' - estava agendado para agora.');
-      if (!notifiedThisCycle) {
-        beep();
-        notifiedThisCycle = true;
+    // Verificar se o lembrete está vencido
+    const isDue = rem.due && new Date(rem.due).getTime() <= Date.now();
+    
+    if (isDue) {
+      dueCounted++;
+      
+      if (!rem.notified && !suppressNotification) {
+        showNotification('Lembrete: ' + rem.text + ' - estava agendado para agora.');
+        
+        // Alerta sonoro apenas para o primeiro lembrete vencido
+        if (!notifiedThisCycle && !userData[currentUser].settings?.muteSounds) {
+          beep();
+          notifiedThisCycle = true;
+        }
+        
+        // Marcar como notificado
+        userData[currentUser].reminders[idx].notified = true;
       }
-      userData[currentUser].reminders[idx].notified = true;
     }
   });
+  
+  // Atualizar contador na interface (se houver)
+  const reminderCounter = document.getElementById('reminderCounter');
+  if (reminderCounter && dueCounted > 0) {
+    reminderCounter.textContent = dueCounted.toString();
+    reminderCounter.style.display = 'inline-block';
+  } else if (reminderCounter) {
+    reminderCounter.style.display = 'none';
+  }
+  
   localStorage.setItem('userData', JSON.stringify(userData));
+  return dueCounted;
 }
 
-// Alerta sonoro
-function beep() {
+// Melhorar a função de beep com configurações de volume
+function beep(frequency = 440, duration = 500, volume = 0.5) {
   try {
     if (!window.audioCtx) {
       window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
+    
     const oscillator = window.audioCtx.createOscillator();
+    const gainNode = window.audioCtx.createGain();
+    
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(440, window.audioCtx.currentTime);
-    oscillator.connect(window.audioCtx.destination);
+    oscillator.frequency.setValueAtTime(frequency, window.audioCtx.currentTime);
+    
+    gainNode.gain.setValueAtTime(volume, window.audioCtx.currentTime);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(window.audioCtx.destination);
+    
     oscillator.start();
-    oscillator.stop(window.audioCtx.currentTime + 0.5);
+    oscillator.stop(window.audioCtx.currentTime + duration/1000);
   } catch (e) {
     console.error('Erro ao reproduzir som', e);
   }
@@ -637,17 +739,21 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
   const emailVal = emailInput.value.trim();
   const passVal = passInput.value;
   const messageEl = document.getElementById('loginMessage');
+  
+  // Validações iniciais (já existentes)
   if (emailVal === '' || passVal === '') {
     messageEl.style.color = 'red';
     messageEl.textContent = 'Por favor, preencha e-mail e senha.';
     return;
   }
+  
   // Simples validação de e-mail para registro
   if (registerMode && !emailVal.includes('@')) {
     messageEl.style.color = 'red';
     messageEl.textContent = 'E-mail inválido.';
     return;
   }
+  
   // Proteção contra bots: checar campo oculto
   const botField = document.getElementById('botCheck');
   if (registerMode && botField.value) {
@@ -655,6 +761,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     messageEl.textContent = 'Falha no registro.';
     return;
   }
+  
   if (registerMode) {
     // Fluxo de registro
     if (users[emailVal]) {
@@ -663,25 +770,67 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     } else {
       // Gera salt e hash da senha antes de salvar
       const salt = generateSalt();
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(passVal + salt)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        users[emailVal] = { salt: salt, hash: hashHex };
+      
+      try {
+        crypto.subtle.digest('SHA-256', new TextEncoder().encode(passVal + salt))
+          .then(hashBuffer => {
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            // Criar usuário
+            users[emailVal] = { salt: salt, hash: hashHex };
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Criar perfil inicial
+            userData[emailVal] = {
+              completedTopics: [],
+              reminders: [],
+              favorites: [],
+              achievements: [],
+              highScore: 0,
+              notes: {},
+              progress: {},
+              quizStats: { attempts: 0, correct: 0 },
+              lastLogin: new Date().toISOString()
+            };
+            
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem('loggedInUser', emailVal);
+            currentUser = emailVal;
+            messageEl.textContent = '';
+            startApp();
+          })
+          .catch(error => {
+            console.error("Erro ao criar hash:", error);
+            messageEl.style.color = 'red';
+            messageEl.textContent = 'Erro ao processar o registro. Tente novamente.';
+          });
+      } catch (error) {
+        console.error("Erro no crypto API:", error);
+        // Fallback para método básico se crypto API falhar
+        const simpleHash = btoa(passVal + salt); // Não é seguro, apenas fallback
+        users[emailVal] = { salt: salt, hash: simpleHash, method: 'basic' };
         localStorage.setItem('users', JSON.stringify(users));
-        // Cria perfil inicial do usuário nos dados
+        
+        // Criar perfil inicial (mesmo código de acima)
         userData[emailVal] = {
           completedTopics: [],
           reminders: [],
           favorites: [],
           achievements: [],
-          highScore: 0
+          highScore: 0,
+          notes: {},
+          progress: {},
+          quizStats: { attempts: 0, correct: 0 },
+          lastLogin: new Date().toISOString()
         };
+        
         localStorage.setItem('userData', JSON.stringify(userData));
         localStorage.setItem('loggedInUser', emailVal);
         currentUser = emailVal;
         messageEl.textContent = '';
         startApp();
-      });
+      }
     }
   } else {
     // Fluxo de login
@@ -700,7 +849,6 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
           currentUser = emailVal;
           messageEl.textContent = '';
           loginAttempts = 0;
-          // Se usuário estiver no formato antigo (sem salt), atualizar (aqui não aplicável pois usamos salt sempre em registro)
           startApp();
         } else {
           messageEl.style.color = 'red';
@@ -710,13 +858,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
       });
     }
   }
-  // Bloqueio após tentativas excessivas
-  if (loginAttempts >= 3) {
-    // Desabilitar botão de login por 30
-Continuing from the previous `script.js` section:
-
-```javascript
-  }
+  
   // Bloqueio após tentativas excessivas de login
   if (loginAttempts >= 3) {
     loginAttempts = 0;
@@ -762,14 +904,24 @@ document.addEventListener('click', function(e) {
     showSection(e.target.dataset.target);
   }
 });
+
+// Adicione o evento para os botões de "Voltar"
+document.querySelectorAll('.backButton').forEach(button => {
+  button.addEventListener('click', function() {
+    showSection(button.dataset.target);
+  });
+});
+
 document.getElementById('homeBtn').addEventListener('click', function() {
   showSection('homeSection');
 });
+
 document.getElementById('logoutBtn').addEventListener('click', function() {
   localStorage.removeItem('loggedInUser');
   currentUser = null;
   location.reload();
 });
+
 document.getElementById('profileBtn').addEventListener('click', function() {
   showSection('profileSection');
 });
@@ -871,18 +1023,23 @@ const correctAnswers = { q1:'c', q2:'a', q3:'b', q4:'a' };
 let quizTimeRemaining = 0;
 function finishQuiz() {
   // Calcula pontuação
-  let total = 4;
+  let total = Object.keys(correctAnswers).length;
   let correctCount = 0;
+  
   for (let q in correctAnswers) {
-    const opts = document.getElementsByName(q);
-    opts.forEach(opt => {
-      if (opt.checked && opt.value === correctAnswers[q]) correctCount++;
-    });
+    const selected = Array.from(document.getElementsByName(q))
+      .find(opt => opt.checked);
+    
+    if (selected && selected.value === correctAnswers[q]) {
+      correctCount++;
+    }
   }
+  
   // Exibe resultado
   document.getElementById('scoreCount').innerText = correctCount.toString();
   document.getElementById('scoreTotal').innerText = total.toString();
   const scoreMsg = document.getElementById('scoreMessage');
+  
   if (correctCount === total) {
     scoreMsg.innerText = "Parabéns! Você acertou todas as perguntas!";
     unlockAchievement("Sábio do Quiz: acertou todas as perguntas do quiz");
@@ -891,10 +1048,14 @@ function finishQuiz() {
   } else {
     scoreMsg.innerText = "Que tal revisar o conteúdo e tentar novamente?";
   }
+  
   document.getElementById('quizResult').style.display = 'block';
+  
   // Atualiza pontuação do usuário
-  userData[currentUser].highScore = Math.max(userData[currentUser].highScore || 0, correctCount);
-  localStorage.setItem('userData', JSON.stringify(userData));
+  if (currentUser && userData[currentUser]) {
+    userData[currentUser].highScore = Math.max(userData[currentUser].highScore || 0, correctCount);
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
 }
 
 // "Refazer Quiz"
@@ -909,12 +1070,13 @@ document.getElementById('restartQuizBtn').addEventListener('click', function() {
   showSection('quizSection');
 });
 
-// Monitorar rolagem para atualizar barra de progresso e marcar lição concluída
-let currentSectionId = null;
-window.addEventListener('scroll', () => {
-  if (!currentSectionId) return;
+// Versão otimizada do rastreamento de rolagem
+window.addEventListener('scroll', debounce(() => {
+  if (!currentSectionId || !currentUser) return;
+  
   const secEl = document.getElementById(currentSectionId);
   if (!secEl) return;
+  
   // Calcula progresso de leitura
   const scrollY = window.scrollY;
   const offsetTop = secEl.offsetTop;
@@ -922,20 +1084,32 @@ window.addEventListener('scroll', () => {
   const windowHeight = window.innerHeight;
   const scrollInSection = scrollY - offsetTop;
   const scrollable = sectionHeight - windowHeight;
+  
   let progress = 0;
   if (scrollable > 0) {
     progress = Math.min(1, Math.max(0, scrollInSection / scrollable));
   } else {
     progress = 1;
   }
+  
   const bar = secEl.querySelector('.progress-bar');
   if (bar) bar.style.width = (progress * 100) + "%";
+  
+  // Salva progresso temporário (mesmo antes de concluir)
+  const topicKey = currentSectionId.replace('Section','');
+  if (!userData[currentUser].progress) userData[currentUser].progress = {};
+  userData[currentUser].progress[topicKey] = progress;
+  localStorage.setItem('userData', JSON.stringify(userData));
+  
   // Marcar lição como concluída se leu até ~95%
-  if (progress >= 0.95 && currentUser) {
-    const topicKey = currentSectionId.replace('Section','');
+  if (progress >= 0.95) {
     if (!userData[currentUser].completedTopics.includes(topicKey)) {
       userData[currentUser].completedTopics.push(topicKey);
       localStorage.setItem('userData', JSON.stringify(userData));
+      
+      // Atualizar visualização da lista de tópicos
+      renderTopicsList();
+      
       // Conquistas de conclusão de lição
       if (userData[currentUser].completedTopics.length === 1) {
         unlockAchievement("Primeiro Passo: primeira lição concluída");
@@ -943,9 +1117,20 @@ window.addEventListener('scroll', () => {
       if (userData[currentUser].completedTopics.length === Object.keys(contentData[currentLang]).length) {
         unlockAchievement("Conquistador: todas as lições concluídas");
       }
+      
+      showNotification(`Parabéns! Você concluiu a lição: ${contentData[currentLang][topicKey].title}`);
     }
   }
-});
+}, 200));
+
+// Função auxiliar de debounce para melhorar performance
+function debounce(func, wait = 100) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
 
 // Inicia aplicação pós-login
 function startApp() {
@@ -973,49 +1158,22 @@ function startApp() {
   }
   // Verificação periódica de lembretes vencidos
   setInterval(checkDueReminders, 60000);
-}
-
-// Ajusta currentSectionId em showSection para progress bar tracking
-function showSection(sectionId) {
-  // Se saindo do Quiz, parar temporizador
-  if (sectionId !== 'quizSection' && quizTimer) {
-    clearInterval(quizTimer);
-    quizTimer = null;
+  
+  // Adicionar backup automático
+  autoBackupUserData();
+  setInterval(autoBackupUserData, 30 * 60 * 1000); // Backup a cada 30 minutos
+  
+  // Inicializar dados do usuário e garantir consistência
+  const userProfile = initUserData(currentUser);
+  
+  // Conquista de login diário
+  const lastLogin = userProfile.lastLogin ? new Date(userProfile.lastLogin) : null;
+  const today = new Date();
+  if (lastLogin && 
+      lastLogin.getDate() !== today.getDate() && 
+      (today - lastLogin) < 2 * 24 * 60 * 60 * 1000) { // menos de 2 dias
+    unlockAchievement("Estudante Dedicado: login em dias consecutivos");
   }
-  sectionIds.forEach(id => {
-    const secEl = document.getElementById(id);
-    if (!secEl) return;
-    secEl.style.display = (id === sectionId) ? 'block' : 'none';
-    if (id === sectionId) {
-      secEl.classList.add('fade-in');
-      secEl.addEventListener('animationend', () => secEl.classList.remove('fade-in'), { once: true });
-    }
-  });
-  currentSectionId = null;
-  // Ações ao mostrar seção específica
-  if (sectionId.endsWith('Section') && sectionId !== 'homeSection' && sectionId !== 'loginSection') {
-    currentSectionId = sectionId;
-  }
-  if (sectionId === 'quizSection') {
-    // Reinicia timer do quiz final
-    quizTimeRemaining = quizTimePerQuestion * 4; // 4 perguntas
-    document.getElementById('timerDisplay').innerText = "00:" + (quizTimeRemaining).toString();
-    quizTimer = setInterval(() => {
-      quizTimeRemaining--;
-      const mm = String(Math.floor(quizTimeRemaining / 60)).padStart(2,'0');
-      const ss = String(quizTimeRemaining % 60).padStart(2,'0');
-      document.getElementById('timerDisplay').innerText = mm + ":" + ss;
-      if (quizTimeRemaining <= 0) {
-        clearInterval(quizTimer);
-        quizTimer = null;
-        finishQuiz();
-        showNotification("Tempo do quiz encerrado.");
-      }
-    }, 1000);
-  }
-  if (sectionId === 'favoritesSection') renderFavorites();
-  if (sectionId === 'profileSection') renderProfile();
-  if (sectionId === 'adminSection') renderAdminPanel();
 }
 
 // Auto-login se usuário já autenticado anteriormente
@@ -1027,3 +1185,175 @@ if (currentUser) {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(err => console.error("SW registration failed:", err));
 }
+
+// Função para gerar salt aleatório para senhas
+function generateSalt() {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  let salt = '';
+  for (let i = 0; i < 16; i++) {
+    salt += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return salt;
+}
+
+// Verificar inatividade periodicamente
+setInterval(() => {
+  if (currentUser && (Date.now() - lastActivity > SESSION_TIMEOUT)) {
+    showNotification("Sessão expirada por inatividade");
+    localStorage.removeItem('loggedInUser');
+    currentUser = null;
+    location.reload();
+  }
+}, 60000); // Verificar a cada minuto
+
+// Atualizar timestamp de última atividade em interações do usuário
+document.addEventListener('click', () => lastActivity = Date.now());
+document.addEventListener('keydown', () => lastActivity = Date.now());
+document.addEventListener('mousemove', () => lastActivity = Date.now());
+
+// Função para backup automático
+function autoBackupUserData() {
+  if (!currentUser) return;
+  
+  try {
+    // Criar cópia para backup
+    const backupKey = `tecnoclass_backup_${currentUser}`;
+    const backupTimestamp = new Date().toISOString();
+    const backupData = {
+      timestamp: backupTimestamp,
+      userData: userData[currentUser]
+    };
+    
+    localStorage.setItem(backupKey, JSON.stringify(backupData));
+    console.log(`Backup automático realizado: ${backupTimestamp}`);
+    
+    // Limitar a 5 backups por usuário
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(`tecnoclass_backup_${currentUser}`)) {
+        keys.push(key);
+      }
+    }
+    
+    if (keys.length > 5) {
+      // Ordenar por data e remover os mais antigos
+      keys.sort();
+      while (keys.length > 5) {
+        localStorage.removeItem(keys.shift());
+      }
+    }
+  } catch (err) {
+    console.error("Erro ao fazer backup:", err);
+  }
+}
+
+// Função para inicializar dados do usuário de forma consistente
+function initUserData(email) {
+  if (!userData[email]) {
+    userData[email] = {
+      completedTopics: [],
+      reminders: [],
+      favorites: [],
+      achievements: [],
+      highScore: 0,
+      notes: {},
+      progress: {},
+      quizStats: { attempts: 0, correct: 0 },
+      lastLogin: new Date().toISOString()
+    };
+  } else {
+    // Garantir que todos os campos existam no perfil
+    const defaults = {
+      completedTopics: [],
+      reminders: [],
+      favorites: [],
+      achievements: [],
+      highScore: 0,
+      notes: {},
+      progress: {},
+      quizStats: { attempts: 0, correct: 0 }
+    };
+    
+    for (const key in defaults) {
+      if (!userData[email][key]) {
+        userData[email][key] = defaults[key];
+      }
+    }
+    
+    // Atualizar data de último login
+    userData[email].lastLogin = new Date().toISOString();
+  }
+  
+  localStorage.setItem('userData', JSON.stringify(userData));
+  return userData[email];
+}
+
+// Adicionar manipulador global de erros
+window.addEventListener('error', function(event) {
+  const errorDetails = {
+    message: event.message,
+    source: event.filename,
+    lineNo: event.lineno,
+    colNo: event.colno,
+    error: event.error ? event.error.stack : null,
+    date: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    currentUser: currentUser ? currentUser : 'not-logged-in',
+    currentSection: currentSectionId
+  };
+  
+  // Salvar no localStorage para diagnóstico
+  try {
+    const errors = JSON.parse(localStorage.getItem('tecnoclass_errors') || '[]');
+    errors.push(errorDetails);
+    // Manter até 10 erros mais recentes
+    while (errors.length > 10) errors.shift();
+    localStorage.setItem('tecnoclass_errors', JSON.stringify(errors));
+  } catch (e) {
+    console.error("Não foi possível salvar detalhes do erro:", e);
+  }
+  
+  // Mostrar notificação de erro para o usuário
+  showNotification("Ocorreu um erro. Recarregue a página se o problema persistir.");
+  
+  console.error("Erro capturado:", errorDetails);
+  
+  // Adicionar botão de relatar erro apenas se não existir já
+  if (!document.getElementById('reportErrorBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'reportErrorBtn';
+    btn.className = 'error-report-btn';
+    btn.textContent = '⚠️ Relatar erro';
+    btn.onclick = reportError;
+    document.body.appendChild(btn);
+  }
+});
+
+// Função para relatar erros
+function reportError() {
+  const errors = JSON.parse(localStorage.getItem('tecnoclass_errors') || '[]');
+  
+  // Criar corpo do e-mail (ou preparar dados para envio)
+  let body = "Detalhes do erro:\n\n";
+  if (errors.length > 0) {
+    body += JSON.stringify(errors[errors.length - 1], null, 2);
+  } else {
+    body += "Nenhum erro registrado";
+  }
+  
+  // Formatar para e-mail (ou poderia enviar para servidor)
+  const mailtoLink = `mailto:suporte@example.com?subject=Relatório de Erro TecnoClass&body=${encodeURIComponent(body)}`;
+  
+  // Abrir janela de e-mail
+  window.open(mailtoLink);
+  
+  // Remover botão após clicar
+  const btn = document.getElementById('reportErrorBtn');
+  if (btn) btn.remove();
+  
+  showNotification("Obrigado por relatar o problema!");
+}
+
+
+
