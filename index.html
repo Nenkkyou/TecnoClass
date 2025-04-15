@@ -114,28 +114,42 @@ if (savedTheme === 'dark') {
   document.body.classList.add('dark');
 }
 
-// Conteúdo educacional padrão, caso ainda não esteja salvo localmente
+// Conteúdo educacional padrão, salvo localmente se ainda não estiver disponível
 if (!contentData) {
   contentData = {
-    programacao: `<h2>Programação</h2>
-      <p>Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer.</p>
-      <p>A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet.</p>
-      <p>Com programação, podemos criar desde pequenos scripts (roteiros de código) para automatizar tarefas simples até aplicativos completos utilizados por milhões de pessoas. Por exemplo, um programador pode escrever um script para organizar arquivos no computador ou desenvolver um app móvel de mensagens – ambos são resultados de códigos escritos para resolver problemas ou facilitar tarefas.</p>`,
-    ciberseguranca: `<h2>Cibersegurança</h2>
-      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais. Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura.</p>
-      <p>Algumas ameaças comuns e dicas de proteção:</p>
+    programacao: `
+      <h2>Programação</h2>
+      <p>Programação é o processo de escrever, testar e manter programas de computador. Esses programas são conjuntos de instruções que dizem à máquina o que fazer.</p>
+      <p>Ela é essencial em áreas como medicina (por exemplo, no monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares desenvolvidos por programadores viabilizam avanços nessas áreas e possibilitam inovações como a Internet das Coisas, conectando dispositivos comuns à internet.</p>
+      <p>A programação permite desde a criação de pequenos scripts para automatizar tarefas simples até o desenvolvimento de aplicativos utilizados por milhões. Por exemplo, um programador pode criar um script para organizar arquivos no computador ou desenvolver um aplicativo de mensagens. Em ambos os casos, o objetivo é resolver problemas ou facilitar o dia a dia com o uso do código.</p>
+    `,
+
+    ciberseguranca: `
+      <h2>Cibersegurança</h2>
+      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais. O profissional da área identifica vulnerabilidades e implementa medidas como firewalls, antivírus e sistemas de detecção de intrusos para manter tudo seguro.</p>
+      <p>A seguir, algumas ameaças comuns e dicas de proteção:</p>
       <ul>
-        <li><strong>DDoS:</strong> ataque distribuído de negação de serviço, sobrecarrega servidores para tirá-los do ar. Proteção: monitorar o tráfego de rede e usar filtros/firewalls que limitem conexões suspeitas, evitando sobrecarga.</li>
-        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim).</li>
-        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações.</li>
-      </ul>`,
-    ia: `<h2>Inteligência Artificial Generativa</h2>
-      <p>A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados. Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
-      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma. A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa, o que demonstra seu enorme impacto potencial na sociedade.</p>`,
-    productOwner: `<h2>Product Owner (PO)</h2>
-      <p><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento. Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
-      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico. Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
+        <li><strong>DDoS:</strong> ataque de negação de serviço distribuído, que sobrecarrega servidores para tirá-los do ar. Para se proteger, é importante monitorar o tráfego da rede e usar filtros ou firewalls que limitem acessos suspeitos.</li>
+        <li><strong>Ransomware:</strong> malware que criptografa dados e exige um resgate. A prevenção envolve manter backups atualizados, usar antivírus, evitar clicar em anexos ou links desconhecidos, entre outras práticas.</li>
+        <li><strong>Phishing:</strong> golpe que tenta enganar o usuário para obter dados como senhas e números de cartão. Para evitar, desconfie de mensagens suspeitas, não clique em links desconhecidos e sempre verifique se um site é legítimo (procure o cadeado de segurança na barra do navegador).</li>
+      </ul>
+    `,
+
+    ia: `
+      <h2>Inteligência Artificial Generativa</h2>
+      <p>Inteligência Artificial Generativa é um tipo de IA que cria novos conteúdos como textos, imagens e sons, com base em padrões aprendidos de grandes conjuntos de dados.</p>
+      <p>Diferente de outras IAs que apenas classificam ou analisam dados, a IA generativa é capaz de criar algo novo. Por exemplo, pode escrever uma redação, compor uma música ou gerar uma imagem artística a partir de uma descrição textual.</p>
+      <p>Um exemplo conhecido é o ChatGPT, lançado em 2022, que consegue manter conversas e produzir diversos tipos de conteúdo. Essa tecnologia pode aumentar a produtividade em áreas como atendimento ao cliente, design, programação e criação de conteúdo, transformando a forma como trabalhamos e nos comunicamos.</p>
+    `,
+
+    productOwner: `
+      <h2>Product Owner (PO)</h2>
+      <p>O Product Owner, ou PO, é o responsável por definir e priorizar as funcionalidades de um produto em equipes que utilizam metodologias ágeis como o Scrum.</p>
+      <p>Ele atua como representante do cliente ou usuário final, gerenciando o <em>backlog</em> do produto — a lista com as funcionalidades e requisitos. Com isso, garante que a equipe técnica esteja sempre trabalhando no que gera mais valor para o negócio.</p>
+      <p>O PO conecta as metas do projeto às necessidades dos usuários e direciona o trabalho da equipe. Ele ajusta prioridades conforme o feedback recebido, assegurando que o produto final seja útil, valioso e alinhado com as expectativas dos envolvidos.</p>
+    `
   };
+
   localStorage.setItem('contentData', JSON.stringify(contentData));
 }
 
