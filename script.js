@@ -813,7 +813,7 @@
                     <span class="module-short-desc">${module.descricao}</span>
                 </summary>
                 <div class="module-content">
-                    ${detailedContent} {/* CORREÇÃO: Removido o comentário extra daqui */}
+                    ${detailedContent} 
                     <div class="module-notes">
                         <label for="notes-${moduleId}">Anotações do Módulo:</label>
                         <textarea
