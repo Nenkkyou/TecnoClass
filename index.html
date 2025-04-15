@@ -3,44 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#4285f4">
-    <meta name="description" content="TecnoClass - Plataforma educacional de tecnologia">
-    <title>TecnoClass</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="description" content="TecnoClass - Sua plataforma PWA de aprendizado em tecnologia.">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="favicon.ico">
+    <!-- Ícones (substitua pelos seus) -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+
+    <title>TecnoClass - Aprendizado Tech</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
     <header>
         <div class="container">
             <h1>TecnoClass</h1>
         </div>
     </header>
-    
+
     <nav>
         <div class="container">
-            <ul>
-                <li><a href="#" data-section="inicio" class="active">Início</a></li>
-                <li><a href="#" data-section="cursos">Cursos</a></li>
-                <li><a href="#" data-section="perfil">Perfil</a></li>
+            <ul id="main-nav">
+                <li><a href="#" data-section="inicio" class="nav-link active" aria-current="page" aria-label="Ir para a seção Início">Início</a></li>
+                <li><a href="#" data-section="cursos" class="nav-link" aria-label="Ir para a seção Cursos">Cursos</a></li>
+                <li><a href="#" data-section="perfil" class="nav-link" aria-label="Ir para a seção Perfil">Perfil</a></li>
             </ul>
         </div>
     </nav>
-    
-    <main>
+
+    <main id="main-content">
         <div class="container">
-            <div id="content">
-                <!-- O conteúdo será carregado dinamicamente via JavaScript -->
+            <div id="content" role="region" aria-live="polite">
+                <!-- Conteúdo carregado dinamicamente -->
             </div>
         </div>
     </main>
-    
+
     <footer>
         <div class="container">
-            <p>&copy; 2023 TecnoClass. Todos os direitos reservados.</p>
+            <p>&copy; <span id="current-year"></span> TecnoClass. Todos os direitos reservados.</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Script principal carregado no final -->
+    <script src="script.js" defer></script>
 </body>
 </html>
