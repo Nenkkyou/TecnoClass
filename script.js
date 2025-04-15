@@ -1,283 +1,220 @@
-"use strict";
-
-// Dados persistentes (LocalStorage) – com tratamento de erros
-let users;
-try {
-  users = JSON.parse(localStorage.getItem('users')) || {};
-} catch (e) {
-  users = {};
-}
-let userData;
-try {
-  userData = JSON.parse(localStorage.getItem('userData')) || {};
-} catch (e) {
-  userData = {};
-}
-let currentUser;
-try {
-  currentUser = localStorage.getItem('loggedInUser');
-} catch (e) {
-  currentUser = null;
-}
-let contentData;
-try {
-  contentData = JSON.parse(localStorage.getItem('contentData')) || null;
-} catch (e) {
-  contentData = null;
-}
-const CONTENT_VERSION = 2;  // Versão do conteúdo para controle de atualização
-
-// ... (conteúdo de cursos defaultContentData omitido para brevidade) ...
-
-// Se não houver conteúdo ou versão desatualizada, salva o conteúdo padrão atualizado
-if (!contentData || !contentData.pt || !contentData.en || parseInt(localStorage.getItem('contentVersion') || "0") < CONTENT_VERSION) {
-  contentData = defaultContentData;
-  localStorage.setItem('contentData', JSON.stringify(contentData));
-  localStorage.setItem('contentVersion', CONTENT_VERSION.toString());
-}
-
-// Variáveis de estado da interface
-let registerMode = false;
-let currentLang = 'pt';  // idioma atual (pt padrão)
-let loginAttempts = 0;
-let quizTimer = null;
-let quizTimePerQuestion = 15;  // segundos por pergunta no quiz final
-let currentQuestionIndex = 0;
-let lastActivity = Date.now();
-const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutos em ms
-
-// Lista dinâmica de seções (para showSection)
-let sectionIds = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection','favoritesSection','profileSection','adminSection'];
-
-// Configura tema salvo
-let savedTheme = localStorage.getItem('theme') || 'light';
-applyTheme(savedTheme);
-
-// Gera lista de tópicos no menu inicial
-function renderTopicsList() {
-  const topicsListEl = document.getElementById('topicsList');
-  topicsListEl.innerHTML = '';
-  const topics = contentData[currentLang];
-  for (let key in topics) {
-    // Adiciona cada tópico como link de navegação (com ícone e título)
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = "#";
-    a.textContent = topics[key].title;
-    a.dataset.target = key + "Section";
-    a.className = "navLink";
-    // Ícone ilustrativo por tópico
-    let icon = "📘";
-    if (key.startsWith("programa")) icon = "💻";
-    else if (key.startsWith("ciber")) icon = "🔒";
-    else if (key === "ia") icon = "🤖";
-    else if (key.startsWith("productOwner")) icon = "📊";
-    a.textContent = icon + " " + topics[key].title;
-    li.appendChild(a);
-    // Se tópico já concluído pelo usuário, indicar (✓)
-    if (currentUser && userData[currentUser] && userData[currentUser].completedTopics.includes(key)) {
-      a.textContent += " ✓";
-    }
-    topicsListEl.appendChild(li);
-  }
-  // Itens extras (Quiz, Lembretes, Favoritos) já estão no HTML fixo, não duplicar aqui
-}
-renderTopicsList();
-
-// Carrega o conteúdo nos elementos de seção de acordo com o idioma atual
-function loadContent(lang = 'pt') {
-  currentLang = lang;
-  const topics = contentData[currentLang];
-  for (let key in topics) {
-    const sectionId = key + "Section";
-    const sectionEl = document.getElementById(sectionId);
-    if (!sectionEl) continue;
-    // Preencher título e conteúdo
-    const titleEl = sectionEl.querySelector('h2');
-    const contentEl = sectionEl.querySelector('.sectionContent');
-    const reviewEl = sectionEl.querySelector('.reviewQuestions');
-    if (titleEl) titleEl.innerText = topics[key].title;
-    if (contentEl) {
-      // Remover vídeos e links "Saiba mais" se houver (para foco no conteúdo básico offline)
-      let content = topics[key].body;
-      content = content.replace(/<video.*?<\/video>/gs, '');
-      content = content.replace(/<p><em>Para saber mais:.*?<\/p>/gs, '');
-      content = content.replace(/<p><em>Learn more:.*?<\/p>/gs, '');
-      content = content.replace(/<p><em>Exemplo visual:.*?<\/p>/gs, '');
-      content = content.replace(/<p><em>Visual example:.*?<\/p>/gs, '');
-      contentEl.innerHTML = content;
-    }
-    // Inserir perguntas de revisão (se ainda não inseridas)
-    if (reviewEl && reviewEl.children.length === 0) {
-      insertReviewQuestions(key, reviewEl);
-    }
-  }
-  // Após carregar conteúdo, configurar interações (IDs de parágrafos, favoritos)
-  setupContentInteractions();
-  // Inicializar sistema de notas adesivas
-  initStickyNotes();
-}
-loadContent(currentLang);
-
-// (Função insertReviewQuestions e outras funções de conteúdo permanecem iguais...)
-
-function startApp() {
-  document.getElementById('appHeader').style.display = 'block';
-  document.getElementById('loginSection').style.display = 'none';
-  document.getElementById('homeSection').style.display = 'block';
-  document.getElementById('welcomeName').innerText = currentUser;
-  document.getElementById('topbar').style.display = 'flex';
-  // Garante estrutura do usuário nos dados
-  if (!userData[currentUser]) {
-    userData[currentUser] = { completedTopics: [], reminders: [], favorites: [], achievements: [], highScore: 0, notes: {} };
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-  renderTopicsList();
-  renderReminders();
-  initStickyNotes();
-  setInterval(checkDueReminders, 60000);
-  autoBackupUserData();
-  setInterval(autoBackupUserData, 30 * 60 * 1000);
-  const userProfile = initUserData(currentUser);
-  // Conquista de login diário
-  const lastLogin = userProfile.lastLogin ? new Date(userProfile.lastLogin) : null;
-  const today = new Date();
-  if (lastLogin &&
-      lastLogin.getDate() !== today.getDate() &&
-      (today - lastLogin) < 2 * 24 * 60 * 60 * 1000) {
-    unlockAchievement("Estudante Dedicado: login em dias consecutivos");
-  }
-  initQuizModal();
-  setTimeout(initQuizModal, 100);
-  checkDueReminders();
-}
-
-// Auto-login se usuário já autenticado anteriormente
-if (currentUser) {
-  startApp();
-}
-
-// Event handlers para navegação principal
-document.getElementById('homeBtn').addEventListener('click', () => showSection('homeSection'));
-document.getElementById('profileBtn').addEventListener('click', () => showSection('profileSection'));
-document.getElementById('quizBtn').addEventListener('click', () => showSection('quizSection'));
-document.getElementById('remindersBtn').addEventListener('click', () => showSection('remindersSection'));
-document.getElementById('favoritesBtn').addEventListener('click', () => showSection('favoritesSection'));
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  localStorage.removeItem('loggedInUser');
-  currentUser = null;
-  location.reload();
-});
-
-document.getElementById('syncBtn').addEventListener('click', () => {
-  showNotification('Sincronização concluída!', 'success');
-  // (Sincronização real com servidor não implementada)
-});
-
-// Botões de voltar em todas seções
-document.querySelectorAll('.backButton').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.getAttribute('data-target');
-    if (target) {
-      showSection(target);
-    }
-  });
-});
-
-// Links de navegação gerados na lista de tópicos (navLink anchors)
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('navLink')) {
-    e.preventDefault();
-    const target = e.target.getAttribute('data-target');
-    if (target) {
-      showSection(target);
-    }
-  }
-});
-
-// Evento para formulário de lembretes
-document.getElementById('reminderForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!currentUser) return;
-  const text = document.getElementById('reminderText').value.trim();
-  let date = document.getElementById('reminderDate').value;
-  if (!text) {
-    showNotification('Por favor, digite um texto para o lembrete.', 'error');
-    return;
-  }
-  if (!date) {
-    // Se não especificar data, usar data atual + 1 dia
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    date = tomorrow.toISOString();
-  }
-  if (!userData[currentUser].reminders) {
-    userData[currentUser].reminders = [];
-  }
-  userData[currentUser].reminders.push({ text: text, date: date, notified: false });
-  localStorage.setItem('userData', JSON.stringify(userData));
-  document.getElementById('reminderText').value = '';
-  document.getElementById('reminderDate').value = '';
-  renderReminders();
-  showNotification('Lembrete adicionado com sucesso!', 'success');
-  // Conquista: primeiro lembrete
-  if (userData[currentUser].reminders.length === 1) {
-    unlockAchievement("Organizado: primeiro lembrete adicionado");
-  }
-});
-
-// Evento para botão de exportar dados do perfil
-document.getElementById('exportDataBtn').addEventListener('click', () => {
-  if (!currentUser || !userData[currentUser]) return;
-  const dataStr = JSON.stringify(userData[currentUser], null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-  const exportFileDefaultName = `tecnoclass_${currentUser}_data.json`;
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
-  linkElement.click();
-  showNotification('Seus dados foram exportados com sucesso!', 'success');
-});
-
-// Iniciar o aplicativo diretamente, sem login
-document.addEventListener('DOMContentLoaded', function() {
-  // Definir um usuário padrão se não existir
-  if (!currentUser) {
-    currentUser = "usuario_padrao";
-    localStorage.setItem('loggedInUser', currentUser);
+// Estrutura modular para o TecnoClass
+(function() {
+    'use strict';
     
-    // Garantir estrutura do usuário nos dados
-    if (!userData[currentUser]) {
-      userData[currentUser] = { completedTopics: [], reminders: [], favorites: [], achievements: [], highScore: 0, notes: {} };
-      localStorage.setItem('userData', JSON.stringify(userData));
+    // Armazenar referências aos elementos DOM
+    const contentElement = document.getElementById('content');
+    const navLinks = document.querySelectorAll('nav a');
+    
+    // Dados dos cursos em formato JSON
+    const cursosData = {
+        programacao: {
+            titulo: "Programação",
+            descricao: "Aprenda a desenvolver software e aplicações web com as linguagens mais utilizadas no mercado.",
+            modulos: [
+                {
+                    titulo: "Fundamentos da Programação",
+                    descricao: "Conceitos básicos de lógica e algoritmos."
+                },
+                {
+                    titulo: "JavaScript Moderno",
+                    descricao: "Desenvolvimento front-end com JavaScript ES6+."
+                },
+                {
+                    titulo: "Desenvolvimento Back-end",
+                    descricao: "Criação de APIs e servidores com Node.js."
+                }
+            ]
+        },
+        ciberseguranca: {
+            titulo: "Cibersegurança",
+            descricao: "Proteja sistemas e redes contra ameaças digitais e aprenda técnicas de segurança da informação.",
+            modulos: [
+                {
+                    titulo: "Fundamentos de Segurança",
+                    descricao: "Princípios básicos de proteção de dados."
+                },
+                {
+                    titulo: "Análise de Vulnerabilidades",
+                    descricao: "Identificação e mitigação de riscos em sistemas."
+                },
+                {
+                    titulo: "Resposta a Incidentes",
+                    descricao: "Estratégias para lidar com violações de segurança."
+                }
+            ]
+        },
+        ia: {
+            titulo: "Inteligência Artificial Generativa",
+            descricao: "Explore o mundo dos modelos de IA capazes de criar conteúdo e resolver problemas complexos.",
+            modulos: [
+                {
+                    titulo: "Fundamentos de IA",
+                    descricao: "Conceitos básicos de aprendizado de máquina."
+                },
+                {
+                    titulo: "Modelos Generativos",
+                    descricao: "Compreensão de GANs, transformers e difusão."
+                },
+                {
+                    titulo: "Aplicações Práticas",
+                    descricao: "Implementação de soluções com IA generativa."
+                }
+            ]
+        },
+        po: {
+            titulo: "Product Owner",
+            descricao: "Aprenda a gerenciar produtos digitais e liderar equipes ágeis com foco em resultados.",
+            modulos: [
+                {
+                    titulo: "Fundamentos de Produto",
+                    descricao: "Conceitos básicos de gestão de produtos digitais."
+                },
+                {
+                    titulo: "Metodologias Ágeis",
+                    descricao: "Scrum, Kanban e frameworks para gestão de produtos."
+                },
+                {
+                    titulo: "Métricas e Resultados",
+                    descricao: "KPIs e análise de dados para tomada de decisão."
+                }
+            ]
+        }
+    };
+    
+    // Conteúdo simulado para cada seção
+    const sectionContent = {
+        inicio: `
+            <h2>Bem-vindo ao TecnoClass</h2>
+            <p>Sua plataforma de aprendizado em tecnologia.</p>
+            <div class="card">
+                <h3>Destaques da semana</h3>
+                <p>Confira nossos cursos mais populares e comece sua jornada de aprendizado.</p>
+            </div>
+            <div class="card">
+                <h3>Novidades</h3>
+                <p>Acabamos de lançar novos cursos de programação e design.</p>
+            </div>
+        `,
+        perfil: `
+            <h2>Seu Perfil</h2>
+            <p>Gerencie suas informações e acompanhe seu progresso.</p>
+            <div class="card">
+                <h3>Informações Pessoais</h3>
+                <p>Atualize seus dados cadastrais e preferências.</p>
+            </div>
+            <div class="card">
+                <h3>Progresso</h3>
+                <p>Acompanhe seu desempenho nos cursos matriculados.</p>
+            </div>
+        `
+    };
+    
+    /**
+     * Gera o HTML para a seção de cursos
+     * @returns {string} HTML formatado com os cursos
+     */
+    function gerarConteudoCursos() {
+        let html = `
+            <h2>Nossos Cursos</h2>
+            <p>Explore nossa biblioteca de cursos de tecnologia.</p>
+        `;
+        
+        // Percorrer todos os cursos e gerar cards
+        for (const key in cursosData) {
+            const curso = cursosData[key];
+            
+            html += `
+                <div class="card">
+                    <h3>${curso.titulo}</h3>
+                    <p>${curso.descricao}</p>
+                    <details>
+                        <summary>Ver módulos do curso</summary>
+                        <div class="modulos">
+                            <ul>
+            `;
+            
+            // Adicionar cada módulo do curso
+            curso.modulos.forEach(modulo => {
+                html += `
+                    <li>
+                        <strong>${modulo.titulo}</strong>: ${modulo.descricao}
+                    </li>
+                `;
+            });
+            
+            html += `
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            `;
+        }
+        
+        return html;
     }
-  }
-  
-  // Iniciar o app diretamente
-  startApp();
-  
-  // Ocultar seção de login
-  document.getElementById('loginSection').style.display = 'none';
-});
-
-// Remover eventos relacionados ao login/registro
-document.getElementById('loginForm').removeEventListener('submit', function(){});
-document.getElementById('switchLink').removeEventListener('click', toggleLoginRegister);
-document.getElementById('togglePassword').removeEventListener('click', function(){});
-document.getElementById('termsLink').removeEventListener('click', function(){});
-document.getElementById('termsLink2').removeEventListener('click', function(){});
-
-// Verificar lembretes periodicamente
-setInterval(() => {
-  if (currentUser && (Date.now() - lastActivity > SESSION_TIMEOUT)) {
-    showNotification("Sessão expirada por inatividade");
-    localStorage.removeItem('loggedInUser');
-    currentUser = null;
-    location.reload();
-  }
-}, 60000);
-
-// Atualizar timestamp de última atividade 
-document.addEventListener('click', () => lastActivity = Date.now());
-document.addEventListener('keydown', () => lastActivity = Date.now());
-document.addEventListener('mousemove', () => lastActivity = Date.now());
+    
+    /**
+     * Carrega o conteúdo da seção selecionada
+     * @param {string} section - Nome da seção a ser carregada
+     */
+    function loadContent(section) {
+        let content = '';
+        
+        // Verificar qual seção carregar
+        if (section === 'cursos') {
+            // Gerar conteúdo dinâmico para a seção de cursos
+            content = gerarConteudoCursos();
+        } else if (sectionContent[section]) {
+            // Usar conteúdo estático para outras seções
+            content = sectionContent[section];
+        } else {
+            console.error('Seção não encontrada:', section);
+            return;
+        }
+        
+        // Atualizar o conteúdo na página
+        contentElement.innerHTML = content;
+        
+        // Salvar a seção atual no localStorage
+        localStorage.setItem('currentSection', section);
+        
+        // Atualizar classe ativa na navegação
+        updateActiveNav(section);
+    }
+    
+    /**
+     * Atualiza a classe ativa no item de navegação
+     * @param {string} section - Nome da seção ativa
+     */
+    function updateActiveNav(section) {
+        navLinks.forEach(link => {
+            if (link.dataset.section === section) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+    
+    /**
+     * Inicializa a aplicação
+     */
+    function init() {
+        // Adicionar event listeners aos links de navegação
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.dataset.section;
+                loadContent(section);
+            });
+        });
+        
+        // Carregar a seção salva ou a seção inicial
+        const savedSection = localStorage.getItem('currentSection');
+        loadContent(savedSection || 'inicio');
+    }
+    
+    // Iniciar a aplicação quando o DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', init);
+})();
