@@ -1,265 +1,637 @@
-body {
-    font-family: 'Nunito', sans-serif;
-    background: #f4f4f4;
+/* --- Variáveis Globais --- */
+:root {
+    /* Cores base (Modo Claro) */
+    --bg-color: #f8f9fa; /* Fundo principal mais suave */
+    --text-color: #212529; /* Texto principal escuro */
+    --primary-color: #007bff; /* Azul primário vibrante */
+    --primary-hover-color: #0056b3; /* Azul mais escuro para hover */
+    --secondary-color: #6c757d; /* Cinza secundário */
+    --accent-color: #28a745; /* Verde para sucesso/ações positivas */
+    --accent-hover-color: #218838; /* Verde mais escuro para hover */
+    --danger-color: #dc3545; /* Vermelho para erros/exclusão */
+    --danger-hover-color: #c82333; /* Vermelho mais escuro para hover */
+    --card-bg-color: #ffffff; /* Fundo dos cards/seções */
+    --input-bg-color: #ffffff;
+    --input-border-color: #ced4da;
+    --link-color: var(--primary-color);
+    --header-bg: var(--primary-color);
+    --header-text: #ffffff;
+    --button-text: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --border-radius: 8px; /* Raio de borda padrão */
+    --transition-speed: 0.3s; /* Velocidade padrão para transições */
+  
+    /* Tipografia */
+    --font-family: 'Nunito', sans-serif;
+    --font-size-base: 16px;
+    --font-size-h1: 2rem;
+    --font-size-h2: 1.75rem;
+    --line-height-base: 1.6;
+  }
+  
+  /* --- Estilos Globais --- */
+  body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
-    color: #333;
-}
-#appHeader {
-    background: #2196F3;
-    color: #fff;
-    padding: 1em;
-}
-#appHeader h1 {
-    margin: 0;
-    font-size: 1.5em;
-}
-#topbar {
-    margin-top: 0.5em;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-}
-#topbar button {
-    background: #fff;
-    color: #2196F3;
-    border: none;
-    padding: 0.5em 1em;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
-    flex: 1 1 auto;
-    text-align: center;
-}
-#topbar button:hover {
-    background: #e0e0e0;
-}
-section {
-    max-width: 800px;
-    margin: 2em auto;
-    background: #fff;
-    padding: 1.5em;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-#loginSection h2 {
-    text-align: center;
-}
-#loginForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#loginForm input {
-    width: 80%;
-    padding: 0.5em;
-    margin: 0.5em;
-    font-size: 1em;
-}
-#loginForm button {
-    width: 50%;
-    padding: 0.5em;
-    font-size: 1em;
-    margin-top: 0.5em;
-    background: #2196F3;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-#loginForm button:hover {
-    background: #1976D2;
-}
-#toggleLoginRegister {
-    text-align: center;
-    margin-top: 1em;
-}
-#toggleLoginRegister a {
-    cursor: pointer;
-    color: #2196F3;
+    padding: 0;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-weight: 700; /* Nunito bold */
+    color: var(--primary-color); /* Títulos com a cor primária */
+  }
+  
+  h1 { font-size: var(--font-size-h1); }
+  h2 { font-size: var(--font-size-h2); }
+  
+  p {
+    margin-bottom: 1rem;
+  }
+  
+  a {
+    color: var(--link-color);
     text-decoration: none;
-}
-#toggleLoginRegister a:hover {
+    transition: color var(--transition-speed) ease;
+  }
+  
+  a:hover {
+    color: var(--primary-hover-color);
     text-decoration: underline;
-}
-#loginMessage {
-    text-align: center;
-    margin-top: 0.5em;
-}
-#topicsList {
+  }
+  
+  ul {
     list-style: none;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-}
-#topicsList li {
-    background: #2196F3;
-    border-radius: 4px;
-}
-#topicsList a {
-    display: block;
-    padding: 0.5em 1em;
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-#topicsList a:hover {
-    background: #1976D2;
-}
-section h2 {
-    color: #2196F3;
-    margin-top: 0;
-}
-section p {
-    line-height: 1.6;
-}
-.quiz-question {
-    margin-bottom: 1em;
-    background: #f9f9f9;
-    padding: 1em;
-    border-radius: 4px;
-}
-.quiz-question p {
-    margin-top: 0;
-}
-.feedback {
-    font-weight: bold;
-    margin-top: 0.5em;
-}
-#reminderForm {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    margin-bottom: 1em;
-}
-#reminderForm input[type="text"] {
-    flex: 1;
-    padding: 0.5em;
-}
-#reminderForm input[type="datetime-local"] {
-    padding: 0.3em;
-}
-#reminderForm button {
-    padding: 0.5em 1em;
-    background: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-#reminderForm button:hover {
-    background: #388E3C;
-}
-#reminderList {
-    list-style: none;
-    padding: 0;
-}
-#reminderList li {
-    padding: 0.5em;
-    border-bottom: 1px solid #ccc;
+    margin: 0;
+  }
+  
+  /* --- Cabeçalho --- */
+  #appHeader {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    position: sticky; /* Mantém o cabeçalho fixo no topo */
+    top: 0;
+    z-index: 1000; /* Garante que fique sobre outros elementos */
+  }
+  
+  #headerTop {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-#reminderList li.due {
-    background: #ffebee;
-    color: #c62828;
-}
-.delete-btn {
+    margin-bottom: 0.5rem; /* Espaço antes da topbar */
+  }
+  
+  #appHeader h1 {
+    margin: 0;
+    font-size: 1.6rem; /* Tamanho ajustado */
+    color: var(--header-text); /* Cor do título no cabeçalho */
+  }
+  
+  #themeToggle {
     background: transparent;
     border: none;
-    color: #c62828;
-    font-size: 1.2em;
+    color: var(--header-text);
+    font-size: 1.5rem; /* Ícone maior */
     cursor: pointer;
-}
-.delete-btn:hover {
-    color: #ff1744;
-}
-
-/* Transições e efeitos suaves */
-body, #appHeader, section, #topbar button, #topicsList a, .quiz-question, #reminderList li, #themeToggle, .delete-btn, input {
-    transition: background-color 0.3s, color 0.3s;
-}
-#themeToggle {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1.2em;
-    cursor: pointer;
-}
-#themeToggle:hover {
+    padding: 0.25rem;
+    line-height: 1; /* Evita desalinhamento */
+    transition: opacity var(--transition-speed) ease;
+  }
+  
+  #themeToggle:hover {
     opacity: 0.8;
-}
-
-/* Modo escuro */
-body.dark {
-    background: #121212;
-    color: #e0e0e0;
-}
-body.dark #appHeader {
-    background: #212121;
-}
-body.dark #topbar button {
-    background: #2196F3;
-    color: #fff;
-}
-body.dark #topbar button:hover {
-    background: #1976D2;
-    color: #fff;
-}
-body.dark section {
-    background: #1e1e1e;
-    box-shadow: none;
-}
-body.dark .quiz-question {
-    background: #2c2c2c;
-}
-body.dark #reminderList li.due {
-    background: #4a0404;
-    color: #ff8a80;
-}
-body.dark .delete-btn {
-    color: #ff8a80;
-}
-body.dark input {
-    background: #333;
-    color: #fff;
-    border: 1px solid #555;
-}
-
-/* Animação fade-in */
-.fade-in {
-    animation: fadeIn 0.5s ease;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Alerta de notificação */
-.notification {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    background: #333;
-    color: #fff;
-    padding: 1em;
-    border-radius: 4px;
-    opacity: 0;
-    transition: opacity 0.5s, transform 0.5s;
-    transform: translateY(20px);
-    z-index: 999;
-}
-.notification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Ícone de sincronização giratório */
-.sync-icon.rotating {
-    animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
+  }
+  
+  #topbar {
+    display: flex;
+    flex-wrap: wrap; /* Permite que botões quebrem linha em telas menores */
+    gap: 0.75rem; /* Espaçamento entre botões */
+    margin-top: 0.5rem;
+  }
+  
+  #topbar button {
+    background: rgba(255, 255, 255, 0.9); /* Fundo branco semi-transparente */
+    color: var(--primary-color);
+    border: none;
+    padding: 0.6em 1.2em;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    font-weight: 700; /* Nunito bold */
+    flex: 1 1 auto; /* Permite que os botões cresçam e diminuam */
+    text-align: center;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, transform 0.1s ease;
+    display: inline-flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em; /* Espaço entre ícone e texto */
+  }
+  
+  #topbar button:hover {
+    background: #ffffff; /* Fundo totalmente branco no hover */
+    color: var(--primary-hover-color);
+  }
+  #topbar button:active {
+      transform: scale(0.98); /* Efeito de clique */
+  }
+  
+  /* --- Seções de Conteúdo --- */
+  section {
+    max-width: 800px;
+    margin: 2rem auto; /* Mais espaço vertical */
+    background: var(--card-bg-color);
+    padding: 2rem; /* Mais padding interno */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px var(--shadow-color); /* Sombra mais suave */
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  
+  /* --- Seção de Login/Registro --- */
+  #loginSection {
+    text-align: center; /* Centraliza conteúdo */
+  }
+  
+  #loginSection h2 {
+    margin-bottom: 1.5rem; /* Mais espaço abaixo do título */
+  }
+  
+  #loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem; /* Espaço entre os inputs e botão */
+    width: 100%;
+    max-width: 400px; /* Limita largura do formulário */
+    margin: 0 auto; /* Centraliza o formulário */
+  }
+  
+  #loginForm input[type="text"],
+  #loginForm input[type="password"] {
+    width: 100%; /* Ocupa toda a largura disponível */
+    padding: 0.8em 1em;
+    font-size: 1em;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    box-sizing: border-box; /* Garante que padding não aumente o tamanho */
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  
+  #loginForm input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Foco visível */
+  }
+  
+  #loginForm button[type="submit"] {
+    width: 100%; /* Botão ocupa largura total */
+    padding: 0.8em 1em;
+    font-size: 1.1em;
+    background: var(--primary-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color var(--transition-speed) ease, transform 0.1s ease;
+  }
+  
+  #loginForm button[type="submit"]:hover {
+    background: var(--primary-hover-color);
+  }
+  #loginForm button[type="submit"]:active {
+      transform: scale(0.98);
+  }
+  
+  #toggleLoginRegister {
+    margin-top: 1.5rem;
+    font-size: 0.95em;
+  }
+  
+  #toggleLoginRegister a {
+    font-weight: 700;
+  }
+  
+  #loginMessage {
+    margin-top: 1rem;
+    font-weight: bold;
+    min-height: 1.5em; /* Reserva espaço para a mensagem */
+  }
+  
+  /* --- Seção Home --- */
+  #homeSection h2 {
+    margin-bottom: 1rem;
+  }
+  
+  #homeSection p {
+    margin-bottom: 1.5rem;
+  }
+  
+  #topicsList {
+    display: grid; /* Usar grid para layout flexível */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Colunas responsivas */
+    gap: 1rem; /* Espaço entre os itens */
+    margin-top: 1.5rem;
+  }
+  
+  #topicsList li {
+    background: var(--primary-color);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-speed) ease, transform 0.2s ease;
+    overflow: hidden; /* Garante que o hover não ultrapasse a borda */
+  }
+  
+  #topicsList li:hover {
+      background: var(--primary-hover-color);
+      transform: translateY(-3px); /* Leve elevação no hover */
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  #topicsList a {
+    display: block;
+    padding: 1.2em 1.5em;
+    color: var(--button-text);
+    text-decoration: none;
+    font-weight: 700;
+    text-align: center;
+  }
+  
+  #homeSection p em { /* Estilo para a dica */
+      color: var(--secondary-color);
+      font-size: 0.9em;
+      display: block;
+      margin-top: 2rem;
+      text-align: center;
+  }
+  
+  /* --- Seções de Conteúdo (Programação, Ciber, IA, PO) --- */
+  section h2 {
+    border-bottom: 2px solid var(--primary-color); /* Linha abaixo do título */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  section ul { /* Estilos para listas dentro das seções */
+      list-style: disc;
+      padding-left: 2rem;
+      margin-bottom: 1rem;
+  }
+  
+  section ul li {
+      margin-bottom: 0.5rem;
+  }
+  
+  section strong { /* Destaque para termos importantes */
+      color: var(--primary-color);
+  }
+  
+  /* --- Seção Quiz --- */
+  .quiz-question {
+    margin-bottom: 1.5rem;
+    background: var(--bg-color); /* Fundo ligeiramente diferente */
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border-color); /* Borda sutil */
+  }
+  
+  .quiz-question p strong {
+    color: var(--text-color); /* Cor normal para o número da pergunta */
+  }
+  
+  .quiz-question label {
+    display: block; /* Cada opção em uma linha */
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+  }
+  
+  .quiz-question input[type="radio"] {
+    margin-right: 0.5em;
+    accent-color: var(--primary-color); /* Cor do radio button selecionado */
+  }
+  
+  .quiz-question button { /* Botão de verificar */
+    padding: 0.5em 1.5em;
+    margin-top: 1rem;
+    background: var(--accent-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color var(--transition-speed) ease, transform 0.1s ease;
+  }
+  
+  .quiz-question button:hover {
+    background: var(--accent-hover-color);
+  }
+  .quiz-question button:active {
+      transform: scale(0.98);
+  }
+  
+  .feedback {
+    font-weight: bold;
+    margin-top: 1rem;
+    min-height: 1.5em; /* Reserva espaço */
+  }
+  
+  /* --- Seção Lembretes --- */
+  #reminderForm {
+    display: flex;
+    flex-wrap: wrap; /* Quebra linha em telas menores */
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--input-border-color);
+  }
+  
+  #reminderForm input[type="text"] {
+    flex: 1 1 200px; /* Permite crescer, base de 200px */
+    padding: 0.8em 1em;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  #reminderForm input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  #reminderForm input[type="datetime-local"] {
+    padding: 0.7em; /* Ajuste de padding */
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    flex: 1 1 150px; /* Flexibilidade para data/hora */
+  }
+  
+  #reminderForm button[type="submit"] {
+    padding: 0.8em 1.5em;
+    background: var(--accent-color);
+    color: var(--button-text);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color var(--transition-speed) ease, transform 0.1s ease;
+    flex-shrink: 0; /* Não encolhe */
+  }
+  
+  #reminderForm button[type="submit"]:hover {
+    background: var(--accent-hover-color);
+  }
+  #reminderForm button[type="submit"]:active {
+      transform: scale(0.98);
+  }
+  
+  #reminderList li {
+    padding: 0.8em 1em;
+    border-bottom: 1px solid var(--input-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem; /* Espaço entre texto e botão */
+    transition: background-color var(--transition-speed) ease;
+  }
+  
+  #reminderList li:last-child {
+    border-bottom: none; /* Remove borda do último item */
+  }
+  
+  #reminderList li.due {
+    background: rgba(220, 53, 69, 0.1); /* Fundo vermelho suave para vencidos */
+    color: var(--danger-color);
+    font-weight: bold;
+  }
+  
+  .delete-btn {
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    font-size: 1.3em; /* Ícone maior */
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color var(--transition-speed) ease, transform 0.1s ease;
+  }
+  
+  .delete-btn:hover {
+    color: var(--danger-hover-color);
+    transform: scale(1.1); /* Aumenta um pouco no hover */
+  }
+  
+  #noRemindersMsg {
+      color: var(--secondary-color);
+      text-align: center;
+      padding: 1rem 0;
+  }
+  
+  
+  /* --- Modo Escuro --- */
+  body.dark {
+    --bg-color: #1a1a1a; /* Fundo escuro principal */
+    --text-color: #e0e0e0; /* Texto claro */
+    --primary-color: #3498db; /* Azul mais claro para contraste */
+    --primary-hover-color: #2980b9;
+    --secondary-color: #95a5a6;
+    --accent-color: #2ecc71; /* Verde mais claro */
+    --accent-hover-color: #27ae60;
+    --danger-color: #e74c3c; /* Vermelho mais claro */
+    --danger-hover-color: #c0392b;
+    --card-bg-color: #2c2c2c; /* Fundo dos cards escuro */
+    --input-bg-color: #3b3b3b;
+    --input-border-color: #555;
+    --link-color: var(--primary-color);
+    --header-bg: #212121; /* Cabeçalho bem escuro */
+    --header-text: #e0e0e0;
+    --button-text: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.4); /* Sombra mais escura */
+  }
+  
+  body.dark #topbar button {
+    background: rgba(52, 152, 219, 0.2); /* Fundo azulado transparente */
+    color: var(--primary-color);
+  }
+  
+  body.dark #topbar button:hover {
+    background: rgba(52, 152, 219, 0.3);
+    color: #ecf0f1; /* Texto mais claro no hover */
+  }
+  
+  body.dark #topicsList li {
+      background: var(--primary-color);
+  }
+  body.dark #topicsList li:hover {
+      background: var(--primary-hover-color);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  }
+  body.dark #topicsList a {
+      color: #1a1a1a; /* Texto escuro no botão claro */
+  }
+  
+  body.dark section {
+    box-shadow: 0 4px 12px var(--shadow-color);
+  }
+  
+  body.dark .quiz-question {
+    background: #3b3b3b;
+    border-color: #555;
+  }
+  
+  body.dark #reminderList li.due {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--danger-color);
+  }
+  
+  body.dark input[type="text"],
+  body.dark input[type="password"],
+  body.dark input[type="datetime-local"] {
+    border-color: var(--input-border-color);
+  }
+  
+  body.dark input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  }
+  
+  body.dark .delete-btn {
+      color: var(--danger-color);
+  }
+  body.dark .delete-btn:hover {
+      color: #ff7675; /* Rosa claro no hover */
+  }
+  
+  
+  /* --- Animações e Efeitos --- */
+  
+  /* Animação fade-in para seções */
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards; /* 'forwards' mantém o estado final */
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Ícone de sincronização giratório */
+  .sync-icon {
+      display: inline-block; /* Necessário para transform */
+  }
+  .sync-icon.rotating {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-}
+  }
+  
+  /* Notificações */
+  .notification {
+    position: fixed;
+    right: 20px;
+    bottom: -100px; /* Começa fora da tela */
+    background: #333;
+    color: #fff;
+    padding: 1em 1.5em;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 9999; /* Garante que fique sobre tudo */
+    max-width: 350px; /* Limita largura */
+  }
+  
+  .notification.show {
+    opacity: 1;
+    transform: translateY(-120px); /* Move para cima (ajustar valor conforme necessário) */
+  }
+  
+  body.dark .notification {
+      background: #eee; /* Fundo claro para notificação no modo escuro */
+      color: #333; /* Texto escuro */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* --- Responsividade Básica --- */
+  @media (max-width: 768px) {
+    :root {
+      --font-size-base: 15px;
+      --font-size-h1: 1.8rem;
+      --font-size-h2: 1.6rem;
+    }
+  
+    #appHeader {
+      padding: 0.8rem 1rem;
+    }
+    #appHeader h1 {
+      font-size: 1.4rem;
+    }
+    #themeToggle {
+      font-size: 1.3rem;
+    }
+  
+    section {
+      margin: 1.5rem 1rem; /* Menos margem lateral */
+      padding: 1.5rem;
+    }
+  
+    #topbar {
+        gap: 0.5rem;
+    }
+    #topbar button {
+        padding: 0.5em 1em;
+        font-size: 0.95em;
+    }
+  
+    #topicsList {
+      grid-template-columns: 1fr; /* Uma coluna em telas pequenas */
+      gap: 0.8rem;
+    }
+  
+    #reminderForm {
+        gap: 0.8rem;
+    }
+    #reminderForm input[type="text"],
+    #reminderForm input[type="datetime-local"] {
+        flex-basis: 100%; /* Ocupa linha inteira */
+    }
+  }
+  
+  @media (max-width: 480px) {
+      :root {
+          --font-size-base: 14px;
+          --font-size-h1: 1.6rem;
+          --font-size-h2: 1.4rem;
+      }
+      section {
+          padding: 1rem;
+      }
+      #loginForm button[type="submit"],
+      #reminderForm button[type="submit"],
+      .quiz-question button {
+          font-size: 1em;
+          padding: 0.7em 1em;
+      }
+  }
+  
