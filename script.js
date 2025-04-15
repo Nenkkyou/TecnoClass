@@ -1,5 +1,30 @@
 "use strict";
 
+// Adicionar esta função no início do script, após as declarações de variáveis
+function checkBrowserCompatibility() {
+  const features = {
+    localStorage: typeof localStorage !== 'undefined',
+    speechSynthesis: 'speechSynthesis' in window,
+    serviceWorker: 'serviceWorker' in navigator
+  };
+  
+  let incompatibleFeatures = [];
+  
+  for (const [feature, supported] of Object.entries(features)) {
+    if (!supported) {
+      incompatibleFeatures.push(feature);
+    }
+  }
+  
+  if (incompatibleFeatures.length > 0) {
+    console.warn('Recursos incompatíveis detectados:', incompatibleFeatures);
+    showNotification('Alguns recursos podem não funcionar corretamente neste navegador.', 'warning');
+  }
+}
+
+// Chamar esta função no início da execução do script
+checkBrowserCompatibility();
+
 // Dados persistentes (LocalStorage)
 let users = JSON.parse(localStorage.getItem('users') || '{}');        // { email: {salt:..., hash:...}, ... }
 let userData = JSON.parse(localStorage.getItem('userData') || '{}');  // { email: { completedTopics:[], reminders:[], favorites:[], achievements:[], highScore:0, notes:{} }, ... }
@@ -168,7 +193,28 @@ function renderTopicsList() {
 }
 renderTopicsList();
 
-// Carrega o conteúdo nos elementos de seção de acordo com o idioma atual
+// Adicionar esta função após a função loadContent
+function handleMissingResources() {
+  // Tratar vídeos que não carregam
+  document.querySelectorAll('video').forEach(video => {
+    video.addEventListener('error', function() {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'video-placeholder';
+      placeholder.innerHTML = '<p>Vídeo não disponível no momento</p>';
+      this.parentNode.replaceChild(placeholder, this);
+    });
+  });
+  
+  // Tratar imagens que não carregam
+  document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('error', function() {
+      this.src = 'placeholder.png'; // Imagem de fallback
+      this.alt = 'Imagem não disponível';
+    });
+  });
+}
+
+// Chamar esta função após carregar o conteúdo
 function loadContent(lang = 'pt') {
   currentLang = lang;
   const topics = contentData[currentLang];
@@ -181,7 +227,16 @@ function loadContent(lang = 'pt') {
     const contentEl = sectionEl.querySelector('.sectionContent');
     const reviewEl = sectionEl.querySelector('.reviewQuestions');
     if (titleEl) titleEl.innerText = topics[key].title;
-    if (contentEl) contentEl.innerHTML = topics[key].body;
+    if (contentEl) {
+      // Remover vídeos e links da Wikipedia
+      let content = topics[key].body;
+      content = content.replace(/<video.*?<\/video>/gs, '');
+      content = content.replace(/<p><em>Para saber mais:.*?<\/p>/gs, '');
+      content = content.replace(/<p><em>Learn more:.*?<\/p>/gs, '');
+      content = content.replace(/<p><em>Exemplo visual:.*?<\/p>/gs, '');
+      content = content.replace(/<p><em>Visual example:.*?<\/p>/gs, '');
+      contentEl.innerHTML = content;
+    }
     // Inserir perguntas de revisão (caso ainda não inseridas)
     if (reviewEl && reviewEl.children.length === 0) {
       insertReviewQuestions(key, reviewEl);
@@ -189,6 +244,12 @@ function loadContent(lang = 'pt') {
   }
   // Após carregar conteúdo, configurar interações (IDs de parágrafos, favoritos)
   setupContentInteractions();
+  
+  // Inicializar sistema de notas adesivas
+  initStickyNotes();
+  
+  // Adicionar tratamento para recursos ausentes
+  handleMissingResources();
 }
 loadContent(currentLang);
 
@@ -502,6 +563,12 @@ function showSection(sectionId) {
   // Limpar recursos da seção anterior
   cleanupResources();
   
+  // Caso especial para o quiz
+  if (sectionId === 'quizSection') {
+    showQuizModal();
+    return;
+  }
+  
   sectionIds.forEach(id => {
     const secEl = document.getElementById(id);
     if (!secEl) return;
@@ -521,63 +588,180 @@ function showSection(sectionId) {
                     sectionId !== 'loginSection' ? sectionId : null;
   
   // Ações especiais ao mostrar certas seções
-  if (sectionId === 'adminSection') renderAdminPanel();
-  if (sectionId === 'profileSection') renderProfile();
-  if (sectionId === 'favoritesSection') renderFavorites();
-  if (sectionId === 'homeSection') {
-    renderTopicsList();
+  if (sectionId === 'profileSection') {
+    updateProfileView();
+  } else if (sectionId === 'adminSection') {
+    updateAdminView();
+  } else if (sectionId === 'favoritesSection') {
+    renderFavorites();
+  } else if (sectionId === 'remindersSection') {
+    renderReminders();
   }
   
-  // Configurar temporizador do quiz
-  if (sectionId === 'quizSection') {
-    // Limpar resultados anteriores
-    document.getElementById('quizResult').style.display = 'none';
+  // Atualizar URL com hash para navegação
+  if (sectionId !== 'loginSection') {
+    window.location.hash = sectionId;
+  }
+  
+  // Rolar para o topo da seção
+  window.scrollTo(0, 0);
+  
+  // Atualizar barra de progresso se for uma seção de conteúdo
+  if (sectionId.endsWith('Section') && 
+      !['homeSection', 'loginSection', 'quizSection', 'remindersSection', 
+        'favoritesSection', 'profileSection', 'adminSection'].includes(sectionId)) {
+    const topicKey = sectionId.replace('Section', '');
+    updateProgressBar(topicKey);
+  }
+}
+
+// Função auxiliar para formatar o tempo do quiz
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Variável para controlar o tempo restante do quiz
+let quizTimeRemaining = 0;
+
+// Inicializar modal do quiz
+function initQuizModal() {
+  // Criar modal do quiz se não existir
+  if (!document.getElementById('quizModal')) {
+    const modal = document.createElement('div');
+    modal.id = 'quizModal';
+    modal.className = 'quiz-modal';
     
-    // Reiniciar timer
-    quizTimeRemaining = quizTimePerQuestion * 4; // 4 perguntas
-    document.getElementById('timerDisplay').innerText = formatTime(quizTimeRemaining);
+    const container = document.createElement('div');
+    container.className = 'quiz-container';
     
-    quizTimer = setInterval(() => {
-      quizTimeRemaining--;
-      document.getElementById('timerDisplay').innerText = formatTime(quizTimeRemaining);
-      
-      if (quizTimeRemaining <= 0) {
+    const header = document.createElement('div');
+    header.className = 'quiz-header';
+    
+    const title = document.createElement('h2');
+    title.textContent = 'Quiz Final';
+    header.appendChild(title);
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'quiz-close';
+    closeBtn.innerHTML = '×';
+    closeBtn.setAttribute('aria-label', 'Fechar quiz');
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+      // Parar timer se estiver ativo
+      if (quizTimer) {
         clearInterval(quizTimer);
         quizTimer = null;
-        finishQuiz();
-        showNotification("Tempo do quiz encerrado.");
       }
-    }, 1000);
+    });
+    header.appendChild(closeBtn);
+    
+    container.appendChild(header);
+    
+    // Clonar conteúdo do quiz para o modal
+    const quizContent = document.getElementById('quizSection').cloneNode(true);
+    // Remover título e botão de voltar
+    quizContent.querySelector('h2').remove();
+    const backBtn = quizContent.querySelector('.backButton');
+    if (backBtn) backBtn.remove();
+    
+    container.appendChild(quizContent);
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+    
+    // Adicionar evento para botão de refazer quiz no modal
+    const restartBtn = modal.querySelector('#restartQuizBtn');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', function() {
+        // Limpa seleções e feedback
+        ['q1','q2','q3','q4'].forEach(q => {
+          modal.querySelectorAll(`input[name="${q}"]`).forEach(opt => opt.checked = false);
+          const feedbackEl = modal.querySelector(`#${q}Feedback`);
+          if (feedbackEl) { feedbackEl.textContent = ''; }
+        });
+        modal.querySelector('#quizResult').style.display = 'none';
+        
+        // Reiniciar timer
+        quizTimeRemaining = quizTimePerQuestion * 4; // 4 perguntas
+        modal.querySelector('#timerDisplay').innerText = formatTime(quizTimeRemaining);
+        
+        if (quizTimer) clearInterval(quizTimer);
+        quizTimer = setInterval(() => {
+          quizTimeRemaining--;
+          modal.querySelector('#timerDisplay').innerText = formatTime(quizTimeRemaining);
+          
+          if (quizTimeRemaining <= 0) {
+            clearInterval(quizTimer);
+            quizTimer = null;
+            finishQuizModal();
+            showNotification("Tempo do quiz encerrado.");
+          }
+        }, 1000);
+      });
+    }
+    
+    // Substituir botões de verificar no modal
+    modal.querySelectorAll('button[onclick^="checkQuiz"]').forEach(btn => {
+      const onclick = btn.getAttribute('onclick');
+      const match = onclick.match(/checkQuiz\('([^']+)','([^']+)'\)/);
+      if (match) {
+        const qName = match[1];
+        const correctValue = match[2];
+        btn.removeAttribute('onclick');
+        btn.addEventListener('click', () => {
+          checkQuizModal(qName, correctValue);
+        });
+      }
+    });
   }
+}
+
+// Mostrar modal do quiz
+function showQuizModal() {
+  const modal = document.getElementById('quizModal');
+  if (!modal) return;
   
-  // Verificar lembretes ao entrar na seção de lembretes
-  if (sectionId === 'remindersSection') {
-    renderReminders();
-    checkDueReminders();
-  }
+  // Limpar resultados anteriores
+  modal.querySelector('#quizResult').style.display = 'none';
+  
+  // Reiniciar timer
+  quizTimeRemaining = quizTimePerQuestion * 4; // 4 perguntas
+  modal.querySelector('#timerDisplay').innerText = formatTime(quizTimeRemaining);
+  
+  if (quizTimer) clearInterval(quizTimer);
+  quizTimer = setInterval(() => {
+    quizTimeRemaining--;
+    modal.querySelector('#timerDisplay').innerText = formatTime(quizTimeRemaining);
+    
+    if (quizTimeRemaining <= 0) {
+      clearInterval(quizTimer);
+      quizTimer = null;
+      finishQuizModal();
+      showNotification("Tempo do quiz encerrado.");
+    }
+  }, 1000);
+  
+  modal.classList.add('show');
 }
 
-// Função auxiliar para formatar tempo em MM:SS
-function formatTime(seconds) {
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const ss = String(seconds % 60).padStart(2, '0');
-  return mm + ":" + ss;
-}
-
-// Função de verificação do Quiz (tanto revisão quanto quiz final)
-function checkQuiz(qName, correctValue) {
-  const options = document.getElementsByName(qName);
+// Verificar resposta do quiz no modal
+function checkQuizModal(qName, correctValue) {
+  const modal = document.getElementById('quizModal');
+  if (!modal) return;
+  
+  const options = modal.querySelectorAll(`input[name="${qName}"]`);
   let selected = null;
   for (let opt of options) {
     if (opt.checked) { selected = opt.value; break; }
   }
-  const feedbackEl = document.getElementById(qName + 'Feedback');
+  const feedbackEl = modal.querySelector(`#${qName}Feedback`);
   if (!feedbackEl) return;
   
   if (selected === null) {
     feedbackEl.style.color = 'orange';
     feedbackEl.textContent = 'Por favor, selecione uma opção.';
-    return false; // Adicionado retorno para verificar se resposta foi selecionada
+    return false;
   } 
   
   const isCorrect = selected === correctValue;
@@ -599,446 +783,28 @@ function checkQuiz(qName, correctValue) {
   return isCorrect;
 }
 
-// Dados de lembretes específicos do usuário atual
-function renderReminders() {
-  const listEl = document.getElementById('reminderList');
-  const noMsg = document.getElementById('noRemindersMsg');
-  listEl.innerHTML = '';
-  let remindersArr = [];
-  if (currentUser && userData[currentUser]) {
-    remindersArr = userData[currentUser].reminders || [];
-  }
-  if (remindersArr.length === 0) {
-    noMsg.style.display = 'block';
-  } else {
-    noMsg.style.display = 'none';
-    remindersArr.forEach((rem, index) => {
-      const li = document.createElement('li');
-      let text = rem.text;
-      if (rem.due) {
-        const dueDate = new Date(rem.due);
-        text += ' – ' + dueDate.toLocaleString();
-        if (dueDate.getTime() <= Date.now()) {
-          li.classList.add('due');
-        }
-      }
-      li.textContent = text;
-      // botão de exclusão
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '✖';
-      delBtn.className = 'delete-btn';
-      delBtn.onclick = () => {
-        userData[currentUser].reminders.splice(index, 1);
-        localStorage.setItem('userData', JSON.stringify(userData));
-        renderReminders();
-      };
-      li.appendChild(delBtn);
-      listEl.appendChild(li);
-    });
-  }
-}
-
-// Verificação melhorada de lembretes com alerta sonoro configurável
-function checkDueReminders(suppressNotification = false) {
-  if (!currentUser || !userData[currentUser]) return;
+// Finalizar quiz no modal
+function finishQuizModal() {
+  const modal = document.getElementById('quizModal');
+  if (!modal) return;
   
-  let notifiedThisCycle = false;
-  let dueCounted = 0;
-  
-  userData[currentUser].reminders.forEach((rem, idx) => {
-    // Verificar se o lembrete está vencido
-    const isDue = rem.due && new Date(rem.due).getTime() <= Date.now();
-    
-    if (isDue) {
-      dueCounted++;
-      
-      if (!rem.notified && !suppressNotification) {
-        showNotification('Lembrete: ' + rem.text + ' - estava agendado para agora.');
-        
-        // Alerta sonoro apenas para o primeiro lembrete vencido
-        if (!notifiedThisCycle && !userData[currentUser].settings?.muteSounds) {
-          beep();
-          notifiedThisCycle = true;
-        }
-        
-        // Marcar como notificado
-        userData[currentUser].reminders[idx].notified = true;
-      }
-    }
-  });
-  
-  // Atualizar contador na interface (se houver)
-  const reminderCounter = document.getElementById('reminderCounter');
-  if (reminderCounter && dueCounted > 0) {
-    reminderCounter.textContent = dueCounted.toString();
-    reminderCounter.style.display = 'inline-block';
-  } else if (reminderCounter) {
-    reminderCounter.style.display = 'none';
-  }
-  
-  localStorage.setItem('userData', JSON.stringify(userData));
-  return dueCounted;
-}
-
-// Melhorar a função de beep com configurações de volume
-function beep(frequency = 440, duration = 500, volume = 0.5) {
-  try {
-    if (!window.audioCtx) {
-      window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    
-    const oscillator = window.audioCtx.createOscillator();
-    const gainNode = window.audioCtx.createGain();
-    
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(frequency, window.audioCtx.currentTime);
-    
-    gainNode.gain.setValueAtTime(volume, window.audioCtx.currentTime);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(window.audioCtx.destination);
-    
-    oscillator.start();
-    oscillator.stop(window.audioCtx.currentTime + duration/1000);
-  } catch (e) {
-    console.error('Erro ao reproduzir som', e);
-  }
-}
-
-// Notificação visual (canto inferior)
-function showNotification(message) {
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
-  // Evita sobreposição de múltiplas notificações
-  const existingNotifs = document.querySelectorAll('.notification');
-  notification.style.bottom = (20 + existingNotifs.length * 60) + 'px';
-  document.body.appendChild(notification);
-  // Exibe com animação
-  requestAnimationFrame(() => {
-    notification.classList.add('show');
-  });
-  // Oculta após 5 segundos
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 500);
-  }, 5000);
-}
-
-// Eventos de interface:
-
-// Formulário de Login/Registro
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const emailInput = document.getElementById('email');
-  const passInput = document.getElementById('password');
-  const emailVal = emailInput.value.trim();
-  const passVal = passInput.value;
-  const messageEl = document.getElementById('loginMessage');
-  
-  // Validações iniciais (já existentes)
-  if (emailVal === '' || passVal === '') {
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'Por favor, preencha e-mail e senha.';
-    return;
-  }
-  
-  // Simples validação de e-mail para registro
-  if (registerMode && !emailVal.includes('@')) {
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'E-mail inválido.';
-    return;
-  }
-  
-  // Proteção contra bots: checar campo oculto
-  const botField = document.getElementById('botCheck');
-  if (registerMode && botField.value) {
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'Falha no registro.';
-    return;
-  }
-  
-  if (registerMode) {
-    // Fluxo de registro
-    if (users[emailVal]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'E-mail já registrado. Escolha outro ou faça login.';
-    } else {
-      // Gera salt e hash da senha antes de salvar
-      const salt = generateSalt();
-      
-      try {
-        crypto.subtle.digest('SHA-256', new TextEncoder().encode(passVal + salt))
-          .then(hashBuffer => {
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            
-            // Criar usuário
-            users[emailVal] = { salt: salt, hash: hashHex };
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Criar perfil inicial
-            userData[emailVal] = {
-              completedTopics: [],
-              reminders: [],
-              favorites: [],
-              achievements: [],
-              highScore: 0,
-              notes: {},
-              progress: {},
-              quizStats: { attempts: 0, correct: 0 },
-              lastLogin: new Date().toISOString()
-            };
-            
-            localStorage.setItem('userData', JSON.stringify(userData));
-            localStorage.setItem('loggedInUser', emailVal);
-            currentUser = emailVal;
-            messageEl.textContent = '';
-            startApp();
-          })
-          .catch(error => {
-            console.error("Erro ao criar hash:", error);
-            messageEl.style.color = 'red';
-            messageEl.textContent = 'Erro ao processar o registro. Tente novamente.';
-          });
-      } catch (error) {
-        console.error("Erro no crypto API:", error);
-        // Fallback para método básico se crypto API falhar
-        const simpleHash = btoa(passVal + salt); // Não é seguro, apenas fallback
-        users[emailVal] = { salt: salt, hash: simpleHash, method: 'basic' };
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        // Criar perfil inicial (mesmo código de acima)
-        userData[emailVal] = {
-          completedTopics: [],
-          reminders: [],
-          favorites: [],
-          achievements: [],
-          highScore: 0,
-          notes: {},
-          progress: {},
-          quizStats: { attempts: 0, correct: 0 },
-          lastLogin: new Date().toISOString()
-        };
-        
-        localStorage.setItem('userData', JSON.stringify(userData));
-        localStorage.setItem('loggedInUser', emailVal);
-        currentUser = emailVal;
-        messageEl.textContent = '';
-        startApp();
-      }
-    }
-  } else {
-    // Fluxo de login
-    if (!users[emailVal]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'Usuário não encontrado. Verifique o e-mail ou registre-se.';
-      loginAttempts++;
-    } else {
-      // Verifica hash da senha com salt
-      const { salt, hash } = users[emailVal];
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(passVal + salt)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        if (hash === hashHex) {
-          localStorage.setItem('loggedInUser', emailVal);
-          currentUser = emailVal;
-          messageEl.textContent = '';
-          loginAttempts = 0;
-          startApp();
-        } else {
-          messageEl.style.color = 'red';
-          messageEl.textContent = 'Senha incorreta. Tente novamente.';
-          loginAttempts++;
-        }
-      });
-    }
-  }
-  
-  // Bloqueio após tentativas excessivas de login
-  if (loginAttempts >= 3) {
-    loginAttempts = 0;
-    emailInput.disabled = true;
-    passInput.disabled = true;
-    document.getElementById('loginBtn').disabled = true;
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'Muitas tentativas. Tente novamente em 30 segundos.';
-    setTimeout(() => {
-      emailInput.disabled = false;
-      passInput.disabled = false;
-      document.getElementById('loginBtn').disabled = false;
-      messageEl.textContent = '';
-    }, 30000);
-  }
-});
-
-// Alterna entre modo Login e Registro
-document.getElementById('registerLink').addEventListener('click', function(e) {
-  e.preventDefault();
-  const title = document.getElementById('loginTitle');
-  const loginBtn = document.getElementById('loginBtn');
-  const toggleText = document.getElementById('toggleLoginRegister');
-  if (!registerMode) {
-    registerMode = true;
-    title.textContent = 'Registrar';
-    loginBtn.textContent = 'Registrar';
-    toggleText.firstChild.textContent = 'Já tem conta? ';
-    this.textContent = 'Entrar';
-  } else {
-    registerMode = false;
-    title.textContent = 'Login';
-    loginBtn.textContent = 'Entrar';
-    toggleText.firstChild.textContent = 'Não tem uma conta? ';
-    this.textContent = 'Registre-se';
-  }
-});
-
-// Navegação por clique nos links de seção
-document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('navLink')) {
-    e.preventDefault();
-    showSection(e.target.dataset.target);
-  }
-});
-
-// Adicione o evento para os botões de "Voltar"
-document.querySelectorAll('.backButton').forEach(button => {
-  button.addEventListener('click', function() {
-    showSection(button.dataset.target);
-  });
-});
-
-document.getElementById('homeBtn').addEventListener('click', function() {
-  showSection('homeSection');
-});
-
-document.getElementById('logoutBtn').addEventListener('click', function() {
-  localStorage.removeItem('loggedInUser');
-  currentUser = null;
-  location.reload();
-});
-
-document.getElementById('profileBtn').addEventListener('click', function() {
-  showSection('profileSection');
-});
-
-// Sincronização (placeholder para integração com backend)
-document.getElementById('syncBtn').addEventListener('click', function() {
-  if (!navigator.onLine) {
-    showNotification('Você está offline no momento. Conecte-se à internet para sincronizar.');
-    return;
-  }
-  const icon = this.querySelector('.sync-icon');
-  this.disabled = true;
-  if (icon) icon.classList.add('rotating');
-  setTimeout(() => {
-    // Aqui poderíamos enviar/receber dados para Firebase/Supabase, etc.
-    localStorage.setItem('contentData', JSON.stringify(contentData));
-    if (icon) icon.classList.remove('rotating');
-    this.disabled = false;
-    showNotification('Conteúdo atualizado com sucesso!');
-  }, 1500);
-});
-
-// Formulário de Lembretes
-document.getElementById('reminderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  if (!currentUser) return;
-  const textVal = document.getElementById('reminderText').value;
-  const dateVal = document.getElementById('reminderDate').value;
-  if (textVal.trim() === '') return;
-  const newRem = { text: textVal.trim(), notified: false };
-  if (dateVal) newRem.due = dateVal;
-  userData[currentUser].reminders.push(newRem);
-  localStorage.setItem('userData', JSON.stringify(userData));
-  document.getElementById('reminderText').value = '';
-  document.getElementById('reminderDate').value = '';
-  renderReminders();
-  // Conquista: primeiro lembrete
-  if (userData[currentUser].reminders.length === 1) {
-    unlockAchievement("Lembreteiro: primeiro lembrete adicionado");
-  }
-});
-
-// Eventos de leitura em voz alta (Web Speech API)
-document.querySelectorAll('.tts-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const section = btn.closest('section');
-    if (!section) return;
-    const contentText = section.querySelector('.sectionContent').innerText;
-    speakText(contentText);
-  });
-});
-function speakText(text) {
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = (currentLang === 'en') ? 'en-US' : 'pt-BR';
-  utterance.rate = 1;
-  window.speechSynthesis.speak(utterance);
-}
-
-// Evento de exportação de dados (JSON)
-document.getElementById('exportDataBtn').addEventListener('click', function() {
-  if (!currentUser) return;
-  const dataStr = JSON.stringify(userData[currentUser], null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `dados_${currentUser}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-// Salvar anotações em tempo real e conquista por anotar
-document.querySelectorAll('.notesSection textarea').forEach(textarea => {
-  textarea.addEventListener('input', () => {
-    if (!currentUser) return;
-    const topic = textarea.id.replace('Notes','');
-    userData[currentUser].notes[topic] = textarea.value;
-    localStorage.setItem('userData', JSON.stringify(userData));
-    if (textarea.value.trim().length === 1) {
-      unlockAchievement("Autor: primeira anotação adicionada");
-    }
-  });
-});
-
-// Função para conceder conquista ao usuário atual
-function unlockAchievement(name) {
-  if (!currentUser) return;
-  const achList = userData[currentUser].achievements;
-  if (!achList.includes(name)) {
-    achList.push(name);
-    localStorage.setItem('userData', JSON.stringify(userData));
-    showNotification("🎉 Nova conquista: " + name);
-  }
-}
-
-// Funções e variáveis para Quiz final
-const correctAnswers = { q1:'c', q2:'a', q3:'b', q4:'a' };
-let quizTimeRemaining = 0;
-function finishQuiz() {
   // Calcula pontuação
-  let total = Object.keys(correctAnswers).length;
+  let total = Object.keys(explanations).length;
   let correctCount = 0;
   
-  for (let q in correctAnswers) {
-    const selected = Array.from(document.getElementsByName(q))
+  for (let q in explanations) {
+    const selected = Array.from(modal.querySelectorAll(`input[name="${q}"]`))
       .find(opt => opt.checked);
     
-    if (selected && selected.value === correctAnswers[q]) {
+    if (selected && selected.value === explanations[q]) {
       correctCount++;
     }
   }
   
   // Exibe resultado
-  document.getElementById('scoreCount').innerText = correctCount.toString();
-  document.getElementById('scoreTotal').innerText = total.toString();
-  const scoreMsg = document.getElementById('scoreMessage');
+  modal.querySelector('#scoreCount').innerText = correctCount.toString();
+  modal.querySelector('#scoreTotal').innerText = total.toString();
+  const scoreMsg = modal.querySelector('#scoreMessage');
   
   if (correctCount === total) {
     scoreMsg.innerText = "Parabéns! Você acertou todas as perguntas!";
@@ -1049,87 +815,13 @@ function finishQuiz() {
     scoreMsg.innerText = "Que tal revisar o conteúdo e tentar novamente?";
   }
   
-  document.getElementById('quizResult').style.display = 'block';
+  modal.querySelector('#quizResult').style.display = 'block';
   
   // Atualiza pontuação do usuário
   if (currentUser && userData[currentUser]) {
     userData[currentUser].highScore = Math.max(userData[currentUser].highScore || 0, correctCount);
     localStorage.setItem('userData', JSON.stringify(userData));
   }
-}
-
-// "Refazer Quiz"
-document.getElementById('restartQuizBtn').addEventListener('click', function() {
-  // Limpa seleções e feedback
-  ['q1','q2','q3','q4'].forEach(q => {
-    document.getElementsByName(q).forEach(opt => opt.checked = false);
-    const feedbackEl = document.getElementById(q + 'Feedback');
-    if (feedbackEl) { feedbackEl.textContent = ''; }
-  });
-  document.getElementById('quizResult').style.display = 'none';
-  showSection('quizSection');
-});
-
-// Versão otimizada do rastreamento de rolagem
-window.addEventListener('scroll', debounce(() => {
-  if (!currentSectionId || !currentUser) return;
-  
-  const secEl = document.getElementById(currentSectionId);
-  if (!secEl) return;
-  
-  // Calcula progresso de leitura
-  const scrollY = window.scrollY;
-  const offsetTop = secEl.offsetTop;
-  const sectionHeight = secEl.offsetHeight;
-  const windowHeight = window.innerHeight;
-  const scrollInSection = scrollY - offsetTop;
-  const scrollable = sectionHeight - windowHeight;
-  
-  let progress = 0;
-  if (scrollable > 0) {
-    progress = Math.min(1, Math.max(0, scrollInSection / scrollable));
-  } else {
-    progress = 1;
-  }
-  
-  const bar = secEl.querySelector('.progress-bar');
-  if (bar) bar.style.width = (progress * 100) + "%";
-  
-  // Salva progresso temporário (mesmo antes de concluir)
-  const topicKey = currentSectionId.replace('Section','');
-  if (!userData[currentUser].progress) userData[currentUser].progress = {};
-  userData[currentUser].progress[topicKey] = progress;
-  localStorage.setItem('userData', JSON.stringify(userData));
-  
-  // Marcar lição como concluída se leu até ~95%
-  if (progress >= 0.95) {
-    if (!userData[currentUser].completedTopics.includes(topicKey)) {
-      userData[currentUser].completedTopics.push(topicKey);
-      localStorage.setItem('userData', JSON.stringify(userData));
-      
-      // Atualizar visualização da lista de tópicos
-      renderTopicsList();
-      
-      // Conquistas de conclusão de lição
-      if (userData[currentUser].completedTopics.length === 1) {
-        unlockAchievement("Primeiro Passo: primeira lição concluída");
-      }
-      if (userData[currentUser].completedTopics.length === Object.keys(contentData[currentLang]).length) {
-        unlockAchievement("Conquistador: todas as lições concluídas");
-      }
-      
-      showNotification(`Parabéns! Você concluiu a lição: ${contentData[currentLang][topicKey].title}`);
-    }
-  }
-}, 200));
-
-// Função auxiliar de debounce para melhorar performance
-function debounce(func, wait = 100) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
 }
 
 // Inicia aplicação pós-login
@@ -1148,14 +840,10 @@ function startApp() {
   renderTopicsList();
   // Renderiza lembretes e anotações do usuário atual
   renderReminders();
-  if (userData[currentUser].notes) {
-    for (let topic in userData[currentUser].notes) {
-      const noteArea = document.getElementById(topic + 'Notes');
-      if (noteArea) noteArea.value = userData[currentUser].notes[topic];
-    }
-  } else {
-    userData[currentUser].notes = {};
-  }
+  
+  // Inicializar sistema de notas adesivas
+  initStickyNotes();
+  
   // Verificação periódica de lembretes vencidos
   setInterval(checkDueReminders, 60000);
   
@@ -1174,6 +862,15 @@ function startApp() {
       (today - lastLogin) < 2 * 24 * 60 * 60 * 1000) { // menos de 2 dias
     unlockAchievement("Estudante Dedicado: login em dias consecutivos");
   }
+  
+  // Inicializar quiz modal
+  initQuizModal();
+  
+  // Inicializar quiz modal imediatamente para evitar atraso
+  setTimeout(initQuizModal, 100);
+  
+  // Verificar lembretes imediatamente após login
+  checkDueReminders();
 }
 
 // Auto-login se usuário já autenticado anteriormente
@@ -1184,16 +881,6 @@ if (currentUser) {
 // Registro do Service Worker (PWA)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(err => console.error("SW registration failed:", err));
-}
-
-// Função para gerar salt aleatório para senhas
-function generateSalt() {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-  let salt = '';
-  for (let i = 0; i < 16; i++) {
-    salt += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-  return salt;
 }
 
 // Verificar inatividade periodicamente
@@ -1353,6 +1040,785 @@ function reportError() {
   if (btn) btn.remove();
   
   showNotification("Obrigado por relatar o problema!");
+}
+
+// Inicializar sistema de notas adesivas
+function initStickyNotes() {
+  document.querySelectorAll('.notesSection').forEach(section => {
+    const topicKey = section.querySelector('textarea').id.replace('Notes', '');
+    
+    // Remover textarea existente
+    const textarea = section.querySelector('textarea');
+    if (textarea) {
+      textarea.style.display = 'none';
+    }
+    
+    // Verificar se já existe o container de notas
+    let notesContainer = section.querySelector('.sticky-notes-container');
+    if (!notesContainer) {
+      // Criar container para notas adesivas
+      notesContainer = document.createElement('div');
+      notesContainer.className = 'sticky-notes-container';
+      section.appendChild(notesContainer);
+      
+      // Adicionar botão para criar nova nota
+      const addBtn = document.createElement('div');
+      addBtn.className = 'add-note-btn';
+      addBtn.innerHTML = '+';
+      addBtn.setAttribute('data-topic', topicKey);
+      addBtn.addEventListener('click', showAddNoteForm);
+      notesContainer.appendChild(addBtn);
+    }
+    
+    // Carregar notas existentes
+    loadStickyNotes(topicKey, notesContainer);
+  });
+}
+
+// Carregar notas adesivas do usuário
+function loadStickyNotes(topicKey, container) {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  // Limpar notas existentes (exceto botão de adicionar)
+  const addBtn = container.querySelector('.add-note-btn');
+  container.innerHTML = '';
+  if (addBtn) container.appendChild(addBtn);
+  
+  // Verificar se há notas para este tópico
+  if (!userData[currentUser].notes) userData[currentUser].notes = {};
+  if (!userData[currentUser].notes[topicKey]) userData[currentUser].notes[topicKey] = [];
+  
+  // Se as notas estiverem em formato antigo (string), converter para array
+  if (typeof userData[currentUser].notes[topicKey] === 'string') {
+    userData[currentUser].notes[topicKey] = [
+      { 
+        text: userData[currentUser].notes[topicKey],
+        color: 'color-yellow',
+        date: new Date().toISOString()
+      }
+    ];
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+  
+  // Renderizar cada nota
+  userData[currentUser].notes[topicKey].forEach((note, index) => {
+    const noteEl = createStickyNote(note, topicKey, index);
+    container.insertBefore(noteEl, addBtn);
+  });
+}
+
+// Criar elemento de nota adesiva
+function createStickyNote(note, topicKey, index) {
+  const noteEl = document.createElement('div');
+  noteEl.className = `sticky-note ${note.color || 'color-yellow'}`;
+  
+  const content = document.createElement('div');
+  content.className = 'sticky-note-content';
+  content.textContent = note.text;
+  noteEl.appendChild(content);
+  
+  const dateEl = document.createElement('div');
+  dateEl.className = 'sticky-note-date';
+  const noteDate = new Date(note.date || new Date());
+  dateEl.textContent = noteDate.toLocaleDateString();
+  noteEl.appendChild(dateEl);
+  
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'sticky-note-delete';
+  deleteBtn.innerHTML = '×';
+  deleteBtn.setAttribute('aria-label', 'Excluir nota');
+  deleteBtn.addEventListener('click', () => {
+    deleteNote(topicKey, index);
+  });
+  noteEl.appendChild(deleteBtn);
+  
+  return noteEl;
+}
+
+// Mostrar formulário para adicionar nota
+function showAddNoteForm(e) {
+  const topicKey = e.currentTarget.getAttribute('data-topic');
+  
+  // Criar popup se não existir
+  let popup = document.getElementById('noteFormPopup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'noteFormPopup';
+    popup.className = 'note-form-popup';
+    
+    const form = document.createElement('div');
+    form.className = 'note-form';
+    
+    const colorPicker = document.createElement('div');
+    colorPicker.className = 'note-color-picker';
+    colorPicker.innerHTML = `
+      <div class="color-option color-yellow selected" data-color="color-yellow"></div>
+      <div class="color-option color-orange" data-color="color-orange"></div>
+      <div class="color-option color-blue" data-color="color-blue"></div>
+      <div class="color-option color-green" data-color="color-green"></div>
+      <div class="color-option color-pink" data-color="color-pink"></div>
+    `;
+    form.appendChild(colorPicker);
+    
+    const textarea = document.createElement('textarea');
+    textarea.id = 'noteText';
+    textarea.placeholder = 'Escreva sua nota aqui...';
+    form.appendChild(textarea);
+    
+    const buttons = document.createElement('div');
+    buttons.className = 'note-form-buttons';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancelar';
+    cancelBtn.className = 'backButton';
+    cancelBtn.addEventListener('click', () => {
+      popup.classList.remove('show');
+    });
+    buttons.appendChild(cancelBtn);
+    
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Salvar';
+    saveBtn.className = 'backButton';
+    saveBtn.style.background = 'var(--primary)';
+    saveBtn.style.color = 'white';
+    saveBtn.addEventListener('click', () => {
+      const text = document.getElementById('noteText').value.trim();
+      if (text) {
+        const selectedColor = document.querySelector('.color-option.selected').getAttribute('data-color');
+        addNote(topicKey, text, selectedColor);
+        popup.classList.remove('show');
+      }
+    });
+    buttons.appendChild(saveBtn);
+    
+    form.appendChild(buttons);
+    popup.appendChild(form);
+    document.body.appendChild(popup);
+    
+    // Adicionar evento para seleção de cores
+    colorPicker.addEventListener('click', (e) => {
+      if (e.target.classList.contains('color-option')) {
+        document.querySelectorAll('.color-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        e.target.classList.add('selected');
+      }
+    });
+  }
+  
+  // Limpar e mostrar popup
+  document.getElementById('noteText').value = '';
+  popup.classList.add('show');
+}
+
+// Adicionar nova nota
+function addNote(topicKey, text, color) {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  if (!userData[currentUser].notes) userData[currentUser].notes = {};
+  if (!userData[currentUser].notes[topicKey]) userData[currentUser].notes[topicKey] = [];
+  
+  userData[currentUser].notes[topicKey].push({
+    text: text,
+    color: color || 'color-yellow',
+    date: new Date().toISOString()
+  });
+  
+  localStorage.setItem('userData', JSON.stringify(userData));
+  
+  // Recarregar notas
+  const container = document.querySelector(`#${topicKey}Section .sticky-notes-container`);
+  if (container) {
+    loadStickyNotes(topicKey, container);
+  }
+  
+  // Conquista: primeira anotação
+  if (userData[currentUser].notes[topicKey].length === 1) {
+    unlockAchievement("Autor: primeira anotação adicionada");
+  }
+}
+
+// Excluir nota
+function deleteNote(topicKey, index) {
+  if (!currentUser || !userData[currentUser] || !userData[currentUser].notes) return;
+  
+  userData[currentUser].notes[topicKey].splice(index, 1);
+  localStorage.setItem('userData', JSON.stringify(userData));
+  
+  // Recarregar notas
+  const container = document.querySelector(`#${topicKey}Section .sticky-notes-container`);
+  if (container) {
+    loadStickyNotes(topicKey, container);
+  }
+}
+
+// Função para atualizar a visualização do perfil
+function updateProfileView() {
+  renderProfile();
+}
+
+// Função para atualizar a visualização do painel administrativo
+function updateAdminView() {
+  renderAdminPanel();
+}
+
+// Função para verificar respostas do quiz
+function checkQuiz(questionName, correctAnswer) {
+  const options = document.querySelectorAll(`input[name="${questionName}"]`);
+  let selected = null;
+  for (let opt of options) {
+    if (opt.checked) { selected = opt.value; break; }
+  }
+  const feedbackEl = document.getElementById(`${questionName}Feedback`);
+  
+  if (!feedbackEl) return false;
+  
+  if (selected === null) {
+    feedbackEl.className = 'feedback';
+    feedbackEl.textContent = 'Por favor, selecione uma opção.';
+    return false;
+  } 
+  
+  const isCorrect = selected === correctAnswer;
+  feedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+  feedbackEl.textContent = isCorrect ? 
+    'Correto! ' + (explanations[questionName] || '') : 
+    'Incorreto. ' + (explanations[questionName] || '');
+  
+  // Marcar tópico como concluído se for uma pergunta de revisão
+  if (isCorrect && currentUser && userData[currentUser]) {
+    const topicKey = questionName.replace('Q', '');
+    if (['prog', 'ciber', 'ia', 'po'].includes(topicKey)) {
+      const topicMapping = {
+        'prog': 'programacao',
+        'ciber': 'ciberseguranca',
+        'ia': 'ia',
+        'po': 'productOwner'
+      };
+      const fullTopicKey = topicMapping[topicKey];
+      if (fullTopicKey && !userData[currentUser].completedTopics.includes(fullTopicKey)) {
+        userData[currentUser].completedTopics.push(fullTopicKey);
+        localStorage.setItem('userData', JSON.stringify(userData));
+        showNotification(`Parabéns! Você concluiu o tópico de ${contentData[currentLang][fullTopicKey].title}!`);
+        renderTopicsList(); // Atualizar lista com marcação de concluído
+      }
+    }
+  }
+  
+  return isCorrect;
+}
+
+// Função para mostrar notificações
+function showNotification(message, type = 'info') {
+  // Remover notificação existente
+  const existingNotification = document.querySelector('.notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+  
+  // Criar nova notificação
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  
+  // Ícone baseado no tipo
+  let icon = '💬';
+  if (type === 'success') icon = '✅';
+  else if (type === 'error') icon = '❌';
+  else if (type === 'warning') icon = '⚠️';
+  
+  notification.innerHTML = `
+    <div class="notification-icon">${icon}</div>
+    <div class="notification-content">
+      <div class="notification-message">${message}</div>
+    </div>
+    <button class="notification-close" aria-label="Fechar notificação">×</button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Mostrar com animação
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  // Configurar botão de fechar
+  notification.querySelector('.notification-close').addEventListener('click', () => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  });
+  
+  // Auto-fechar após 5 segundos
+  setTimeout(() => {
+    if (document.body.contains(notification)) {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          notification.remove();
+        }
+      }, 300);
+    }
+  }, 5000);
+}
+
+// Função para renderizar lembretes
+function renderReminders() {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  const reminderList = document.getElementById('reminderList');
+  const noRemindersMsg = document.getElementById('noRemindersMsg');
+  
+  reminderList.innerHTML = '';
+  
+  if (!userData[currentUser].reminders || userData[currentUser].reminders.length === 0) {
+    noRemindersMsg.style.display = 'block';
+    return;
+  }
+  
+  noRemindersMsg.style.display = 'none';
+  
+  userData[currentUser].reminders.forEach((reminder, index) => {
+    const li = document.createElement('li');
+    const now = new Date();
+    const reminderDate = new Date(reminder.date);
+    const isDue = reminderDate <= now;
+    
+    if (isDue) {
+      li.classList.add('due');
+    }
+    
+    const reminderContent = document.createElement('div');
+    reminderContent.className = 'reminder-content';
+    
+    const title = document.createElement('div');
+    title.className = 'reminder-title';
+    title.textContent = reminder.text;
+    
+    const time = document.createElement('div');
+    time.className = 'reminder-time';
+    time.textContent = reminderDate.toLocaleString();
+    
+    reminderContent.appendChild(title);
+    reminderContent.appendChild(time);
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '×';
+    deleteBtn.setAttribute('aria-label', 'Excluir lembrete');
+    deleteBtn.addEventListener('click', () => {
+      deleteReminder(index);
+    });
+    
+    li.appendChild(reminderContent);
+    li.appendChild(deleteBtn);
+    reminderList.appendChild(li);
+  });
+}
+
+// Função para excluir um lembrete
+function deleteReminder(index) {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  userData[currentUser].reminders.splice(index, 1);
+  localStorage.setItem('userData', JSON.stringify(userData));
+  renderReminders();
+  showNotification('Lembrete excluído com sucesso!', 'success');
+}
+
+// Função para verificar lembretes vencidos
+function checkDueReminders() {
+  if (!currentUser || !userData[currentUser] || !userData[currentUser].reminders) return;
+  
+  const now = new Date();
+  let dueCount = 0;
+  
+  userData[currentUser].reminders.forEach(reminder => {
+    const reminderDate = new Date(reminder.date);
+    if (reminderDate <= now && !reminder.notified) {
+      dueCount++;
+      reminder.notified = true;
+    }
+  });
+  
+  if (dueCount > 0) {
+    showNotification(`Você tem ${dueCount} lembrete${dueCount > 1 ? 's' : ''} vencido${dueCount > 1 ? 's' : ''}!`, 'warning');
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+}
+
+// Função para desbloquear conquistas
+function unlockAchievement(achievementName) {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  if (!userData[currentUser].achievements.includes(achievementName)) {
+    userData[currentUser].achievements.push(achievementName);
+    localStorage.setItem('userData', JSON.stringify(userData));
+    showNotification(`🏆 Nova conquista: ${achievementName}`, 'success');
+  }
+}
+
+// Adicionar eventos para os botões da barra superior
+document.getElementById('homeBtn').addEventListener('click', () => showSection('homeSection'));
+document.getElementById('profileBtn').addEventListener('click', () => showSection('profileSection'));
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('loggedInUser');
+  currentUser = null;
+  location.reload();
+});
+
+// Adicionar evento para o botão de sincronização
+document.getElementById('syncBtn').addEventListener('click', () => {
+  showNotification('Sincronização concluída!', 'success');
+  // Aqui seria implementada a sincronização real com um servidor
+});
+
+// Adicionar eventos para os botões de voltar
+document.querySelectorAll('.backButton').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.getAttribute('data-target');
+    if (target) {
+      showSection(target);
+    }
+  });
+});
+
+// Adicionar eventos para os links de navegação
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('navLink')) {
+    e.preventDefault();
+    const target = e.target.getAttribute('data-target');
+    if (target) {
+      showSection(target);
+    }
+  }
+});
+
+// Adicionar evento para o formulário de lembretes
+document.getElementById('reminderForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if (!currentUser) return;
+  
+  const text = document.getElementById('reminderText').value.trim();
+  let date = document.getElementById('reminderDate').value;
+  
+  if (!text) {
+    showNotification('Por favor, digite um texto para o lembrete.', 'error');
+    return;
+  }
+  
+  if (!date) {
+    // Se não for especificada uma data, usar data atual + 1 dia
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    date = tomorrow.toISOString();
+  }
+  
+  if (!userData[currentUser].reminders) {
+    userData[currentUser].reminders = [];
+  }
+  
+  userData[currentUser].reminders.push({
+    text: text,
+    date: date,
+    notified: false
+  });
+  
+  localStorage.setItem('userData', JSON.stringify(userData));
+  
+  document.getElementById('reminderText').value = '';
+  document.getElementById('reminderDate').value = '';
+  
+  renderReminders();
+  showNotification('Lembrete adicionado com sucesso!', 'success');
+  
+  // Conquista: primeiro lembrete
+  if (userData[currentUser].reminders.length === 1) {
+    unlockAchievement("Organizado: primeiro lembrete adicionado");
+  }
+});
+
+// Adicionar evento para o botão de exportar dados
+document.getElementById('exportDataBtn').addEventListener('click', () => {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  const dataStr = JSON.stringify(userData[currentUser], null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportFileDefaultName = `tecnoclass_${currentUser}_data.json`;
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+  
+  showNotification('Seus dados foram exportados com sucesso!', 'success');
+});
+
+// Adicionar evento para o formulário de login/registro
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const botCheck = document.getElementById('botCheck').value;
+  const loginMessage = document.getElementById('loginMessage');
+  
+  // Verificação anti-bot (honeypot)
+  if (botCheck) {
+    loginMessage.className = 'error';
+    loginMessage.textContent = 'Erro de validação.';
+    return;
+  }
+  
+  if (!email || !password) {
+    loginMessage.className = 'error';
+    loginMessage.textContent = 'Por favor, preencha todos os campos.';
+    return;
+  }
+  
+  if (registerMode) {
+    // Modo de registro
+    if (users[email]) {
+      loginMessage.className = 'error';
+      loginMessage.textContent = 'Este e-mail já está registrado.';
+      return;
+    }
+    
+    // Simular hash+salt (em produção, usar bcrypt ou similar)
+    const salt = Math.random().toString(36).substring(2);
+    const hash = password + salt; // Simulação simplificada
+    
+    users[email] = { salt, hash };
+    userData[email] = { 
+      completedTopics: [], 
+      reminders: [], 
+      favorites: [], 
+      achievements: [],
+      highScore: 0,
+      notes: {}
+    };
+    
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('userData', JSON.stringify(userData));
+    
+    loginMessage.className = 'success';
+    loginMessage.textContent = 'Registro concluído! Você pode fazer login agora.';
+    
+    // Voltar para modo de login
+    registerMode = false;
+    document.getElementById('loginTitle').textContent = 'Login';
+    document.getElementById('loginBtn').textContent = 'Entrar';
+    document.getElementById('toggleLoginRegister').innerHTML = 'Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>';
+    document.getElementById('registerLink').addEventListener('click', toggleLoginRegister);
+    
+  } else {
+    // Modo de login
+    if (!users[email]) {
+      loginAttempts++;
+      loginMessage.className = 'error';
+      loginMessage.textContent = 'E-mail não encontrado.';
+      return;
+    }
+    
+    const { salt, hash } = users[email];
+    if (password + salt !== hash) { // Simulação simplificada
+      loginAttempts++;
+      loginMessage.className = 'error';
+      loginMessage.textContent = 'Senha incorreta.';
+      
+      // Bloquear temporariamente após 3 tentativas
+      if (loginAttempts >= 3) {
+        document.getElementById('loginBtn').disabled = true;
+        loginMessage.textContent = 'Muitas tentativas. Tente novamente em 30 segundos.';
+        setTimeout(() => {
+          document.getElementById('loginBtn').disabled = false;
+          loginAttempts = 0;
+        }, 30000);
+      }
+      return;
+    }
+    
+    // Login bem-sucedido
+    currentUser = email;
+    localStorage.setItem('loggedInUser', email);
+    loginMessage.className = 'success';
+    loginMessage.textContent = 'Login bem-sucedido!';
+    
+    // Iniciar aplicação
+    startApp();
+  }
+});
+
+// Função para alternar entre login e registro
+function toggleLoginRegister(e) {
+  e.preventDefault();
+  registerMode = !registerMode;
+  
+  if (registerMode) {
+    document.getElementById('loginTitle').textContent = 'Registro';
+    document.getElementById('loginBtn').textContent = 'Registrar';
+    document.getElementById('toggleLoginRegister').innerHTML = 'Já tem uma conta? <a href="#" id="loginLink">Faça login</a>';
+    document.getElementById('loginLink').addEventListener('click', toggleLoginRegister);
+  } else {
+    document.getElementById('loginTitle').textContent = 'Login';
+    document.getElementById('loginBtn').textContent = 'Entrar';
+    document.getElementById('toggleLoginRegister').innerHTML = 'Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>';
+    document.getElementById('registerLink').addEventListener('click', toggleLoginRegister);
+  }
+  
+  document.getElementById('loginMessage').textContent = '';
+  document.getElementById('loginMessage').className = '';
+}
+
+// Adicionar evento para o link de registro
+document.getElementById('registerLink').addEventListener('click', toggleLoginRegister);
+
+// Adicionar evento para o botão de mostrar/ocultar senha
+document.getElementById('togglePassword').addEventListener('click', () => {
+  const passwordInput = document.getElementById('password');
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  document.getElementById('togglePassword').textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+});
+
+// Adicionar evento para os links de termos
+document.getElementById('termsLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('modal').style.display = 'flex';
+});
+
+document.getElementById('termsLink2').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('modal').style.display = 'flex';
+});
+
+// Adicionar evento para fechar o modal
+document.getElementById('closeModal').addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'none';
+});
+
+// Adicionar eventos para os botões de leitura de texto
+document.querySelectorAll('.tts-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const section = this.closest('section');
+    const content = section.querySelector('.sectionContent').textContent;
+    
+    // Cancelar qualquer leitura em andamento
+    window.speechSynthesis.cancel();
+    
+    // Criar nova leitura
+    const utterance = new SpeechSynthesisUtterance(content);
+    utterance.lang = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+    window.speechSynthesis.speak(utterance);
+    
+    showNotification('Iniciando leitura do texto...', 'info');
+  });
+});
+
+// Inicializar a aplicação com base na URL (para navegação direta)
+function initFromUrl() {
+  const hash = window.location.hash.substring(1);
+  if (hash && sectionIds.includes(hash)) {
+    showSection(hash);
+  }
+}
+
+// Executar inicialização baseada na URL após carregamento completo
+window.addEventListener('load', initFromUrl);
+
+// Adicionar evento para navegação por hash
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.substring(1);
+  if (hash && sectionIds.includes(hash)) {
+    showSection(hash);
+  }
+});
+
+// Adicionar evento para o formulário de adicionar tópico (admin)
+const addTopicForm = document.getElementById('addTopicForm');
+if (addTopicForm) {
+  addTopicForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) return;
+    
+    const title = document.getElementById('newTopicTitle').value.trim();
+    const content = document.getElementById('newTopicContent').value.trim();
+    
+    if (!title || !content) {
+      showNotification('Por favor, preencha todos os campos.', 'error');
+      return;
+    }
+    
+    // Gerar chave para o tópico (slug do título)
+    const topicKey = title.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remover acentos
+      .replace(/[^a-z0-9]/g, '');
+    
+    // Adicionar tópico ao conteúdo
+    contentData[currentLang][topicKey] = {
+      title: title,
+      body: content
+    };
+    
+    localStorage.setItem('contentData', JSON.stringify(contentData));
+    
+    document.getElementById('newTopicTitle').value = '';
+    document.getElementById('newTopicContent').value = '';
+    
+    document.getElementById('addTopicMsg').textContent = 'Tópico adicionado com sucesso!';
+    setTimeout(() => {
+      document.getElementById('addTopicMsg').textContent = '';
+    }, 3000);
+    
+    // Atualizar lista de tópicos
+    renderTopicsList();
+  });
+}
+
+// Adicionar esta função após a função checkQuiz
+function updateProgressBar(topicKey) {
+  if (!currentUser || !userData[currentUser]) return;
+  
+  const progressBar = document.querySelector(`#${topicKey}Section .progress-bar`);
+  if (!progressBar) return;
+  
+  // Calcular progresso baseado em tópicos concluídos
+  if (userData[currentUser].completedTopics.includes(topicKey)) {
+    progressBar.style.width = '100%';
+  } else {
+    // Progresso parcial baseado em interações (favoritos, notas, etc.)
+    const hasNotes = userData[currentUser].notes && 
+                    userData[currentUser].notes[topicKey] && 
+                    userData[currentUser].notes[topicKey].length > 0;
+    
+    const hasFavorites = userData[currentUser].favorites.some(f => f.topic === topicKey);
+    
+    if (hasNotes && hasFavorites) {
+      progressBar.style.width = '66%';
+    } else if (hasNotes || hasFavorites) {
+      progressBar.style.width = '33%';
+    } else {
+      progressBar.style.width = '10%'; // Progresso mínimo por visualizar
+    }
+  }
+}
+
+// Modificar a função showSection para atualizar a barra de progresso
+function showSection(sectionId) {
+  // ... código existente ...
+  
+  // Atualizar barra de progresso se for uma seção de conteúdo
+  if (sectionId.endsWith('Section') && 
+      !['homeSection', 'loginSection', 'quizSection', 'remindersSection', 
+        'favoritesSection', 'profileSection', 'adminSection'].includes(sectionId)) {
+    const topicKey = sectionId.replace('Section', '');
+    updateProgressBar(topicKey);
+  }
+  
+  // ... resto do código existente ...
 }
 
 
