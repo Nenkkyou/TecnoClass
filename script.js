@@ -70,7 +70,7 @@
             <p>Sua plataforma PWA para aprender tecnologia de forma prática e acessível.</p>
             <div class="card">
                 <h3>Explore Nossos Cursos</h3>
-                <p>Navegue pela seção 'Cursos' para encontrar trilhas de aprendizado em programação, cibersegurança, IA e gestão de produtos.</p>
+                <p>Navegue pela seção 'Cursos' para encontrar trilhas de aprendizado em programação, cibersegurança, IA e gestão de produtos (Product Owner).</p>
             </div>
             <div class="card">
                 <h3>Acompanhe seu Progresso</h3>
