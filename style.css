@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito', sans-serif;
     background: #f4f4f4;
     margin: 0;
     color: #333;
@@ -175,7 +175,91 @@ section p {
 .delete-btn:hover {
     color: #ff1744;
 }
-#noRemindersMsg {
-    font-style: italic;
-    color: #777;
+
+/* Transições e efeitos suaves */
+body, #appHeader, section, #topbar button, #topicsList a, .quiz-question, #reminderList li, #themeToggle, .delete-btn, input {
+    transition: background-color 0.3s, color 0.3s;
+}
+#themeToggle {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+#themeToggle:hover {
+    opacity: 0.8;
+}
+
+/* Modo escuro */
+body.dark {
+    background: #121212;
+    color: #e0e0e0;
+}
+body.dark #appHeader {
+    background: #212121;
+}
+body.dark #topbar button {
+    background: #2196F3;
+    color: #fff;
+}
+body.dark #topbar button:hover {
+    background: #1976D2;
+    color: #fff;
+}
+body.dark section {
+    background: #1e1e1e;
+    box-shadow: none;
+}
+body.dark .quiz-question {
+    background: #2c2c2c;
+}
+body.dark #reminderList li.due {
+    background: #4a0404;
+    color: #ff8a80;
+}
+body.dark .delete-btn {
+    color: #ff8a80;
+}
+body.dark input {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+/* Animação fade-in */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Alerta de notificação */
+.notification {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #333;
+    color: #fff;
+    padding: 1em;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(20px);
+    z-index: 999;
+}
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Ícone de sincronização giratório */
+.sync-icon.rotating {
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
