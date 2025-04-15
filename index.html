@@ -3,17 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App Educacional Offline</title>
+  <title>Big House Class</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="appHeader" style="display:none;">
-  <h1>EduApp Offline</h1>
-  <div id="topbar">
-    <button id="homeBtn">Início</button>
-    <button id="syncBtn">Sincronizar</button>
-    <button id="logoutBtn">Sair</button>
+<div id="appHeader">
+  <div id="headerTop">
+    <h1>Big House Class</h1>
+    <button id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
+  </div>
+  <div id="topbar" style="display:none;">
+    <button id="homeBtn" type="button">Início</button>
+    <button id="syncBtn" type="button"><span class="sync-icon">↻</span> Sincronizar</button>
+    <button id="logoutBtn" type="button">Sair</button>
   </div>
 </div>
 
@@ -104,28 +108,33 @@
 let users = JSON.parse(localStorage.getItem('users') || '{}');
 let currentUser = localStorage.getItem('loggedInUser') || null;
 let contentData = JSON.parse(localStorage.getItem('contentData') || 'null');
+// Aplica tema salvo (modo claro/escuro)
+let savedTheme = localStorage.getItem('theme') || 'light';
+if (savedTheme === 'dark') {
+  document.body.classList.add('dark');
+}
 
 // Conteúdo educacional padrão, caso ainda não esteja salvo localmente
 if (!contentData) {
   contentData = {
     programacao: `<h2>Programação</h2>
-      <p>Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer&#8203;:contentReference[oaicite:0]{index=0}. Ela está por trás da maioria das tecnologias digitais que usamos diariamente, desde aplicativos de celular até sistemas bancários e controle de tráfego.</p>
-      <p>A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet&#8203;:contentReference[oaicite:1]{index=1}.</p>
+      <p>Programação é o processo de escrever, testar e manter programas de computador – ou seja, conjuntos de instruções que dizem à máquina o que fazer.</p>
+      <p>A programação tem grande importância em diversas áreas, como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Softwares criados por programadores possibilitam avanços nesses campos e até a Internet das Coisas, conectando dispositivos do dia a dia à internet.</p>
       <p>Com programação, podemos criar desde pequenos scripts (roteiros de código) para automatizar tarefas simples até aplicativos completos utilizados por milhões de pessoas. Por exemplo, um programador pode escrever um script para organizar arquivos no computador ou desenvolver um app móvel de mensagens – ambos são resultados de códigos escritos para resolver problemas ou facilitar tarefas.</p>`,
     ciberseguranca: `<h2>Cibersegurança</h2>
-      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais&#8203;:contentReference[oaicite:2]{index=2}. Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura&#8203;:contentReference[oaicite:3]{index=3}.</p>
+      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais. Um profissional de cibersegurança identifica vulnerabilidades e implementa medidas de defesa (firewalls, antivírus, sistemas de detecção de intrusos, etc.) para manter a infraestrutura segura.</p>
       <p>Algumas ameaças comuns e dicas de proteção:</p>
       <ul>
         <li><strong>DDoS:</strong> ataque distribuído de negação de serviço, sobrecarrega servidores para tirá-los do ar. Proteção: monitorar o tráfego de rede e usar filtros/firewalls que limitem conexões suspeitas, evitando sobrecarga.</li>
-        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim)&#8203;:contentReference[oaicite:4]{index=4}.</li>
-        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações&#8203;:contentReference[oaicite:5]{index=5}.</li>
+        <li><strong>Ransomware:</strong> malware que “sequestra” dados por criptografia, exigindo resgate. Proteção: manter backups atualizados, usar antivírus e anti-malware e nunca clicar em links ou anexos desconhecidos em e-mails (muitos ransomware se espalham assim).</li>
+        <li><strong>Phishing:</strong> golpe de falsificação para roubar dados pessoais (senhas, cartões). Proteção: desconfiar de e-mails ou mensagens suspeitas, não clicar em links de remetentes desconhecidos e verificar se o site é legítimo (cadeado de segurança/HTTPS) antes de inserir informações.</li>
       </ul>`,
     ia: `<h2>Inteligência Artificial Generativa</h2>
-      <p>A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados&#8203;:contentReference[oaicite:6]{index=6}. Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
-      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma&#8203;:contentReference[oaicite:7]{index=7}. A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa&#8203;:contentReference[oaicite:8]{index=8}, o que demonstra seu enorme impacto potencial na sociedade.</p>`,
+      <p>A <strong>IA Generativa</strong> é um tipo de inteligência artificial capaz de criar novos conteúdos (texto, imagens, áudio, etc.) baseando-se em padrões aprendidos de grandes volumes de dados. Em vez de apenas analisar ou classificar dados, ela <em>gera</em> informações novas: por exemplo, escrever uma resposta, compor uma música ou desenhar uma imagem original a partir de um pedido do usuário.</p>
+      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou o potencial dessa tecnologia ao conseguir manter conversas e criar conteúdos variados de forma autônoma. A IA generativa pode impactar o mundo ao aumentar a produtividade em diversas áreas – de atendimento ao cliente (chatbots inteligentes) à criação de designs, códigos e conteúdo multimídia – transformando a maneira como trabalhamos e criamos. Estimativas indicam que até 2026 mais de 80% das organizações poderão usar aplicações de IA generativa, o que demonstra seu enorme impacto potencial na sociedade.</p>`,
     productOwner: `<h2>Product Owner (PO)</h2>
-      <p><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento&#8203;:contentReference[oaicite:9]{index=9}. Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
-      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico&#8203;:contentReference[oaicite:10]{index=10}. Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
+      <p><strong>Product Owner</strong> é o papel de “dono do produto” em metodologias ágeis (como Scrum). Esse profissional representa os interesses do cliente ou usuário final dentro da equipe de desenvolvimento. Sua principal função é gerenciar e priorizar o <em>backlog</em> do produto – a lista de funcionalidades e requisitos – para garantir que a equipe esteja sempre trabalhando no que gera mais valor.</p>
+      <p>Em outras palavras, o PO faz a ponte entre os objetivos de negócio, as necessidades dos usuários e o trabalho do time técnico. Ele decide o que deve ser desenvolvido primeiro, ajusta prioridades conforme feedback e mantém todos alinhados à visão do produto. Um Product Owner eficaz assegura que o produto final tenha o máximo de valor possível, atendendo às expectativas dos stakeholders e contribuindo para o sucesso do projeto.</p>`
   };
   localStorage.setItem('contentData', JSON.stringify(contentData));
 }
@@ -142,7 +151,17 @@ function loadContent() {
 function showSection(sectionId) {
   const sections = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection'];
   sections.forEach(id => {
-    document.getElementById(id).style.display = (id === sectionId ? 'block' : 'none');
+    const secEl = document.getElementById(id);
+    if (id === sectionId) {
+      secEl.style.display = 'block';
+      // Anima seção ao mostrar
+      secEl.classList.add('fade-in');
+      secEl.addEventListener('animationend', () => {
+        secEl.classList.remove('fade-in');
+      }, { once: true });
+    } else {
+      secEl.style.display = 'none';
+    }
   });
 }
 
@@ -204,15 +223,59 @@ function renderReminders() {
 
 // Verifica lembretes vencidos e alerta uma vez
 function checkDueReminders() {
+  let notifiedThisCycle = false;
   reminders.forEach((rem, idx) => {
-    if (!rem.notified && rem.due) {
-      if (new Date(rem.due).getTime() <= Date.now()) {
-        alert('Lembrete: ' + rem.text + ' - estava agendado para agora.');
-        reminders[idx].notified = true;
+    if (!rem.notified && rem.due && new Date(rem.due).getTime() <= Date.now()) {
+      showNotification('Lembrete: ' + rem.text + ' - estava agendado para agora.');
+      if (!notifiedThisCycle) {
+        beep();
+        notifiedThisCycle = true;
       }
+      reminders[idx].notified = true;
     }
   });
   localStorage.setItem('reminders', JSON.stringify(reminders));
+}
+
+// Função de alerta sonoro
+function beep() {
+  try {
+    if (!window.audioCtx) {
+      window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const oscillator = window.audioCtx.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440, window.audioCtx.currentTime);
+    oscillator.connect(window.audioCtx.destination);
+    oscillator.start();
+    oscillator.stop(window.audioCtx.currentTime + 0.5);
+  } catch (e) {
+    console.error('Erro ao reproduzir som', e);
+  }
+}
+
+// Função de notificação visual
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  // Evita sobreposição de múltiplas notificações
+  const existingNotifs = document.querySelectorAll('.notification');
+  notification.style.bottom = (20 + existingNotifs.length * 60) + 'px';
+  document.body.appendChild(notification);
+  // Exibe com animação
+  requestAnimationFrame(() => {
+    notification.classList.add('show');
+  });
+  // Oculta após 5 segundos
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 500);
+  }, 5000);
 }
 
 // Eventos de interface
@@ -232,8 +295,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
       messageEl.style.color = 'red';
       messageEl.textContent = 'Usuário já existe. Escolha outro nome.';
     } else {
-      // Cria novo usuário
-      // Hash simples da senha (para não salvar texto puro)
+      // Cria novo usuário com senha hash (não salvar texto puro)
       crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -251,7 +313,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
       messageEl.style.color = 'red';
       messageEl.textContent = 'Usuário não encontrado. Verifique o nome ou registre-se.';
     } else {
-      // Verifica senha
+      // Verifica hash da senha
       crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -278,15 +340,15 @@ document.getElementById('registerLink').addEventListener('click', function(e) {
     registerMode = true;
     title.textContent = 'Registrar';
     loginBtn.textContent = 'Registrar';
-    toggleText.innerHTML = 'Já tem conta? <a href="#" id="registerLinkBack">Entrar</a>';
-    // altera id do link
-    this.id = 'registerLinkBack';
+    // Atualiza texto do link de alternância
+    toggleText.firstChild.textContent = 'Já tem conta? ';
+    document.getElementById('registerLink').textContent = 'Entrar';
   } else {
     registerMode = false;
     title.textContent = 'Login';
     loginBtn.textContent = 'Entrar';
-    toggleText.innerHTML = 'Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>';
-    this.id = 'registerLink';
+    toggleText.firstChild.textContent = 'Não tem uma conta? ';
+    document.getElementById('registerLink').textContent = 'Registre-se';
   }
 });
 document.addEventListener('click', function(e) {
@@ -305,15 +367,19 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
 });
 document.getElementById('syncBtn').addEventListener('click', function() {
   if (!navigator.onLine) {
-    alert('Você está offline no momento. Conecte-se à internet para sincronizar.');
+    showNotification('Você está offline no momento. Conecte-se à internet para sincronizar.');
     return;
   }
-  // Simula busca de conteúdo atualizado (em app real, faria uma requisição ao servidor)
-  alert('Sincronizando conteúdo...');
-  // Em um app real, aqui poderia ser feito fetch em uma API e atualizar contentData
-  // No demo, apenas garantimos que contentData está salvo localmente
-  localStorage.setItem('contentData', JSON.stringify(contentData));
-  alert('Conteúdo atualizado com sucesso!');
+  // Animação de sincronização: ícone gira e conteúdo é atualizado
+  const icon = this.querySelector('.sync-icon');
+  this.disabled = true;
+  if (icon) icon.classList.add('rotating');
+  setTimeout(() => {
+    localStorage.setItem('contentData', JSON.stringify(contentData));
+    if (icon) icon.classList.remove('rotating');
+    this.disabled = false;
+    showNotification('Conteúdo atualizado com sucesso!');
+  }, 1500);
 });
 document.getElementById('reminderForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -330,6 +396,21 @@ document.getElementById('reminderForm').addEventListener('submit', function(e) {
   renderReminders();
 });
 
+// Alternância de tema claro/escuro
+document.getElementById('themeToggle').addEventListener('click', function() {
+  if (document.body.classList.contains('dark')) {
+    document.body.classList.remove('dark');
+    this.textContent = '☾';
+    this.setAttribute('aria-label', 'Alternar para modo escuro');
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.body.classList.add('dark');
+    this.textContent = '☀';
+    this.setAttribute('aria-label', 'Alternar para modo claro');
+    localStorage.setItem('theme', 'dark');
+  }
+});
+
 // Inicia o app após login
 function startApp() {
   // Mostra header e tela inicial
@@ -340,11 +421,11 @@ function startApp() {
   document.getElementById('welcomeName').innerText = currentUser;
   loadContent();
   renderReminders();
-  // Solicita armazenamento persistente (evita perda de dados pelo navegador)
+  // Solicita armazenamento persistente para não perder dados offline
   if (navigator.storage && navigator.storage.persist) {
     navigator.storage.persist().catch(console.error);
   }
-  // Inicia verificação periódica de lembretes
+  // Inicia verificação periódica de lembretes vencidos
   setInterval(checkDueReminders, 60000);
 }
 
