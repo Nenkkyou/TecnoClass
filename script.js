@@ -1,30 +1,5 @@
 "use strict";
 
-// Adicionar esta função no início do script, após as declarações de variáveis
-function checkBrowserCompatibility() {
-  const features = {
-    localStorage: typeof localStorage !== 'undefined',
-    speechSynthesis: 'speechSynthesis' in window,
-    serviceWorker: 'serviceWorker' in navigator
-  };
-  
-  let incompatibleFeatures = [];
-  
-  for (const [feature, supported] of Object.entries(features)) {
-    if (!supported) {
-      incompatibleFeatures.push(feature);
-    }
-  }
-  
-  if (incompatibleFeatures.length > 0) {
-    console.warn('Recursos incompatíveis detectados:', incompatibleFeatures);
-    showNotification('Alguns recursos podem não funcionar corretamente neste navegador.', 'warning');
-  }
-}
-
-// Chamar esta função no início da execução do script
-checkBrowserCompatibility();
-
 // Dados persistentes (LocalStorage)
 let users = JSON.parse(localStorage.getItem('users') || '{}');        // { email: {salt:..., hash:...}, ... }
 let userData = JSON.parse(localStorage.getItem('userData') || '{}');  // { email: { completedTopics:[], reminders:[], favorites:[], achievements:[], highScore:0, notes:{} }, ... }
@@ -193,28 +168,7 @@ function renderTopicsList() {
 }
 renderTopicsList();
 
-// Adicionar esta função após a função loadContent
-function handleMissingResources() {
-  // Tratar vídeos que não carregam
-  document.querySelectorAll('video').forEach(video => {
-    video.addEventListener('error', function() {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'video-placeholder';
-      placeholder.innerHTML = '<p>Vídeo não disponível no momento</p>';
-      this.parentNode.replaceChild(placeholder, this);
-    });
-  });
-  
-  // Tratar imagens que não carregam
-  document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('error', function() {
-      this.src = 'placeholder.png'; // Imagem de fallback
-      this.alt = 'Imagem não disponível';
-    });
-  });
-}
-
-// Chamar esta função após carregar o conteúdo
+// Carrega o conteúdo nos elementos de seção de acordo com o idioma atual
 function loadContent(lang = 'pt') {
   currentLang = lang;
   const topics = contentData[currentLang];
@@ -247,9 +201,6 @@ function loadContent(lang = 'pt') {
   
   // Inicializar sistema de notas adesivas
   initStickyNotes();
-  
-  // Adicionar tratamento para recursos ausentes
-  handleMissingResources();
 }
 loadContent(currentLang);
 
@@ -605,14 +556,6 @@ function showSection(sectionId) {
   
   // Rolar para o topo da seção
   window.scrollTo(0, 0);
-  
-  // Atualizar barra de progresso se for uma seção de conteúdo
-  if (sectionId.endsWith('Section') && 
-      !['homeSection', 'loginSection', 'quizSection', 'remindersSection', 
-        'favoritesSection', 'profileSection', 'adminSection'].includes(sectionId)) {
-    const topicKey = sectionId.replace('Section', '');
-    updateProgressBar(topicKey);
-  }
 }
 
 // Função auxiliar para formatar o tempo do quiz
@@ -1776,49 +1719,6 @@ if (addTopicForm) {
     // Atualizar lista de tópicos
     renderTopicsList();
   });
-}
-
-// Adicionar esta função após a função checkQuiz
-function updateProgressBar(topicKey) {
-  if (!currentUser || !userData[currentUser]) return;
-  
-  const progressBar = document.querySelector(`#${topicKey}Section .progress-bar`);
-  if (!progressBar) return;
-  
-  // Calcular progresso baseado em tópicos concluídos
-  if (userData[currentUser].completedTopics.includes(topicKey)) {
-    progressBar.style.width = '100%';
-  } else {
-    // Progresso parcial baseado em interações (favoritos, notas, etc.)
-    const hasNotes = userData[currentUser].notes && 
-                    userData[currentUser].notes[topicKey] && 
-                    userData[currentUser].notes[topicKey].length > 0;
-    
-    const hasFavorites = userData[currentUser].favorites.some(f => f.topic === topicKey);
-    
-    if (hasNotes && hasFavorites) {
-      progressBar.style.width = '66%';
-    } else if (hasNotes || hasFavorites) {
-      progressBar.style.width = '33%';
-    } else {
-      progressBar.style.width = '10%'; // Progresso mínimo por visualizar
-    }
-  }
-}
-
-// Modificar a função showSection para atualizar a barra de progresso
-function showSection(sectionId) {
-  // ... código existente ...
-  
-  // Atualizar barra de progresso se for uma seção de conteúdo
-  if (sectionId.endsWith('Section') && 
-      !['homeSection', 'loginSection', 'quizSection', 'remindersSection', 
-        'favoritesSection', 'profileSection', 'adminSection'].includes(sectionId)) {
-    const topicKey = sectionId.replace('Section', '');
-    updateProgressBar(topicKey);
-  }
-  
-  // ... resto do código existente ...
 }
 
 
