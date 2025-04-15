@@ -239,148 +239,33 @@ document.getElementById('exportDataBtn').addEventListener('click', () => {
   showNotification('Seus dados foram exportados com sucesso!', 'success');
 });
 
-// **Evento para formulário de login/registro** – inclui lógica de registro e login
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const botCheck = document.getElementById('botCheck').value;
-  const loginMessage = document.getElementById('loginMessage');
-  // Verificação anti-bot (honeypot)
-  if (botCheck) {
-    loginMessage.className = 'error';
-    loginMessage.textContent = 'Erro de validação.';
-    return;
-  }
-  if (!email || !password) {
-    loginMessage.className = 'error';
-    loginMessage.textContent = 'Por favor, preencha todos os campos.';
-    return;
-  }
-  if (registerMode) {
-    // Modo de registro
-    if (users[email]) {
-      loginMessage.className = 'error';
-      loginMessage.textContent = 'Este e-mail já está registrado.';
-      return;
+// Iniciar o aplicativo diretamente, sem login
+document.addEventListener('DOMContentLoaded', function() {
+  // Definir um usuário padrão se não existir
+  if (!currentUser) {
+    currentUser = "usuario_padrao";
+    localStorage.setItem('loggedInUser', currentUser);
+    
+    // Garantir estrutura do usuário nos dados
+    if (!userData[currentUser]) {
+      userData[currentUser] = { completedTopics: [], reminders: [], favorites: [], achievements: [], highScore: 0, notes: {} };
+      localStorage.setItem('userData', JSON.stringify(userData));
     }
-    // Simular hash+salt (em produção usar bcrypt ou similar)
-    const salt = Math.random().toString(36).substring(2);
-    const hash = password + salt;  // Simulação simplificada
-    users[email] = { salt, hash };
-    userData[email] = {
-      completedTopics: [],
-      reminders: [],
-      favorites: [],
-      achievements: [],
-      highScore: 0,
-      notes: {}
-    };
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('userData', JSON.stringify(userData));
-    loginMessage.className = 'success';
-    loginMessage.textContent = 'Registro concluído! Você pode fazer login agora.';
-    // Alternar para modo Login automaticamente após registro
-    showLoginForm();
-    document.getElementById('password').value = '';  // limpar campo senha pós-registro
-  } else {
-    // Modo de login
-    if (!users[email]) {
-      loginAttempts++;
-      loginMessage.className = 'error';
-      loginMessage.textContent = 'E-mail não encontrado.';
-      return;
-    }
-    const { salt, hash } = users[email];
-    if (password + salt !== hash) {  // Simulação simplificada de verificação
-      loginAttempts++;
-      loginMessage.className = 'error';
-      loginMessage.textContent = 'Senha incorreta.';
-      // Bloquear temporariamente após 3 tentativas
-      if (loginAttempts >= 3) {
-        document.getElementById('loginBtn').disabled = true;
-        loginMessage.textContent = 'Muitas tentativas. Tente novamente em 30 segundos.';
-        setTimeout(() => {
-          document.getElementById('loginBtn').disabled = false;
-          loginAttempts = 0;
-        }, 30000);
-      }
-      return;
-    }
-    // Login bem-sucedido
-    currentUser = email;
-    localStorage.setItem('loggedInUser', email);
-    loginMessage.className = 'success';
-    loginMessage.textContent = 'Login bem-sucedido!';
-    startApp();
   }
+  
+  // Iniciar o app diretamente
+  startApp();
+  
+  // Ocultar seção de login
+  document.getElementById('loginSection').style.display = 'none';
 });
 
-// **Funções de alternância entre Login e Registro (simplificadas)** 
-function showRegisterForm() {
-  registerMode = true;
-  document.getElementById('loginTitle').textContent = 'Registro';
-  document.getElementById('loginBtn').textContent = 'Registrar';
-  document.getElementById('switchPrefix').textContent = 'Já tem uma conta? ';
-  document.getElementById('switchLink').textContent = 'Faça login';
-  document.getElementById('loginMessage').textContent = '';
-  document.getElementById('loginMessage').className = '';
-}
-function showLoginForm() {
-  registerMode = false;
-  document.getElementById('loginTitle').textContent = 'Login';
-  document.getElementById('loginBtn').textContent = 'Entrar';
-  document.getElementById('switchPrefix').textContent = 'Não tem uma conta? ';
-  document.getElementById('switchLink').textContent = 'Registre-se';
-  document.getElementById('loginMessage').textContent = '';
-  document.getElementById('loginMessage').className = '';
-}
-function toggleLoginRegister(e) {
-  e.preventDefault();
-  if (registerMode) {
-    showLoginForm();
-  } else {
-    showRegisterForm();
-  }
-}
-// Adicionar evento para o link de alternância Login/Registro
-document.getElementById('switchLink').addEventListener('click', toggleLoginRegister);
-
-// Evento para botão de mostrar/ocultar senha
-document.getElementById('togglePassword').addEventListener('click', () => {
-  const passwordInput = document.getElementById('password');
-  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordInput.setAttribute('type', type);
-  document.getElementById('togglePassword').textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
-});
-
-// Eventos para os links de Termos/Política (abre modal)
-document.getElementById('termsLink').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('modal').style.display = 'flex';
-});
-document.getElementById('termsLink2').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('modal').style.display = 'flex';
-});
-document.getElementById('closeModal').addEventListener('click', () => {
-  document.getElementById('modal').style.display = 'none';
-});
-
-// Botões de Text-to-Speech (leitura de texto das seções)
-document.querySelectorAll('.tts-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const section = this.closest('section');
-    const content = section.querySelector('.sectionContent').textContent;
-    window.speechSynthesis.cancel();  // cancelar leitura em andamento
-    const utterance = new SpeechSynthesisUtterance(content);
-    utterance.lang = currentLang === 'pt' ? 'pt-BR' : 'en-US';
-    window.speechSynthesis.speak(utterance);
-    showNotification('Iniciando leitura do texto...', 'info');
-  });
-});
-
-// ... (demais funções de quiz, backup e verificação de lembretes seguem inalteradas) ...
+// Remover eventos relacionados ao login/registro
+document.getElementById('loginForm').removeEventListener('submit', function(){});
+document.getElementById('switchLink').removeEventListener('click', toggleLoginRegister);
+document.getElementById('togglePassword').removeEventListener('click', function(){});
+document.getElementById('termsLink').removeEventListener('click', function(){});
+document.getElementById('termsLink2').removeEventListener('click', function(){});
 
 // Verificar lembretes periodicamente
 setInterval(() => {
