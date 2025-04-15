@@ -1,437 +1,18 @@
-:root {
-  /* Paleta de cores principal */
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #3b82f6;
-  --secondary: #10b981;
-  --accent: #8b5cf6;
-
-  /* Cores neutras */
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --surface-variant: #f1f5f9;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border: #e2e8f0;
-
-  /* Cores de feedback */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #3b82f6;
-
-  /* Variáveis para tema escuro */
-  --dark-background: #0f172a;
-  --dark-surface: #1e293b;
-  --dark-surface-variant: #334155;
-  --dark-text-primary: #f1f5f9;
-  --dark-text-secondary: #94a3b8;
-  --dark-border: #334155;
-
-  /* Espaçamento e tamanhos */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  /* Bordas e sombras */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-full: 9999px;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-  /* Tipografia */
-  --font-sans: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  /* Transições */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+/* Remover estilos relacionados ao login/registro */
+#loginSection, #loginForm, #loginMessage, .error, .success {
+  display: none;
 }
 
-/* Reset e estilos base */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Remover estilos relacionados à alternância de tema */
+#themeToggle {
+  display: none;
 }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
+/* Remover estilos relacionados ao modal de termos */
+#modal, .modal-content {
+  display: none;
 }
 
-body {
-  font-family: var(--font-sans);
-  background: var(--background);
-  color: var(--text-primary);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* ... (demais estilos globais não modificados omitidos) ... */
-
-/* Utilitários de espaçamento */
-.mt-0 { margin-top: 0; }
-.mt-1 { margin-top: var(--spacing-xs); }
-.mt-2 { margin-top: var(--spacing-sm); }
-.mt-3 { margin-top: var(--spacing-md); }
-.mt-4 { margin-top: var(--spacing-lg); }
-.mt-5 { margin-top: var(--spacing-xl); }
-
-.mb-0 { margin-bottom: 0; }
-.mb-1 { margin-bottom: var(--spacing-xs); }
-.mb-2 { margin-bottom: var(--spacing-sm); }
-.mb-3 { margin-bottom: var(--spacing-md); }
-.mb-4 { margin-bottom: var(--spacing-lg); }
-.mb-5 { margin-bottom: var(--spacing-xl); }
-
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-/* Utilitários de texto */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.text-primary { color: var(--primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-success { color: var(--success); }
-.text-error { color: var(--error); }
-.text-warning { color: var(--warning); }
-
-.fw-normal { font-weight: 400; }
-.fw-medium { font-weight: 500; }
-.fw-semibold { font-weight: 600; }
-.fw-bold { font-weight: 700; }
-
-.fs-small { font-size: 0.875em; }
-.fs-large { font-size: 1.125em; }
-.fs-xl { font-size: 1.25em; }
-.fs-2xl { font-size: 1.5em; }
-
-/* Utilitários de layout */
-.d-flex { display: flex; }
-.flex-column { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.justify-center { justify-content: center; }
-.gap-1 { gap: var(--spacing-xs); }
-.gap-2 { gap: var(--spacing-sm); }
-.gap-3 { gap: var(--spacing-md); }
-.gap-4 { gap: var(--spacing-lg); }
-
-.w-full { width: 100%; }
-.h-full { height: 100%; }
-
-/* Utilitários de borda e sombra */
-.rounded-sm { border-radius: var(--radius-sm); }
-.rounded-md { border-radius: var(--radius-md); }
-.rounded-lg { border-radius: var(--radius-lg); }
-.rounded-full { border-radius: var(--radius-full); }
-
-.shadow-sm { box-shadow: var(--shadow-sm); }
-.shadow-md { box-shadow: var(--shadow-md); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
-
-/* Utilitários de fundo */
-.bg-surface { background-color: var(--surface); }
-.bg-surface-variant { background-color: var(--surface-variant); }
-.bg-primary { background-color: var(--primary); }
-.bg-success { background-color: var(--success); }
-.bg-error { background-color: var(--error); }
-.bg-warning { background-color: var(--warning); }
-
-/* **Estilo do link de acessibilidade** */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--primary);
-  color: #fff;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-}
-.skip-link:focus {
-  top: 0;
-  z-index: 100;
-}
-
-/* Estilo para as notas adesivas (post-its) */
-.sticky-notes-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  justify-content: flex-start;
-}
-
-.sticky-note {
-  background: #fff9c4;
-  padding: var(--spacing-md);
-  width: 200px;
-  min-height: 150px;
-  box-shadow: var(--shadow-md);
-  border-radius: var(--radius-sm);
-  position: relative;
-  transform: rotate(var(--rotate, -1deg));
-  transition: all var(--transition-normal);
-  display: flex;
-  flex-direction: column;
-}
-
-/* ... (demais estilos de notas adesivas e outros componentes não alterados) ... */
-
-/* Estilos adicionais para as novas classes e elementos */
-
-/* Cabeçalho e navegação */
-.controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-/* Seção de boas-vindas */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-xl);
-  justify-content: center;
-}
-
-.action-button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 0.8em 1.5em;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  min-width: 150px;
-}
-
-.action-button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-}
-
-.action-button:active {
-  transform: translateY(-1px);
-}
-
-/* Dica destacada */
-.tip {
-  background: rgba(59, 130, 246, 0.1);
-  border-left: 3px solid var(--primary);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-sm);
-  margin-top: var(--spacing-lg);
-}
-
-/* Cabeçalho das seções de conteúdo */
-.section-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-}
-
-.section-header .tts-btn {
-  margin-left: var(--spacing-md);
-}
-
-/* Melhorias no Quiz */
-.quiz-questions-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  margin: var(--spacing-lg) 0;
-}
-
-.quiz-option {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-sm) var(--spacing-md);
-  margin-bottom: var(--spacing-xs);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.quiz-option:hover {
-  background: var(--surface-variant);
-}
-
-.check-answer-btn {
-  margin-top: var(--spacing-md);
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 0.6em 1.2em;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-}
-
-.check-answer-btn:hover {
-  background: var(--primary-dark);
-}
-
-/* Perfil do aluno */
-.profile-card {
-  background: var(--surface-variant);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  margin-top: var(--spacing-md);
-}
-
-.profile-info {
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--border);
-}
-
-.profile-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.stat-card {
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-card h3 {
-  margin-bottom: var(--spacing-sm);
-  color: var(--primary);
-  font-size: 1.1rem;
-}
-
-.profile-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  justify-content: flex-start;
-  margin-top: var(--spacing-lg);
-}
-
-.secondary-button {
-  background: var(--surface);
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 0.7em 1.2em;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.secondary-button:hover {
-  background: rgba(37, 99, 235, 0.1);
-}
-
-/* Painel administrativo */
-.admin-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin: var(--spacing-lg) 0;
-}
-
-.admin-card {
-  background: var(--surface-variant);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-}
-
-.admin-card h3 {
-  margin-bottom: var(--spacing-md);
-  color: var(--primary);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: var(--spacing-xs);
-}
-
-/* Notificação */
-.notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: var(--surface);
-  border-left: 4px solid var(--primary);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  z-index: 999;
-  max-width: 350px;
-  transform: translateY(100px);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.notification.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.notification-icon {
-  font-size: 1.5rem;
-  color: var(--primary);
-}
-
-.notification-content {
-  flex: 1;
-}
-
-.notification-close {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.notification-close:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-/* Estados vazios */
-.empty-state-message {
-  text-align: center;
-  color: var(--text-secondary);
-  padding: var(--spacing-lg);
-  background: var(--surface-variant);
-  border-radius: var(--radius-md);
-  margin: var(--spacing-md) 0;
-}
-
-/* Tema escuro para os novos componentes */
 body.dark .action-button {
   background: var(--primary-dark);
 }
@@ -486,59 +67,100 @@ body.dark .empty-state-message {
   color: var(--dark-text-secondary);
 }
 
-/* Melhorias de responsividade */
-@media (max-width: 768px) {
-  .profile-stats {
-    grid-template-columns: 1fr;
-  }
-  .admin-panel {
-    grid-template-columns: 1fr;
-  }
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .action-button {
-    width: 100%;
-    justify-content: center;
-  }
-  .profile-actions {
-    flex-direction: column;
-  }
-  .profile-actions button {
-    width: 100%;
-  }
-  .notification {
-    left: 20px;
-    right: 20px;
-    max-width: none;
-  }
+/* Estilos gerais para tema escuro */
+body.dark {
+  background-color: var(--dark-background);
+  color: var(--dark-text);
 }
 
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
-  #appHeader h1 {
-    font-size: 1.3rem;
-  }
-  section {
-    margin: var(--spacing-sm) var(--spacing-sm);
-    padding: var(--spacing-md);
-  }
-  #topbar button {
-    flex: 0 0 100%;
-    margin-bottom: var(--spacing-xs);
-  }
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .section-header .tts-btn {
-    margin-left: 0;
-    margin-top: var(--spacing-sm);
-  }
-  .quiz-option {
-    padding: var(--spacing-md);
-  }
+body.dark a {
+  color: var(--primary-light);
+}
+
+body.dark input, 
+body.dark textarea, 
+body.dark select {
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+  border-color: var(--dark-border);
+}
+
+body.dark button {
+  background-color: var(--primary-dark);
+  color: var(--dark-text);
+}
+
+body.dark button:hover {
+  background-color: var(--primary);
+}
+
+/* Header e navegação */
+body.dark #appHeader {
+  background-color: var(--dark-surface);
+  border-bottom: 1px solid var(--dark-border);
+}
+
+body.dark #topbar {
+  background-color: var(--dark-surface-variant);
+}
+
+body.dark #topbar button {
+  color: var(--dark-text);
+}
+
+body.dark #topbar button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Seções e cards */
+body.dark section {
+  background-color: var(--dark-surface);
+  border-color: var(--dark-border);
+}
+
+/* Formulários e controles */
+body.dark .form-group label {
+  color: var(--dark-text-secondary);
+}
+
+body.dark .progress-container {
+  background-color: var(--dark-surface-variant);
+}
+
+body.dark .progress-bar {
+  background-color: var(--primary);
+}
+
+/* Notificações */
+body.dark .notification {
+  background-color: var(--dark-surface);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
+/* Lista de tópicos */
+body.dark #topicsList li a {
+  color: var(--primary-light);
+}
+
+body.dark #topicsList li a:hover {
+  background-color: var(--dark-surface-variant);
+}
+
+/* Quiz */
+body.dark #quizTimer {
+  background-color: var(--dark-surface-variant);
+  color: var(--dark-text);
+}
+
+body.dark .quiz-option.selected {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+body.dark .quiz-option.correct {
+  background-color: rgba(34, 197, 94, 0.3);
+}
+
+body.dark .quiz-option.incorrect {
+  background-color: rgba(239, 68, 68, 0.3);
 }
