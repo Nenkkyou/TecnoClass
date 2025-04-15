@@ -3,451 +3,234 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Big House Class</title>
+  <title>Big House Class - Plataforma Educacional</title>
+  <!-- Fonte Google (Nunito) e CSS externo -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Manifesto PWA -->
+  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
-
-<div id="appHeader">
-  <div id="headerTop">
-    <h1>Big House Class</h1>
-    <button id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
+  <div id="appHeader">
+    <div id="headerTop">
+      <h1>Big House Class</h1>
+      <!-- Seletor de idioma -->
+      <select id="languageSelect" aria-label="Selecionar idioma">
+        <option value="pt" selected>Português</option>
+        <option value="en">English</option>
+      </select>
+      <!-- Botão de alternar tema (Ciclo: Claro, Escuro, Alto Contraste, Estudo Noturno, Divertido) -->
+      <button id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
+    </div>
+    <!-- Barra de navegação superior (aparece após login) -->
+    <div id="topbar" style="display:none;">
+      <button id="homeBtn" type="button">Início</button>
+      <button id="syncBtn" type="button"><span class="sync-icon">↻</span> Sincronizar</button>
+      <button id="profileBtn" type="button">Perfil</button>
+      <button id="logoutBtn" type="button">Sair</button>
+    </div>
   </div>
-  <div id="topbar" style="display:none;">
-    <button id="homeBtn" type="button">Início</button>
-    <button id="syncBtn" type="button"><span class="sync-icon">↻</span> Sincronizar</button>
-    <button id="logoutBtn" type="button">Sair</button>
+
+  <!-- Seção de Login/Registro -->
+  <section id="loginSection">
+    <h2 id="loginTitle">Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="E-mail" required />
+      <input type="password" id="password" placeholder="Senha" required />
+      <!-- Campo oculto para verificação de bot (não deve ser preenchido por humanos) -->
+      <input type="text" id="botCheck" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;" />
+      <button type="submit" id="loginBtn">Entrar</button>
+    </form>
+    <p id="toggleLoginRegister">
+      Não tem uma conta? <a href="#" id="registerLink">Registre-se</a>
+    </p>
+    <p id="loginMessage"></p>
+    <p class="terms">
+      Ao usar este aplicativo, você concorda com nossa 
+      <a href="#" id="termsLink">Política de Privacidade</a> e <a href="#" id="termsLink2">Termos de Uso</a>.
+    </p>
+  </section>
+
+  <!-- Seção de Boas-vindas / Home (lista de tópicos) -->
+  <section id="homeSection" style="display:none;">
+    <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
+    <p>Escolha um dos tópicos abaixo para estudar:</p>
+    <ul id="topicsList"></ul>
+    <p><em>Dica:</em> Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
+  </section>
+
+  <!-- Seções de conteúdo educacional (Programação, Cibersegurança, IA, PO, etc.) -->
+  <section id="programacaoSection" style="display:none;">
+    <h2 class="sectionTitle">Programação</h2>
+    <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+    <div class="sectionContent"></div>
+    <div class="reviewQuestions"></div>
+    <div class="notesSection">
+      <h3>Suas anotações:</h3>
+      <textarea id="programacaoNotes" placeholder="Escreva suas anotações aqui..."></textarea>
+    </div>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <section id="cibersegurancaSection" style="display:none;">
+    <h2 class="sectionTitle">Cibersegurança</h2>
+    <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+    <div class="sectionContent"></div>
+    <div class="reviewQuestions"></div>
+    <div class="notesSection">
+      <h3>Suas anotações:</h3>
+      <textarea id="cibersegurancaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
+    </div>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <section id="iaSection" style="display:none;">
+    <h2 class="sectionTitle">Inteligência Artificial Generativa</h2>
+    <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+    <div class="sectionContent"></div>
+    <div class="reviewQuestions"></div>
+    <div class="notesSection">
+      <h3>Suas anotações:</h3>
+      <textarea id="iaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
+    </div>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <section id="productOwnerSection" style="display:none;">
+    <h2 class="sectionTitle">Product Owner (PO)</h2>
+    <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+    <div class="sectionContent"></div>
+    <div class="reviewQuestions"></div>
+    <div class="notesSection">
+      <h3>Suas anotações:</h3>
+      <textarea id="productOwnerNotes" placeholder="Escreva suas anotações aqui..."></textarea>
+    </div>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <!-- Seção de Quiz Final -->
+  <section id="quizSection" style="display:none;">
+    <h2>Quiz Final</h2>
+    <p>Responda às perguntas a seguir dentro do tempo limite.</p>
+    <div id="quizTimer">Tempo: <span id="timerDisplay">--:--</span></div>
+    <div class="quiz-question">
+      <p><strong>1.</strong> Qual destas <u>não</u> é uma linguagem de programação?</p>
+      <label><input type="radio" name="q1" value="a" /> Python</label><br/>
+      <label><input type="radio" name="q1" value="b" /> Java</label><br/>
+      <label><input type="radio" name="q1" value="c" /> HTML</label><br/>
+      <label><input type="radio" name="q1" value="d" /> C++</label><br/>
+      <button type="button" onclick="checkQuiz('q1','c')">Verificar</button>
+      <p class="feedback" id="q1Feedback"></p>
+    </div>
+    <div class="quiz-question">
+      <p><strong>2.</strong> Uma boa prática de cibersegurança é:</p>
+      <label><input type="radio" name="q2" value="a" /> Usar senhas fortes e únicas.</label><br/>
+      <label><input type="radio" name="q2" value="b" /> Clicar em links suspeitos.</label><br/>
+      <label><input type="radio" name="q2" value="c" /> Compartilhar senhas com colegas.</label><br/>
+      <label><input type="radio" name="q2" value="d" /> Ignorar atualizações do sistema.</label><br/>
+      <button type="button" onclick="checkQuiz('q2','a')">Verificar</button>
+      <p class="feedback" id="q2Feedback"></p>
+    </div>
+    <div class="quiz-question">
+      <p><strong>3.</strong> Uma aplicação de IA generativa é:</p>
+      <label><input type="radio" name="q3" value="a" /> Organizar arquivos em pastas.</label><br/>
+      <label><input type="radio" name="q3" value="b" /> Criar imagens a partir de texto.</label><br/>
+      <label><input type="radio" name="q3" value="c" /> Criptografar dados automaticamente.</label><br/>
+      <label><input type="radio" name="q3" value="d" /> Controlar dispositivos de hardware.</label><br/>
+      <button type="button" onclick="checkQuiz('q3','b')">Verificar</button>
+      <p class="feedback" id="q3Feedback"></p>
+    </div>
+    <div class="quiz-question">
+      <p><strong>4.</strong> O que é gerenciado pelo Product Owner em um projeto Scrum?</p>
+      <label><input type="radio" name="q4" value="a" /> O backlog (lista de requisitos do produto).</label><br/>
+      <label><input type="radio" name="q4" value="b" /> A arquitetura técnica do sistema.</label><br/>
+      <label><input type="radio" name="q4" value="c" /> A segurança dos dados do projeto.</label><br/>
+      <label><input type="radio" name="q4" value="d" /> As tarefas diárias de cada desenvolvedor.</label><br/>
+      <button type="button" onclick="checkQuiz('q4','a')">Verificar</button>
+      <p class="feedback" id="q4Feedback"></p>
+    </div>
+    <div id="quizResult" style="display:none;">
+      <h3>Resultado do Quiz:</h3>
+      <p>Você acertou <span id="scoreCount"></span> de <span id="scoreTotal"></span> perguntas.</p>
+      <p id="scoreMessage"></p>
+      <button type="button" id="restartQuizBtn">Refazer Quiz</button>
+    </div>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <!-- Seção de Lembretes -->
+  <section id="remindersSection" style="display:none;">
+    <h2>Lembretes</h2>
+    <form id="reminderForm">
+      <input type="text" id="reminderText" placeholder="Digite um lembrete..." required />
+      <input type="datetime-local" id="reminderDate" />
+      <button type="submit">Adicionar</button>
+    </form>
+    <ul id="reminderList"></ul>
+    <p id="noRemindersMsg">Nenhum lembrete adicionado.</p>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <!-- Seção de Favoritos -->
+  <section id="favoritesSection" style="display:none;">
+    <h2>Favoritos</h2>
+    <p>Seus trechos favoritos para revisão:</p>
+    <ul id="favoritesList"></ul>
+    <p id="noFavoritesMsg">Você não marcou nenhum favorito ainda.</p>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <!-- Seção de Perfil do Aluno -->
+  <section id="profileSection" style="display:none;">
+    <h2>Perfil do Aluno</h2>
+    <p><strong>Nome:</strong> <span id="profileName"></span></p>
+    <p><strong>Progresso Geral:</strong> <span id="profileProgress"></span></p>
+    <h3>Lições Concluídas:</h3>
+    <ul id="completedList"></ul>
+    <h3>Conquistas:</h3>
+    <ul id="achievementsList"></ul>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+    <button id="exportDataBtn">Exportar Dados (JSON)</button>
+  </section>
+
+  <!-- Seção Administrativa (visível apenas para professor/admin) -->
+  <section id="adminSection" style="display:none;">
+    <h2>Painel Administrativo</h2>
+    <h3>Dados de Uso dos Alunos:</h3>
+    <ul id="userListStats"></ul>
+    <h3>Adicionar Novo Tópico</h3>
+    <form id="addTopicForm">
+      <input type="text" id="newTopicTitle" placeholder="Título do novo tópico" required />
+      <textarea id="newTopicContent" placeholder="Conteúdo HTML do tópico" required></textarea>
+      <button type="submit">Adicionar Tópico</button>
+    </form>
+    <p id="addTopicMsg"></p>
+    <button class="backButton" data-target="homeSection">Voltar para Início</button>
+  </section>
+
+  <!-- Modal de Termos de Uso/Política -->
+  <div id="modal" style="display:none;">
+    <div class="modal-content">
+      <h3>Política de Privacidade & Termos de Uso</h3>
+      <p>Este aplicativo educacional armazena seus dados de forma local (no dispositivo) e pode sincronizá-los com a nuvem opcionalmente. Suas informações pessoais (como e-mail e lembretes) não são compartilhadas com terceiros. As senhas são armazenadas de forma segura (hash + salt) para sua proteção.</p>
+      <p>Ao utilizar este aplicativo, você concorda em usá-lo apenas para fins educacionais. Nenhum dado sensível deve ser inserido. Os desenvolvedores não se responsabilizam por perdas de dados, mas fazem o possível para proteger suas informações.</p>
+      <button id="closeModal" type="button">Fechar</button>
+    </div>
   </div>
-</div>
 
-<section id="loginSection">
-  <h2 id="loginTitle">Login</h2>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="Usuário" required />
-    <input type="password" id="password" placeholder="Senha" required />
-    <button type="submit" id="loginBtn">Entrar</button>
-  </form>
-  <p id="toggleLoginRegister">Não tem uma conta? <a href="#" id="registerLink">Registre-se</a></p>
-  <p id="loginMessage"></p>
-</section>
-
-<section id="homeSection" style="display:none;">
-  <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
-  <p>Escolha um dos tópicos abaixo para estudar:</p>
-  <ul id="topicsList">
-    <li><a href="#" data-target="programacaoSection" class="navLink">Programação</a></li>
-    <li><a href="#" data-target="cibersegurancaSection" class="navLink">Cibersegurança</a></li>
-    <li><a href="#" data-target="iaSection" class="navLink">Inteligência Artificial Generativa</a></li>
-    <li><a href="#" data-target="productOwnerSection" class="navLink">Product Owner (PO)</a></li>
-    <li><a href="#" data-target="quizSection" class="navLink">Quiz</a></li>
-    <li><a href="#" data-target="remindersSection" class="navLink">Lembretes</a></li>
-  </ul>
-  <p><em>Dica:</em> Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
-</section>
-
-<section id="programacaoSection" style="display:none;"></section>
-<section id="cibersegurancaSection" style="display:none;"></section>
-<section id="iaSection" style="display:none;"></section>
-<section id="productOwnerSection" style="display:none;"></section>
-
-<section id="quizSection" style="display:none;">
-  <h2>Quiz</h2>
-  <div class="quiz-question">
-    <p><strong>1.</strong> Programação serve principalmente para:</p>
-    <label><input type="radio" name="q1" value="a" /> Traduzir linguagens humanas literalmente para o computador.</label><br/>
-    <label><input type="radio" name="q1" value="b" /> Instruir o computador a realizar tarefas.</label><br/>
-    <label><input type="radio" name="q1" value="c" /> Construir equipamentos de hardware.</label><br/>
-    <label><input type="radio" name="q1" value="d" /> Proteger dados contra ataques.</label><br/>
-    <button onclick="checkQuiz('q1','b')">Verificar</button>
-    <p class="feedback" id="q1Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>2.</strong> Qual das alternativas <u>não</u> é um exemplo de ameaça cibernética?</p>
-    <label><input type="radio" name="q2" value="a" /> Phishing</label><br/>
-    <label><input type="radio" name="q2" value="b" /> Ransomware</label><br/>
-    <label><input type="radio" name="q2" value="c" /> DDoS</label><br/>
-    <label><input type="radio" name="q2" value="d" /> Backup de dados</label><br/>
-    <button onclick="checkQuiz('q2','d')">Verificar</button>
-    <p class="feedback" id="q2Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>3.</strong> O ChatGPT é um exemplo de:</p>
-    <label><input type="radio" name="q3" value="a" /> Malware de inteligência artificial.</label><br/>
-    <label><input type="radio" name="q3" value="b" /> Chatbot baseado em IA generativa.</label><br/>
-    <label><input type="radio" name="q3" value="c" /> Ataque de phishing em larga escala.</label><br/>
-    <label><input type="radio" name="q3" value="d" /> Aplicativo de programação em bloco.</label><br/>
-    <button onclick="checkQuiz('q3','b')">Verificar</button>
-    <p class="feedback" id="q3Feedback"></p>
-  </div>
-  <div class="quiz-question">
-    <p><strong>4.</strong> No contexto do Scrum, o Product Owner é responsável por:</p>
-    <label><input type="radio" name="q4" value="a" /> Escrever todo o código do produto.</label><br/>
-    <label><input type="radio" name="q4" value="b" /> Representar os interesses do cliente e priorizar funcionalidades.</label><br/>
-    <label><input type="radio" name="q4" value="c" /> Gerenciar diretamente a equipe de desenvolvedores.</label><br/>
-    <label><input type="radio" name="q4" value="d" /> Garantir a segurança cibernética do projeto.</label><br/>
-    <button onclick="checkQuiz('q4','b')">Verificar</button>
-    <p class="feedback" id="q4Feedback"></p>
-  </div>
-</section>
-
-<section id="remindersSection" style="display:none;">
-  <h2>Lembretes</h2>
-  <form id="reminderForm">
-    <input type="text" id="reminderText" placeholder="Digite um lembrete..." required />
-    <input type="datetime-local" id="reminderDate" />
-    <button type="submit">Adicionar</button>
-  </form>
-  <ul id="reminderList"></ul>
-  <p id="noRemindersMsg">Nenhum lembrete adicionado.</p>
-</section>
-
-<script>
-"use strict";
-// Dados persistentes
-let users = JSON.parse(localStorage.getItem('users') || '{}');
-let currentUser = localStorage.getItem('loggedInUser') || null;
-let contentData = JSON.parse(localStorage.getItem('contentData') || 'null');
-// Aplica tema salvo (modo claro/escuro)
-let savedTheme = localStorage.getItem('theme') || 'light';
-if (savedTheme === 'dark') {
-  document.body.classList.add('dark');
-}
-
-// Conteúdo educacional padrão, salvo localmente se ainda não estiver disponível
-if (!contentData) {
-  contentData = {
-    programacao: `
-      <h2>Programação</h2>
-      <p>Programação é o processo de escrever, testar e manter programas de computador — conjuntos de instruções que dizem à máquina o que fazer. Ela está por trás de quase tudo que usamos no nosso dia a dia digital: desde aplicativos de celular até sistemas bancários e de controle de tráfego.</p>
-      <p>Ela tem papel fundamental em áreas como medicina (monitoramento remoto de pacientes), engenharia, indústria automotiva e arquitetura. Programadores desenvolvem softwares que tornam esses avanços possíveis e ajudam a conectar objetos à internet, formando a chamada Internet das Coisas.</p>
-      <p>Com programação, podemos desde criar scripts simples para automatizar tarefas rotineiras até desenvolver aplicativos usados por milhões de pessoas. Um exemplo: um programador pode criar um script para organizar arquivos ou desenvolver um app de mensagens. Tudo isso é resultado da aplicação de códigos para facilitar tarefas ou resolver problemas do cotidiano.</p>
-    `,
-
-    ciberseguranca: `
-      <h2>Cibersegurança</h2>
-      <p>Cibersegurança é a prática de proteger redes, sistemas, dados, aplicações e dispositivos contra ataques digitais. Profissionais da área identificam vulnerabilidades e implementam medidas como firewalls, antivírus e sistemas de detecção de intrusos para manter os ambientes seguros.</p>
-      <p>Veja algumas ameaças comuns e como se proteger:</p>
-      <ul>
-        <li><strong>Ataque DDoS:</strong> sobrecarga de servidores para tirá-los do ar. Proteja-se monitorando o tráfego da rede e utilizando firewalls que limitem acessos suspeitos.</li>
-        <li><strong>Ransomware:</strong> malware que criptografa arquivos e exige resgate. Previna-se com backups atualizados, antivírus e evitando abrir anexos ou links desconhecidos.</li>
-        <li><strong>Phishing:</strong> tentativa de enganar o usuário para roubar dados. Desconfie de mensagens estranhas, não clique em links de remetentes desconhecidos e confira se o site é seguro (com HTTPS).</li>
-      </ul>
-    `,
-
-    ia: `
-      <h2>Inteligência Artificial Generativa</h2>
-      <p>A Inteligência Artificial Generativa é um tipo de IA capaz de criar conteúdos originais — como textos, imagens, áudios e vídeos — a partir de padrões aprendidos com grandes volumes de dados.</p>
-      <p>Ela vai além da análise de dados: é usada para compor músicas, gerar textos, criar imagens e muito mais, tudo a partir de comandos simples dos usuários.</p>
-      <p>Um exemplo famoso é o ChatGPT, lançado em 2022, que mostrou como essa tecnologia pode ser aplicada para gerar respostas, ideias e até códigos. A IA generativa está transformando áreas como design, marketing, atendimento ao cliente e produção de conteúdo.</p>
-    `,
-
-    productOwner: `
-      <h2>Product Owner (PO)</h2>
-      <p>O Product Owner é a pessoa responsável por representar os interesses do cliente ou usuário em projetos que usam metodologias ágeis, como o Scrum. Ele atua como o “dono” do produto dentro do time.</p>
-      <p>Seu papel inclui gerenciar e priorizar o <em>backlog</em> — a lista de funcionalidades e tarefas — garantindo que a equipe trabalhe nas entregas de maior valor para o projeto.</p>
-      <p>O PO é um elo entre os objetivos do negócio, as necessidades dos usuários e o trabalho do time técnico. Ele toma decisões sobre o que deve ser feito primeiro, ajusta o planejamento com base em feedbacks e assegura que o produto final tenha qualidade e gere impacto positivo.</p>
-    `
-  };
-
-  localStorage.setItem('contentData', JSON.stringify(contentData));
-}
-
-// Insere o conteúdo nas seções de tópico
-function loadContent() {
-  document.getElementById('programacaoSection').innerHTML = contentData.programacao;
-  document.getElementById('cibersegurancaSection').innerHTML = contentData.ciberseguranca;
-  document.getElementById('iaSection').innerHTML = contentData.ia;
-  document.getElementById('productOwnerSection').innerHTML = contentData.productOwner;
-}
-
-// Mostra uma seção e esconde as demais
-function showSection(sectionId) {
-  const sections = ['homeSection','programacaoSection','cibersegurancaSection','iaSection','productOwnerSection','quizSection','remindersSection'];
-  sections.forEach(id => {
-    const secEl = document.getElementById(id);
-    if (id === sectionId) {
-      secEl.style.display = 'block';
-      // Anima seção ao mostrar
-      secEl.classList.add('fade-in');
-      secEl.addEventListener('animationend', () => {
-        secEl.classList.remove('fade-in');
-      }, { once: true });
-    } else {
-      secEl.style.display = 'none';
-    }
-  });
-}
-
-// Verificação do Quiz
-function checkQuiz(qName, correctValue) {
-  const options = document.getElementsByName(qName);
-  let selected = null;
-  for (let opt of options) {
-    if (opt.checked) { selected = opt.value; break; }
-  }
-  const feedbackEl = document.getElementById(qName + 'Feedback');
-  if (selected === null) {
-    feedbackEl.style.color = 'orange';
-    feedbackEl.textContent = 'Por favor, selecione uma opção.';
-  } else if (selected === correctValue) {
-    feedbackEl.style.color = 'green';
-    feedbackEl.textContent = 'Correto!';
-  } else {
-    feedbackEl.style.color = 'red';
-    feedbackEl.textContent = 'Incorreto. Tente novamente.';
-  }
-}
-
-// Lembretes
-let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-function renderReminders() {
-  const listEl = document.getElementById('reminderList');
-  const noMsg = document.getElementById('noRemindersMsg');
-  listEl.innerHTML = '';
-  if (reminders.length === 0) {
-    noMsg.style.display = 'block';
-  } else {
-    noMsg.style.display = 'none';
-    reminders.forEach((rem, index) => {
-      const li = document.createElement('li');
-      let text = rem.text;
-      if (rem.due) {
-        const dueDate = new Date(rem.due);
-        text += ' – ' + dueDate.toLocaleString();
-        if (dueDate.getTime() <= Date.now()) {
-          li.classList.add('due');
-        }
-      }
-      li.textContent = text;
-      // botão de exclusão
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '✖';
-      delBtn.className = 'delete-btn';
-      delBtn.onclick = () => {
-        reminders.splice(index, 1);
-        localStorage.setItem('reminders', JSON.stringify(reminders));
-        renderReminders();
-      };
-      li.appendChild(delBtn);
-      listEl.appendChild(li);
-    });
-  }
-}
-
-// Verifica lembretes vencidos e alerta uma vez
-function checkDueReminders() {
-  let notifiedThisCycle = false;
-  reminders.forEach((rem, idx) => {
-    if (!rem.notified && rem.due && new Date(rem.due).getTime() <= Date.now()) {
-      showNotification('Lembrete: ' + rem.text + ' - estava agendado para agora.');
-      if (!notifiedThisCycle) {
-        beep();
-        notifiedThisCycle = true;
-      }
-      reminders[idx].notified = true;
-    }
-  });
-  localStorage.setItem('reminders', JSON.stringify(reminders));
-}
-
-// Função de alerta sonoro
-function beep() {
-  try {
-    if (!window.audioCtx) {
-      window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    const oscillator = window.audioCtx.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(440, window.audioCtx.currentTime);
-    oscillator.connect(window.audioCtx.destination);
-    oscillator.start();
-    oscillator.stop(window.audioCtx.currentTime + 0.5);
-  } catch (e) {
-    console.error('Erro ao reproduzir som', e);
-  }
-}
-
-// Função de notificação visual
-function showNotification(message) {
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
-  // Evita sobreposição de múltiplas notificações
-  const existingNotifs = document.querySelectorAll('.notification');
-  notification.style.bottom = (20 + existingNotifs.length * 60) + 'px';
-  document.body.appendChild(notification);
-  // Exibe com animação
-  requestAnimationFrame(() => {
-    notification.classList.add('show');
-  });
-  // Oculta após 5 segundos
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 500);
-  }, 5000);
-}
-
-// Eventos de interface
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  const messageEl = document.getElementById('loginMessage');
-  if (user === '' || pass === '') {
-    messageEl.style.color = 'red';
-    messageEl.textContent = 'Por favor, preencha usuário e senha.';
-    return;
-  }
-  if (registerMode) {
-    // Fluxo de registro
-    if (users[user]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'Usuário já existe. Escolha outro nome.';
-    } else {
-      // Cria novo usuário com senha hash (não salvar texto puro)
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        users[user] = hashHex;
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('loggedInUser', user);
-        currentUser = user;
-        messageEl.textContent = '';
-        startApp();
-      });
-    }
-  } else {
-    // Fluxo de login
-    if (!users[user]) {
-      messageEl.style.color = 'red';
-      messageEl.textContent = 'Usuário não encontrado. Verifique o nome ou registre-se.';
-    } else {
-      // Verifica hash da senha
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass)).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        if (users[user] === hashHex) {
-          localStorage.setItem('loggedInUser', user);
-          currentUser = user;
-          messageEl.textContent = '';
-          startApp();
-        } else {
-          messageEl.style.color = 'red';
-          messageEl.textContent = 'Senha incorreta. Tente novamente.';
-        }
-      });
-    }
-  }
-});
-let registerMode = false;
-document.getElementById('registerLink').addEventListener('click', function(e) {
-  e.preventDefault();
-  const title = document.getElementById('loginTitle');
-  const loginBtn = document.getElementById('loginBtn');
-  const toggleText = document.getElementById('toggleLoginRegister');
-  if (!registerMode) {
-    registerMode = true;
-    title.textContent = 'Registrar';
-    loginBtn.textContent = 'Registrar';
-    // Atualiza texto do link de alternância
-    toggleText.firstChild.textContent = 'Já tem conta? ';
-    document.getElementById('registerLink').textContent = 'Entrar';
-  } else {
-    registerMode = false;
-    title.textContent = 'Login';
-    loginBtn.textContent = 'Entrar';
-    toggleText.firstChild.textContent = 'Não tem uma conta? ';
-    document.getElementById('registerLink').textContent = 'Registre-se';
-  }
-});
-document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('navLink')) {
-    e.preventDefault();
-    showSection(e.target.dataset.target);
-  }
-});
-document.getElementById('homeBtn').addEventListener('click', function() {
-  showSection('homeSection');
-});
-document.getElementById('logoutBtn').addEventListener('click', function() {
-  localStorage.removeItem('loggedInUser');
-  currentUser = null;
-  location.reload();
-});
-document.getElementById('syncBtn').addEventListener('click', function() {
-  if (!navigator.onLine) {
-    showNotification('Você está offline no momento. Conecte-se à internet para sincronizar.');
-    return;
-  }
-  // Animação de sincronização: ícone gira e conteúdo é atualizado
-  const icon = this.querySelector('.sync-icon');
-  this.disabled = true;
-  if (icon) icon.classList.add('rotating');
-  setTimeout(() => {
-    localStorage.setItem('contentData', JSON.stringify(contentData));
-    if (icon) icon.classList.remove('rotating');
-    this.disabled = false;
-    showNotification('Conteúdo atualizado com sucesso!');
-  }, 1500);
-});
-document.getElementById('reminderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const text = document.getElementById('reminderText').value;
-  const date = document.getElementById('reminderDate').value;
-  if (text.trim() === '') return;
-  const newRem = { text: text.trim() };
-  if (date) newRem.due = date;
-  newRem.notified = false;
-  reminders.push(newRem);
-  localStorage.setItem('reminders', JSON.stringify(reminders));
-  document.getElementById('reminderText').value = '';
-  document.getElementById('reminderDate').value = '';
-  renderReminders();
-});
-
-// Alternância de tema claro/escuro
-document.getElementById('themeToggle').addEventListener('click', function() {
-  if (document.body.classList.contains('dark')) {
-    document.body.classList.remove('dark');
-    this.textContent = '☾';
-    this.setAttribute('aria-label', 'Alternar para modo escuro');
-    localStorage.setItem('theme', 'light');
-  } else {
-    document.body.classList.add('dark');
-    this.textContent = '☀';
-    this.setAttribute('aria-label', 'Alternar para modo claro');
-    localStorage.setItem('theme', 'dark');
-  }
-});
-
-// Inicia o app após login
-function startApp() {
-  // Mostra header e tela inicial
-  document.getElementById('appHeader').style.display = 'block';
-  document.getElementById('loginSection').style.display = 'none';
-  document.getElementById('homeSection').style.display = 'block';
-  // Carrega conteúdo e informações do usuário
-  document.getElementById('welcomeName').innerText = currentUser;
-  loadContent();
-  renderReminders();
-  // Solicita armazenamento persistente para não perder dados offline
-  if (navigator.storage && navigator.storage.persist) {
-    navigator.storage.persist().catch(console.error);
-  }
-  // Inicia verificação periódica de lembretes vencidos
-  setInterval(checkDueReminders, 60000);
-}
-
-// Login automático se o usuário já estava autenticado
-if (currentUser) {
-  startApp();
-}
-</script>
-
+  <!-- Inclusão do script principal -->
+  <script src="script.js"></script>
+  <!-- Script do Google Analytics (substituir 'G-XXXX' pelo ID real) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXX');
+  </script>
 </body>
 </html>
