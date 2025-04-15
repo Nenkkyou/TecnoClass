@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Plataforma educacional TecnoClass com cursos de programação, cibersegurança, IA e product owner" />
+  <meta name="description" content="TecnoClass - Plataforma educacional com cursos de programação, cibersegurança, IA e product owner" />
+  <meta name="theme-color" content="#2563eb">
   <title>TecnoClass - Plataforma Educacional</title>
   
   <!-- Preconnect para carregamento mais rápido das fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
   
   <link rel="stylesheet" href="style.css" />
   <!-- Favicon -->
@@ -18,9 +19,6 @@
   
   <!-- Manifesto PWA -->
   <link rel="manifest" href="manifest.json" />
-  
-  <!-- Tema para navegadores móveis -->
-  <meta name="theme-color" content="#4285f4">
 </head>
 <body>
   <!-- Link de acessibilidade para pular para o conteúdo principal -->
@@ -29,23 +27,23 @@
   <header id="appHeader">
     <div id="headerTop">
       <h1>TecnoClass</h1>
-      <!-- Seletor de idioma -->
+      <!-- Seletor de idioma e controles -->
       <div class="controls">
         <label for="languageSelect" class="visually-hidden">Selecionar idioma</label>
         <select id="languageSelect" aria-label="Selecionar idioma">
           <option value="pt" selected>Português</option>
           <option value="en">English</option>
         </select>
-        <!-- Botão de alternar tema (Ciclo: Claro, Escuro, Alto Contraste, Estudo Noturno, Divertido) -->
+        <!-- Botão de alternar tema -->
         <button id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
       </div>
     </div>
     <!-- Barra de navegação superior (aparece após login) -->
     <nav id="topbar" style="display:none;" aria-label="Navegação principal">
-      <button id="homeBtn" type="button">Início</button>
+      <button id="homeBtn" type="button"><span aria-hidden="true">🏠</span> Início</button>
       <button id="syncBtn" type="button"><span class="sync-icon" aria-hidden="true">↻</span> Sincronizar</button>
-      <button id="profileBtn" type="button">Perfil</button>
-      <button id="logoutBtn" type="button">Sair</button>
+      <button id="profileBtn" type="button"><span aria-hidden="true">👤</span> Perfil</button>
+      <button id="logoutBtn" type="button"><span aria-hidden="true">🚪</span> Sair</button>
     </nav>
   </header>
 
@@ -56,11 +54,11 @@
       <form id="loginForm">
         <div class="form-group">
           <label for="email">E-mail</label>
-          <input type="email" id="email" placeholder="E-mail" required autocomplete="username" />
+          <input type="email" id="email" placeholder="Seu e-mail" required autocomplete="username" />
         </div>
         <div class="form-group">
           <label for="password">Senha</label>
-          <input type="password" id="password" placeholder="Senha" required autocomplete="current-password" />
+          <input type="password" id="password" placeholder="Sua senha" required autocomplete="current-password" />
           <button type="button" id="togglePassword" aria-label="Mostrar/ocultar senha" class="password-toggle">👁️</button>
         </div>
         <!-- Campo oculto para verificação de bot (honeypot) -->
@@ -82,13 +80,20 @@
       <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
       <p>Escolha um dos tópicos abaixo para estudar:</p>
       <ul id="topicsList" role="list"></ul>
-      <p><em>Dica:</em> Você pode clicar em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
+      <div class="action-buttons mt-4">
+        <button id="quizBtn" class="action-button"><span aria-hidden="true">📝</span> Quiz Final</button>
+        <button id="remindersBtn" class="action-button"><span aria-hidden="true">🔔</span> Lembretes</button>
+        <button id="favoritesBtn" class="action-button"><span aria-hidden="true">⭐</span> Favoritos</button>
+      </div>
+      <p class="tip mt-3"><em>Dica:</em> Clique em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
     </section>
 
     <!-- Seções de conteúdo educacional (Programação, Cibersegurança, IA, PO, etc.) -->
     <section id="programacaoSection" style="display:none;">
-      <h2 class="sectionTitle">Programação</h2>
-      <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+      <div class="section-header">
+        <h2 class="sectionTitle">Programação</h2>
+        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
+      </div>
       <div class="progress-container" role="progressbar" aria-label="Progresso do módulo">
         <div class="progress-bar"></div>
       </div>
@@ -96,15 +101,16 @@
       <div class="reviewQuestions" role="form" aria-label="Perguntas de revisão"></div>
       <div class="notesSection">
         <h3>Suas anotações:</h3>
-        <label for="programacaoNotes" class="visually-hidden">Anotações de programação</label>
         <textarea id="programacaoNotes" placeholder="Escreva suas anotações aqui..."></textarea>
       </div>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <section id="cibersegurancaSection" style="display:none;">
-      <h2 class="sectionTitle">Cibersegurança</h2>
-      <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+      <div class="section-header">
+        <h2 class="sectionTitle">Cibersegurança</h2>
+        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
+      </div>
       <div class="progress-container"><div class="progress-bar"></div></div>
       <div class="sectionContent"></div>
       <div class="reviewQuestions"></div>
@@ -112,12 +118,14 @@
         <h3>Suas anotações:</h3>
         <textarea id="cibersegurancaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
       </div>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <section id="iaSection" style="display:none;">
-      <h2 class="sectionTitle">Inteligência Artificial Generativa</h2>
-      <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+      <div class="section-header">
+        <h2 class="sectionTitle">Inteligência Artificial Generativa</h2>
+        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
+      </div>
       <div class="progress-container"><div class="progress-bar"></div></div>
       <div class="sectionContent"></div>
       <div class="reviewQuestions"></div>
@@ -125,12 +133,14 @@
         <h3>Suas anotações:</h3>
         <textarea id="iaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
       </div>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <section id="productOwnerSection" style="display:none;">
-      <h2 class="sectionTitle">Product Owner (PO)</h2>
-      <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈 Ouvir texto</button>
+      <div class="section-header">
+        <h2 class="sectionTitle">Product Owner (PO)</h2>
+        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
+      </div>
       <div class="progress-container"><div class="progress-bar"></div></div>
       <div class="sectionContent"></div>
       <div class="reviewQuestions"></div>
@@ -138,7 +148,7 @@
         <h3>Suas anotações:</h3>
         <textarea id="productOwnerNotes" placeholder="Escreva suas anotações aqui..."></textarea>
       </div>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <!-- Seção de Quiz Final -->
@@ -147,53 +157,55 @@
       <p>Responda às perguntas a seguir dentro do tempo limite.</p>
       <div id="quizTimer" role="timer" aria-live="polite">Tempo: <span id="timerDisplay">--:--</span></div>
       
-      <fieldset class="quiz-question">
-        <legend><strong>1.</strong> Qual destas <u>não</u> é uma linguagem de programação?</legend>
-        <div class="quiz-options">
-          <label><input type="radio" name="q1" value="a" /> Python</label><br/>
-          <label><input type="radio" name="q1" value="b" /> Java</label><br/>
-          <label><input type="radio" name="q1" value="c" /> HTML</label><br/>
-          <label><input type="radio" name="q1" value="d" /> C++</label><br/>
-        </div>
-        <button type="button" onclick="checkQuiz('q1','c')">Verificar</button>
-        <p class="feedback" id="q1Feedback" role="alert" aria-live="polite"></p>
-      </fieldset>
-      
-      <fieldset class="quiz-question">
-        <legend><strong>2.</strong> Uma boa prática de cibersegurança é:</legend>
-        <div class="quiz-options">
-          <label><input type="radio" name="q2" value="a" /> Usar senhas fortes e únicas.</label><br/>
-          <label><input type="radio" name="q2" value="b" /> Clicar em links suspeitos.</label><br/>
-          <label><input type="radio" name="q2" value="c" /> Compartilhar senhas com colegas.</label><br/>
-          <label><input type="radio" name="q2" value="d" /> Ignorar atualizações do sistema.</label><br/>
-        </div>
-        <button type="button" onclick="checkQuiz('q2','a')">Verificar</button>
-        <p class="feedback" id="q2Feedback" role="alert" aria-live="polite"></p>
-      </fieldset>
-      
-      <fieldset class="quiz-question">
-        <legend><strong>3.</strong> Uma aplicação de IA generativa é:</legend>
-        <div class="quiz-options">
-          <label><input type="radio" name="q3" value="a" /> Organizar arquivos em pastas.</label><br/>
-          <label><input type="radio" name="q3" value="b" /> Criar imagens a partir de texto.</label><br/>
-          <label><input type="radio" name="q3" value="c" /> Criptografar dados automaticamente.</label><br/>
-          <label><input type="radio" name="q3" value="d" /> Controlar dispositivos de hardware.</label><br/>
-        </div>
-        <button type="button" onclick="checkQuiz('q3','b')">Verificar</button>
-        <p class="feedback" id="q3Feedback" role="alert" aria-live="polite"></p>
-      </fieldset>
-      
-      <fieldset class="quiz-question">
-        <legend><strong>4.</strong> O que é gerenciado pelo Product Owner em um projeto Scrum?</legend>
-        <div class="quiz-options">
-          <label><input type="radio" name="q4" value="a" /> O backlog (lista de requisitos do produto).</label><br/>
-          <label><input type="radio" name="q4" value="b" /> A arquitetura técnica do sistema.</label><br/>
-          <label><input type="radio" name="q4" value="c" /> A segurança dos dados do projeto.</label><br/>
-          <label><input type="radio" name="q4" value="d" /> As tarefas diárias de cada desenvolvedor.</label><br/>
-        </div>
-        <button type="button" onclick="checkQuiz('q4','a')">Verificar</button>
-        <p class="feedback" id="q4Feedback" role="alert" aria-live="polite"></p>
-      </fieldset>
+      <div class="quiz-questions-container">
+        <fieldset class="quiz-question">
+          <legend><strong>1.</strong> Qual destas <u>não</u> é uma linguagem de programação?</legend>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q1" value="a" /> Python</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b" /> Java</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c" /> HTML</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d" /> C++</label>
+          </div>
+          <button type="button" class="check-answer-btn" onclick="checkQuiz('q1','c')">Verificar</button>
+          <p class="feedback" id="q1Feedback" role="alert" aria-live="polite"></p>
+        </fieldset>
+        
+        <fieldset class="quiz-question">
+          <legend><strong>2.</strong> Uma boa prática de cibersegurança é:</legend>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q2" value="a" /> Usar senhas fortes e únicas.</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b" /> Clicar em links suspeitos.</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c" /> Compartilhar senhas com colegas.</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d" /> Ignorar atualizações do sistema.</label>
+          </div>
+          <button type="button" class="check-answer-btn" onclick="checkQuiz('q2','a')">Verificar</button>
+          <p class="feedback" id="q2Feedback" role="alert" aria-live="polite"></p>
+        </fieldset>
+        
+        <fieldset class="quiz-question">
+          <legend><strong>3.</strong> Uma aplicação de IA generativa é:</legend>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q3" value="a" /> Organizar arquivos em pastas.</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b" /> Criar imagens a partir de texto.</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c" /> Criptografar dados automaticamente.</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d" /> Controlar dispositivos de hardware.</label>
+          </div>
+          <button type="button" class="check-answer-btn" onclick="checkQuiz('q3','b')">Verificar</button>
+          <p class="feedback" id="q3Feedback" role="alert" aria-live="polite"></p>
+        </fieldset>
+        
+        <fieldset class="quiz-question">
+          <legend><strong>4.</strong> O que é gerenciado pelo Product Owner em um projeto Scrum?</legend>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q4" value="a" /> O backlog (lista de requisitos do produto).</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b" /> A arquitetura técnica do sistema.</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c" /> A segurança dos dados do projeto.</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d" /> As tarefas diárias de cada desenvolvedor.</label>
+          </div>
+          <button type="button" class="check-answer-btn" onclick="checkQuiz('q4','a')">Verificar</button>
+          <p class="feedback" id="q4Feedback" role="alert" aria-live="polite"></p>
+        </fieldset>
+      </div>
       
       <div id="quizResult" style="display:none;" role="alert" aria-live="polite">
         <h3>Resultado do Quiz:</h3>
@@ -201,7 +213,7 @@
         <p id="scoreMessage"></p>
         <button type="button" id="restartQuizBtn">Refazer Quiz</button>
       </div>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <!-- Seção de Lembretes -->
@@ -213,8 +225,8 @@
         <button type="submit">Adicionar</button>
       </form>
       <ul id="reminderList"></ul>
-      <p id="noRemindersMsg">Nenhum lembrete adicionado.</p>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <p id="noRemindersMsg" class="empty-state-message">Nenhum lembrete adicionado.</p>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <!-- Seção de Favoritos -->
@@ -222,36 +234,64 @@
       <h2>Favoritos</h2>
       <p>Seus trechos favoritos para revisão:</p>
       <ul id="favoritesList"></ul>
-      <p id="noFavoritesMsg">Você não marcou nenhum favorito ainda.</p>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <p id="noFavoritesMsg" class="empty-state-message">Você não marcou nenhum favorito ainda.</p>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
 
     <!-- Seção de Perfil do Aluno -->
     <section id="profileSection" style="display:none;">
       <h2>Perfil do Aluno</h2>
-      <p><strong>Nome:</strong> <span id="profileName"></span></p>
-      <p><strong>Progresso Geral:</strong> <span id="profileProgress"></span></p>
-      <h3>Lições Concluídas:</h3>
-      <ul id="completedList"></ul>
-      <h3>Conquistas:</h3>
-      <ul id="achievementsList"></ul>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
-      <button id="exportDataBtn">Exportar Dados (JSON)</button>
+      <div class="profile-card">
+        <div class="profile-info">
+          <p><strong>Nome:</strong> <span id="profileName"></span></p>
+          <p><strong>Progresso Geral:</strong> <span id="profileProgress"></span></p>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-card">
+            <h3>Lições Concluídas</h3>
+            <ul id="completedList"></ul>
+          </div>
+          
+          <div class="stat-card">
+            <h3>Conquistas</h3>
+            <ul id="achievementsList"></ul>
+          </div>
+        </div>
+        
+        <div class="profile-actions">
+          <button id="exportDataBtn" class="secondary-button">Exportar Dados (JSON)</button>
+          <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
+        </div>
+      </div>
     </section>
 
     <!-- Seção Administrativa (visível apenas para professor/admin) -->
     <section id="adminSection" style="display:none;">
       <h2>Painel Administrativo</h2>
-      <h3>Dados de Uso dos Alunos:</h3>
-      <ul id="userListStats"></ul>
-      <h3>Adicionar Novo Tópico</h3>
-      <form id="addTopicForm">
-        <input type="text" id="newTopicTitle" placeholder="Título do novo tópico" required />
-        <textarea id="newTopicContent" placeholder="Conteúdo HTML do tópico" required></textarea>
-        <button type="submit">Adicionar Tópico</button>
-      </form>
-      <p id="addTopicMsg"></p>
-      <button class="backButton" data-target="homeSection">Voltar para Início</button>
+      <div class="admin-panel">
+        <div class="admin-card">
+          <h3>Dados de Uso dos Alunos</h3>
+          <ul id="userListStats"></ul>
+        </div>
+        
+        <div class="admin-card">
+          <h3>Adicionar Novo Tópico</h3>
+          <form id="addTopicForm">
+            <div class="form-group">
+              <label for="newTopicTitle">Título do tópico</label>
+              <input type="text" id="newTopicTitle" placeholder="Título do novo tópico" required />
+            </div>
+            <div class="form-group">
+              <label for="newTopicContent">Conteúdo HTML</label>
+              <textarea id="newTopicContent" placeholder="Conteúdo HTML do tópico" required></textarea>
+            </div>
+            <button type="submit">Adicionar Tópico</button>
+          </form>
+          <p id="addTopicMsg"></p>
+        </div>
+      </div>
+      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
     </section>
   </main>
 
@@ -267,15 +307,16 @@
     </div>
   </div>
 
+  <!-- Notificação -->
+  <div class="notification" id="notification" role="alert" aria-live="polite">
+    <div class="notification-icon"></div>
+    <div class="notification-content">
+      <div class="notification-message"></div>
+    </div>
+    <button class="notification-close" aria-label="Fechar notificação">×</button>
+  </div>
+
   <!-- Inclusão do script principal -->
   <script src="script.js" defer></script>
-  <!-- Script do Google Analytics (substituir 'G-XXXX' pelo ID real) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-XXXX');
-  </script>
 </body>
 </html>
