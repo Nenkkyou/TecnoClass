@@ -789,30 +789,35 @@
 
     // --- Funções de Renderização ---
 
-    /** Gera o HTML para um único módulo */
+    /** Gera o HTML para um único módulo dentro de um <details> */
     function renderModule(module, cursoId) {
         const moduleId = module.id;
-        const noteTextareaId = `notes-${moduleId}`;
-        const completionCheckboxId = `completion-${moduleId}`;
         const currentNote = state.notes[moduleId] || '';
         const isCompleted = state.completion[moduleId] || false;
-        // Garante que o conteúdo detalhado seja uma string vazia se não existir
-        const detailedContent = module.conteudo || '<p><em>Conteúdo detalhado em breve.</em></p>';
+        const completionCheckboxId = `completion-${moduleId}`;
+
+        // Prepara o conteúdo detalhado ou uma mensagem padrão
+        const detailedContent = module.conteudo ? `
+            <hr>
+            <div class="module-detailed-content">
+                ${module.conteudo}
+            </div>
+            <hr>
+        ` : '<p><em>Conteúdo detalhado em breve.</em></p>';
 
         return `
             <details class="module-details ${isCompleted ? 'completed' : ''}" data-module-id="${moduleId}">
                 <summary class="module-summary">
-                    ${module.titulo}
-                    <span class="completion-indicator" aria-hidden="true">${isCompleted ? '✔' : ''}</span>
-                    <span class="module-description">${module.descricao}</span>
+                    <span class="module-title">${module.titulo}</span>
+                    <span class="completion-indicator">${isCompleted ? '✔' : ''}</span>
+                    <span class="module-short-desc">${module.descricao}</span>
                 </summary>
                 <div class="module-content">
                     ${detailedContent} {/* CORREÇÃO: Removido o comentário extra daqui */}
-                    <hr>
                     <div class="module-notes">
-                        <label for="${noteTextareaId}">Minhas Anotações:</label>
+                        <label for="notes-${moduleId}">Anotações do Módulo:</label>
                         <textarea
-                            id="${noteTextareaId}"
+                            id="notes-${moduleId}"
                             data-module-id="${moduleId}"
                             aria-label="Anotações para o módulo ${module.titulo}"
                             rows="5"
