@@ -1782,4 +1782,315 @@ body.dark :focus-visible {
 .bg-success { background-color: var(--success); }
 .bg-error { background-color: var(--error); }
 .bg-warning { background-color: var(--warning); }
+
+/* Remover o link de acessibilidade "Pular para o conteúdo principal" */
+.skip-link {
+  display: none;
+}
+
+/* Estilo para as notas adesivas (post-its) */
+.sticky-notes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.sticky-note {
+  background: #fff9c4;
+  padding: var(--spacing-md);
+  width: 200px;
+  min-height: 150px;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-sm);
+  position: relative;
+  transform: rotate(var(--rotate, -1deg));
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.sticky-note:nth-child(2n) {
+  --rotate: 1deg;
+  background: #ffccbc;
+}
+
+.sticky-note:nth-child(3n) {
+  --rotate: -2deg;
+  background: #bbdefb;
+}
+
+.sticky-note:nth-child(4n) {
+  --rotate: 2deg;
+  background: #c8e6c9;
+}
+
+.sticky-note:hover {
+  transform: rotate(0) scale(1.05);
+  z-index: 1;
+}
+
+.sticky-note-content {
+  flex: 1;
+  font-family: 'Nunito', cursive;
+  font-size: 0.95em;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  margin-bottom: var(--spacing-md);
+}
+
+.sticky-note-date {
+  font-size: 0.8em;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-top: auto;
+}
+
+.sticky-note-delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 1em;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+}
+
+.sticky-note-delete:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.add-note-btn {
+  background: #ddd;
+  border: 2px dashed #aaa;
+  width: 200px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 2em;
+  color: #888;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.add-note-btn:hover {
+  background: #eee;
+  color: #666;
+  transform: scale(1.05);
+}
+
+.note-form-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.note-form-popup.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.note-form {
+  background: var(--surface);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+}
+
+.note-form textarea {
+  width: 100%;
+  height: 150px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  resize: none;
+}
+
+.note-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.note-color-picker {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.color-option.selected {
+  border-color: var(--primary);
+  transform: scale(1.1);
+}
+
+/* Cores para os post-its */
+.color-yellow { background: #fff9c4; }
+.color-orange { background: #ffccbc; }
+.color-blue { background: #bbdefb; }
+.color-green { background: #c8e6c9; }
+.color-pink { background: #f8bbd0; }
+
+/* Tema escuro para os post-its */
+body.dark .sticky-note {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #000;
+}
+
+body.dark .sticky-note-date {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+body.dark .add-note-btn {
+  background: #333;
+  border-color: #555;
+  color: #aaa;
+}
+
+body.dark .add-note-btn:hover {
+  background: #444;
+  color: #ccc;
+}
+
+/* Melhorias no formulário de login */
+#loginForm {
+  background: var(--surface-variant);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilo para o quiz em janela separada */
+.quiz-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.quiz-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.quiz-container {
+  background: var(--surface);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.quiz-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.quiz-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.dark .quiz-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Tema escuro para o quiz modal */
+body.dark .quiz-container {
+  background: var(--dark-surface);
+  border: 1px solid var(--dark-border);
+}
+
+body.dark .quiz-header {
+  border-bottom-color: var(--dark-border);
+}
   
