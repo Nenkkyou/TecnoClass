@@ -1,276 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TecnoClass - Plataforma educacional com cursos de programação, cibersegurança, IA e product owner" />
-  <meta name="theme-color" content="#2563eb" />
-  <title>TecnoClass - Plataforma Educacional</title>
-
-  <!-- Preconnect para carregamento mais rápido das fontes -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="style.css" />
-  <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link rel="apple-touch-icon" href="icon-192x192.png" />
-
-  <!-- Manifesto PWA -->
-  <link rel="manifest" href="manifest.json" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4285f4">
+    <meta name="description" content="TecnoClass - Plataforma educacional de tecnologia">
+    <title>TecnoClass</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="favicon.ico">
 </head>
 <body>
-  <!-- Link de acessibilidade para pular para o conteúdo principal -->
-  <a href="#mainContent" class="skip-link">Pular para o conteúdo principal</a>
-
-  <header id="appHeader">
-    <div id="headerTop">
-      <h1>TecnoClass</h1>
-      <!-- Seletor de idioma e controles -->
-      <div class="controls">
-        <label for="languageSelect" class="visually-hidden">Selecionar idioma</label>
-        <select id="languageSelect" aria-label="Selecionar idioma">
-          <option value="pt" selected>Português</option>
-          <option value="en">English</option>
-        </select>
-        <!-- Botão de alternar tema (lua/sol) -->
-        <button id="themeToggle" type="button" aria-label="Alternar tema">☾</button>
-      </div>
-    </div>
-    <!-- Barra de navegação superior (aparece após login) -->
-    <nav id="topbar" style="display:none;" aria-label="Navegação principal">
-      <button id="homeBtn" type="button"><span aria-hidden="true">🏠</span> Início</button>
-      <button id="syncBtn" type="button"><span class="sync-icon" aria-hidden="true">↻</span> Sincronizar</button>
-      <button id="profileBtn" type="button"><span aria-hidden="true">👤</span> Perfil</button>
-      <button id="logoutBtn" type="button"><span aria-hidden="true">🚪</span> Sair</button>
+    <header>
+        <div class="container">
+            <h1>TecnoClass</h1>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#" data-section="inicio" class="active">Início</a></li>
+                <li><a href="#" data-section="cursos">Cursos</a></li>
+                <li><a href="#" data-section="perfil">Perfil</a></li>
+            </ul>
+        </div>
     </nav>
-  </header>
-
-  <main id="mainContent">
-    <!-- Seção de Login/Registro -->
-    <section id="loginSection">
-      <h2 id="loginTitle">Login</h2>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" placeholder="Seu e-mail" required autocomplete="username" />
-        </div>
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" placeholder="Sua senha" required autocomplete="current-password" />
-          <button type="button" id="togglePassword" aria-label="Mostrar/ocultar senha" class="password-toggle">👁️</button>
-        </div>
-        <!-- Campo oculto para verificação de bot (honeypot) -->
-        <input type="text" id="botCheck" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; opacity:0;" />
-        <button type="submit" id="loginBtn">Entrar</button>
-      </form>
-      <p id="toggleLoginRegister">
-        <span id="switchPrefix">Não tem uma conta? </span><a href="#" id="switchLink">Registre-se</a>
-      </p>
-      <div id="loginMessage" role="alert" aria-live="polite"></div>
-      <p class="terms">
-        Ao usar este aplicativo, você concorda com nossa 
-        <a href="#" id="termsLink">Política de Privacidade</a> e <a href="#" id="termsLink2">Termos de Uso</a>.
-      </p>
-    </section>
-
-    <!-- Seção de Boas-vindas / Home (lista de tópicos) -->
-    <section id="homeSection" style="display:none;">
-      <h2>Bem-vindo(a), <span id="welcomeName"></span>!</h2>
-      <p>Escolha um dos tópicos abaixo para estudar:</p>
-      <ul id="topicsList" role="list"></ul>
-      <div class="action-buttons mt-4">
-        <button id="quizBtn" class="action-button"><span aria-hidden="true">📝</span> Quiz Final</button>
-        <button id="remindersBtn" class="action-button"><span aria-hidden="true">🔔</span> Lembretes</button>
-        <button id="favoritesBtn" class="action-button"><span aria-hidden="true">⭐</span> Favoritos</button>
-      </div>
-      <p class="tip mt-3"><em>Dica:</em> Clique em "Sincronizar" quando tiver internet para atualizar os conteúdos.</p>
-    </section>
-
-    <!-- Seções de conteúdo educacional (Programação, Cibersegurança, IA, PO) -->
-    <section id="programacaoSection" style="display:none;">
-      <div class="section-header">
-        <h2>Programação</h2>
-        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
-      </div>
-      <div class="progress-container" role="progressbar" aria-label="Progresso do módulo">
-        <div class="progress-bar"></div>
-      </div>
-      <div class="sectionContent"></div>
-      <div class="reviewQuestions" role="form" aria-label="Perguntas de revisão"></div>
-      <div class="notesSection">
-        <h3>Suas anotações:</h3>
-        <textarea id="programacaoNotes" placeholder="Escreva suas anotações aqui..."></textarea>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <section id="cibersegurancaSection" style="display:none;">
-      <div class="section-header">
-        <h2>Cibersegurança</h2>
-        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
-      </div>
-      <div class="progress-container" role="progressbar" aria-label="Progresso do módulo">
-        <div class="progress-bar"></div>
-      </div>
-      <div class="sectionContent"></div>
-      <div class="reviewQuestions" role="form" aria-label="Perguntas de revisão"></div>
-      <div class="notesSection">
-        <h3>Suas anotações:</h3>
-        <textarea id="cibersegurancaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <section id="iaSection" style="display:none;">
-      <div class="section-header">
-        <h2>Inteligência Artificial Generativa</h2>
-        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
-      </div>
-      <div class="progress-container" role="progressbar" aria-label="Progresso do módulo">
-        <div class="progress-bar"></div>
-      </div>
-      <div class="sectionContent"></div>
-      <div class="reviewQuestions" role="form" aria-label="Perguntas de revisão"></div>
-      <div class="notesSection">
-        <h3>Suas anotações:</h3>
-        <textarea id="iaNotes" placeholder="Escreva suas anotações aqui..."></textarea>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <section id="productOwnerSection" style="display:none;">
-      <div class="section-header">
-        <h2>Product Owner (PO)</h2>
-        <button class="tts-btn" type="button" aria-label="Ouvir texto desta seção">🔈</button>
-      </div>
-      <div class="progress-container" role="progressbar" aria-label="Progresso do módulo">
-        <div class="progress-bar"></div>
-      </div>
-      <div class="sectionContent"></div>
-      <div class="reviewQuestions" role="form" aria-label="Perguntas de revisão"></div>
-      <div class="notesSection">
-        <h3>Suas anotações:</h3>
-        <textarea id="productOwnerNotes" placeholder="Escreva suas anotações aqui..."></textarea>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <!-- Seção de Quiz Final (conteúdo será mostrado em modal) -->
-    <section id="quizSection" style="display:none;">
-      <h2>Quiz Final</h2>
-      <p>Responda às perguntas a seguir dentro do tempo limite.</p>
-      <div id="quizTimer" role="timer" aria-live="polite">Tempo: <span id="timerDisplay">--:--</span></div>
-      <div class="quiz-questions-container">
-        <!-- ... (conteúdo do quiz estático omitido para brevidade, será clon. em modal) ... -->
-      </div>
-      <div id="quizResult" style="display:none;" role="alert" aria-live="polite">
-        <h3>Resultado do Quiz:</h3>
-        <p>Você acertou <span id="scoreCount"></span> de <span id="scoreTotal"></span> perguntas.</p>
-        <p id="scoreMessage"></p>
-        <button type="button" id="restartQuizBtn">Refazer Quiz</button>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <!-- Seção de Lembretes -->
-    <section id="remindersSection" style="display:none;">
-      <h2>Lembretes</h2>
-      <form id="reminderForm">
-        <input type="text" id="reminderText" placeholder="Digite um lembrete..." required />
-        <input type="datetime-local" id="reminderDate" />
-        <button type="submit">Adicionar</button>
-      </form>
-      <ul id="reminderList"></ul>
-      <p id="noRemindersMsg" class="empty-state-message">Nenhum lembrete adicionado.</p>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <!-- Seção de Favoritos -->
-    <section id="favoritesSection" style="display:none;">
-      <h2>Favoritos</h2>
-      <p>Seus trechos favoritos para revisão:</p>
-      <ul id="favoritesList"></ul>
-      <p id="noFavoritesMsg" class="empty-state-message">Você não marcou nenhum favorito ainda.</p>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-
-    <!-- Seção de Perfil do Aluno -->
-    <section id="profileSection" style="display:none;">
-      <h2>Perfil do Aluno</h2>
-      <div class="profile-card">
-        <div class="profile-info">
-          <p><strong>Nome:</strong> <span id="profileName"></span></p>
-          <p><strong>Progresso Geral:</strong> <span id="profileProgress"></span></p>
-        </div>
-        <div class="profile-stats">
-          <div class="stat-card">
-            <h3>Lições Concluídas</h3>
-            <ul id="completedList"></ul>
-          </div>
-          <div class="stat-card">
-            <h3>Conquistas</h3>
-            <ul id="achievementsList"></ul>
-          </div>
-        </div>
-        <div class="profile-actions">
-          <button id="exportDataBtn" class="secondary-button">Exportar Dados (JSON)</button>
-          <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Seção Administrativa (visível apenas para professor/admin) -->
-    <section id="adminSection" style="display:none;">
-      <h2>Painel Administrativo</h2>
-      <div class="admin-panel">
-        <div class="admin-card">
-          <h3>Dados de Uso dos Alunos</h3>
-          <ul id="userListStats"></ul>
-        </div>
-        <div class="admin-card">
-          <h3>Adicionar Novo Tópico</h3>
-          <form id="addTopicForm">
-            <div class="form-group">
-              <label for="newTopicTitle">Título do tópico</label>
-              <input type="text" id="newTopicTitle" placeholder="Título do novo tópico" required />
+    
+    <main>
+        <div class="container">
+            <div id="content">
+                <!-- O conteúdo será carregado dinamicamente via JavaScript -->
             </div>
-            <div class="form-group">
-              <label for="newTopicContent">Conteúdo HTML</label>
-              <textarea id="newTopicContent" placeholder="Conteúdo HTML do tópico" required></textarea>
-            </div>
-            <button type="submit">Adicionar Tópico</button>
-          </form>
-          <p id="addTopicMsg"></p>
         </div>
-      </div>
-      <button class="backButton" data-target="homeSection"><span aria-hidden="true">←</span> Voltar para Início</button>
-    </section>
-  </main>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 TecnoClass. Todos os direitos reservados.</p>
+        </div>
+    </footer>
 
-  <!-- Modal de Termos de Uso/Política -->
-  <div id="modal" style="display:none;" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
-    <div class="modal-content">
-      <h3 id="modalTitle">Política de Privacidade & Termos de Uso</h3>
-      <div class="modal-body">
-        <p>Este aplicativo educacional armazena seus dados de forma local (no dispositivo) e pode sincronizá-los com a nuvem opcionalmente. Suas informações pessoais (como e-mail e lembretes) não são compartilhadas com terceiros. As senhas são armazenadas de forma segura (hash + salt) para sua proteção.</p>
-        <p>Ao utilizar este aplicativo, você concorda em usá-lo apenas para fins educacionais. Nenhum dado sensível deve ser inserido. Os desenvolvedores não se responsabilizam por perdas de dados, mas fazem o possível para proteger suas informações.</p>
-      </div>
-      <button id="closeModal" type="button">Fechar</button>
-    </div>
-  </div>
-
-  <!-- Notificação -->
-  <div class="notification" id="notification" role="alert" aria-live="polite">
-    <div class="notification-icon"></div>
-    <div class="notification-content">
-      <div class="notification-message"></div>
-    </div>
-    <button class="notification-close" aria-label="Fechar notificação">×</button>
-  </div>
-
-  <!-- Inclusão do script principal -->
-  <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 </html>
