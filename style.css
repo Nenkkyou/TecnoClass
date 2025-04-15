@@ -1,163 +1,409 @@
 /* Reset básico */
-* {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Variáveis de Cor (Tema Claro) */
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5f5f5;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --text-light: #555555;
+    --border-color: #e0e0e0;
+    --card-shadow: rgba(0, 0, 0, 0.08);
+    --card-hover-shadow: rgba(0, 0, 0, 0.12);
+    --success-color: #4caf50;
+    --success-light-bg: #e8f5e9;
+    --danger-color: #f44336;
+    --danger-hover-color: #d32f2f;
+    --focus-ring-color: rgba(74, 144, 226, 0.4);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f5f5f5;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Container para limitar largura e centralizar conteúdo */
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Estilos do cabeçalho */
-header {
-    background-color: #4285f4;
+/* Link para pular navegação (Acessibilidade) */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color);
     color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Cabeçalho */
+header {
+    background-color: var(--primary-color);
+    color: var(--background-color);
     padding: 1rem 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--card-shadow);
 }
 
 header h1 {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     font-weight: 600;
+    text-align: center;
 }
 
-/* Estilos da navegação */
+/* Navegação */
 nav {
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 nav ul {
     display: flex;
+    justify-content: center;
     list-style: none;
+    padding: 0.5rem 0;
 }
 
 nav li {
-    margin-right: 10px;
+    margin: 0 5px;
 }
 
-nav a {
+nav a.nav-link {
     display: block;
-    padding: 1rem;
-    color: #555;
+    padding: 0.8rem 1.2rem;
+    color: var(--text-light);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s, border-bottom 0.2s;
+    border-bottom: 3px solid transparent;
+    position: relative; /* Para o foco */
 }
 
-nav a:hover {
-    color: #4285f4;
+nav a.nav-link:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
-nav a.active {
-    color: #4285f4;
-    border-bottom: 3px solid #4285f4;
+nav a.nav-link:focus-visible { /* Estilo de foco mais moderno */
+    outline: none;
+    background-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
-/* Estilos do conteúdo principal */
+nav a.nav-link.active {
+    color: var(--primary-color);
+    font-weight: 600;
+    border-bottom-color: var(--primary-color);
+}
+
+/* Conteúdo Principal */
 main {
-    min-height: calc(100vh - 180px);
+    flex-grow: 1;
     padding: 2rem 0;
 }
 
 #content {
-    background-color: #fff;
+    background-color: var(--background-color);
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    box-shadow: 0 1px 4px var(--card-shadow);
 }
 
-/* Estilos para cards de conteúdo */
+#content h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+    font-size: 1.6rem;
+}
+
+#content h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+#content p {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+/* Cards (Geral e Cursos) */
 .card {
-    background-color: #fff;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px var(--card-shadow);
+    transition: box-shadow 0.3s ease;
 }
 
-.card h2 {
-    margin-bottom: 10px;
-    color: #333;
+.card:hover {
+     box-shadow: 0 4px 8px var(--card-hover-shadow);
 }
 
-.card h3 {
-    margin-bottom: 8px;
-    color: #444;
+.course-card h3 {
+    margin-bottom: 0.5rem;
 }
 
-/* Estilos para os elementos details/summary */
-details {
+/* Módulos (Details/Summary) */
+.module-details {
     margin-top: 15px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    overflow: hidden;
+    overflow: hidden; /* Para bordas arredondadas funcionarem */
+    background-color: var(--background-color);
 }
 
-summary {
-    padding: 10px 15px;
-    background-color: #f5f5f5;
+.module-summary {
+    padding: 12px 15px;
+    background-color: var(--secondary-color);
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.3s;
+    list-style: none; /* Remove marcador padrão */
+    display: flex; /* Para alinhar ícone (opcional) */
+    justify-content: space-between; /* Para alinhar ícone (opcional) */
+    align-items: center;
+    transition: background-color 0.2s;
 }
 
-summary:hover {
+.module-summary::-webkit-details-marker,
+.module-summary::marker {
+    display: none; /* Remove marcador padrão */
+}
+
+.module-summary:hover,
+.module-details[open] > .module-summary {
     background-color: #e9e9e9;
 }
 
-details[open] summary {
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #e9e9e9;
+.module-details[open] > .module-summary {
+    border-bottom: 1px solid var(--border-color);
 }
 
-details .modulos {
-    padding: 15px;
+/* Indicador Visual de Concluído */
+.module-details.completed > .module-summary {
+    background-color: var(--success-light-bg);
+    color: var(--success-color);
+    font-weight: 600;
+}
+.module-details.completed > .module-summary::after { /* Adiciona um checkmark (exemplo) */
+    content: '✔';
+    margin-left: 10px;
+    color: var(--success-color);
 }
 
-details ul {
-    margin-left: 20px;
-    list-style-type: disc;
+
+.module-content {
+    padding: 20px;
+    border-top: 1px solid var(--border-color); /* Linha sutil quando aberto */
 }
 
-details li {
-    margin-bottom: 10px;
+.module-details[open] > .module-content {
+     animation: fadeIn 0.5s ease; /* Animação suave */
 }
 
-/* Estilos do rodapé */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+.module-content h4 {
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.module-content p {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+/* Anotações */
+.module-notes {
+    margin-top: 20px;
+}
+
+.module-notes label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.module-notes textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.module-notes textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+/* Ações do Módulo (Concluído) */
+.module-actions {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.module-actions input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+    position: relative; /* Para foco */
+}
+
+.module-actions input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
+    border-radius: 2px; /* Ajuste visual do foco */
+}
+
+
+.module-actions label {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-light);
+    user-select: none;
+}
+
+/* Botões */
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    line-height: 1.2; /* Alinhamento vertical */
+}
+
+button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+.button-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.button-danger:hover {
+    background-color: var(--danger-hover-color);
+}
+
+/* Rodapé */
 footer {
     background-color: #333;
-    color: #fff;
+    color: #f1f1f1;
     padding: 1rem 0;
     text-align: center;
     font-size: 0.9rem;
+    margin-top: auto; /* Empurra para baixo */
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    nav ul {
-        flex-wrap: wrap;
+    .container {
+        width: 95%;
     }
-    
-    nav li {
-        flex: 1 1 100%;
-        margin-right: 0;
-        text-align: center;
-    }
-    
+
     header h1 {
+        font-size: 1.6rem;
+    }
+
+    nav ul {
+        flex-wrap: wrap; /* Permite quebrar linha se necessário */
+        justify-content: space-around;
+    }
+
+    nav li {
+        margin: 5px;
+    }
+
+    nav a.nav-link {
+        padding: 0.7rem 1rem;
+    }
+
+    #content {
+        padding: 20px;
+    }
+    #content h2 { font-size: 1.5rem; }
+    #content h3 { font-size: 1.2rem; }
+
+    .card {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+     header h1 {
+        font-size: 1.4rem;
+    }
+     nav ul {
+        flex-direction: column;
+        align-items: stretch;
+     }
+     nav li {
+        margin: 3px 0;
+     }
+     nav a.nav-link {
         text-align: center;
+        font-size: 0.95rem;
+        padding: 0.8rem;
+    }
+    button {
+        font-size: 0.95rem;
+        padding: 9px 15px;
+        width: 100%; /* Botão ocupa largura total */
+    }
+    .module-summary {
+        padding: 10px 12px;
+    }
+    .module-content {
+        padding: 15px;
     }
 }
