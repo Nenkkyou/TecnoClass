@@ -15,17 +15,17 @@
     };
     const NOTE_SAVE_DEBOUNCE_MS = 500; // Milissegundos para esperar antes de salvar nota
 
-    // --- Dados dos Cursos (Estrutura JSON Simplificada) ---
+    // --- Dados dos Cursos (Estrutura JSON) ---
     const cursosData = {
         programacao: {
             id: "programacao",
             titulo: "Programação Essencial",
-            descricao: "Aprenda a criar software e páginas web interativas.",
+            descricao: "Desenvolva software e aplicações web com as linguagens mais populares.",
             modulos: [
-                { id: "prog-01", titulo: "Fundamentos da Lógica", descricao: "Como 'pensar' como um computador para resolver problemas." }, // Conteúdo removido
-                { id: "prog-02", titulo: "HTML & CSS Moderno", descricao: "Construindo a estrutura e a aparência de páginas web." }, // Conteúdo removido
-                { id: "prog-03", titulo: "JavaScript Interativo", descricao: "Adicionando comportamento e interatividade às páginas." }, // Conteúdo removido
-                { id: "prog-04", titulo: "Introdução ao Back-end", descricao: "Entendendo como funcionam os 'bastidores' da web." } // Conteúdo removido
+                { id: "prog-01", titulo: "Fundamentos da Lógica", descricao: "Conceitos básicos de algoritmos e pensamento computacional." },
+                { id: "prog-02", titulo: "HTML & CSS Moderno", descricao: "Estruturação e estilização de páginas web responsivas." },
+                { id: "prog-03", titulo: "JavaScript Interativo", descricao: "Manipulação do DOM e interatividade no front-end." },
+                { id: "prog-04", titulo: "Introdução ao Back-end", descricao: "Conceitos de servidores, APIs e bancos de dados." }
             ]
         },
         ciberseguranca: {
@@ -33,67 +33,156 @@
             titulo: "Cibersegurança Defensiva",
             descricao: "Proteja sistemas e redes contra ameaças digitais.",
             modulos: [
-                { id: "ciber-01", titulo: "Princípios de Segurança", descricao: "Os pilares da proteção de dados: Confidencialidade, Integridade, Disponibilidade." }, // Conteúdo removido
-                { id: "ciber-02", titulo: "Análise de Vulnerabilidades", descricao: "Identificando pontos fracos em sistemas antes dos invasores." }, // Conteúdo removido
-                { id: "ciber-03", titulo: "Segurança de Redes", descricao: "Protegendo a comunicação e o acesso à rede." }, // Conteúdo removido
-                { id: "ciber-04", titulo: "Resposta a Incidentes", descricao: "O que fazer quando um problema de segurança acontece." } // Conteúdo removido
+                { id: "ciber-01", titulo: "Princípios de Segurança", descricao: "Confidencialidade, Integridade e Disponibilidade." },
+                { id: "ciber-02", titulo: "Análise de Vulnerabilidades", descricao: "Identificação e mitigação de riscos em sistemas." },
+                { id: "ciber-03", titulo: "Segurança de Redes", descricao: "Firewalls, VPNs e protocolos seguros." },
+                { id: "ciber-04", titulo: "Resposta a Incidentes", descricao: "Estratégias para lidar com violações de segurança." }
             ]
         },
         ia: {
             id: "ia",
             titulo: "IA Generativa na Prática",
-            descricao: "Explore modelos de IA capazes de criar conteúdo.",
+            descricao: "Explore modelos de IA capazes de criar conteúdo e resolver problemas.",
             modulos: [
-                { id: "ia-01", titulo: "Fundamentos de IA/ML", descricao: "Como as máquinas aprendem a partir de dados." }, // Conteúdo removido
-                { id: "ia-02", titulo: "Modelos Generativos (LLMs)", descricao: "Entendendo como funcionam IAs como ChatGPT." }, // Conteúdo removido
-                { id: "ia-03", titulo: "Engenharia de Prompt", descricao: "A arte de 'conversar' com a IA para obter os melhores resultados." }, // Conteúdo removido
-                { id: "ia-04", titulo: "Ética em IA", descricao: "Considerações importantes sobre o uso responsável da IA." } // Conteúdo removido
+                { id: "ia-01", titulo: "Fundamentos de IA/ML", descricao: "Conceitos básicos de aprendizado de máquina." },
+                { id: "ia-02", titulo: "Modelos Generativos (LLMs)", descricao: "Compreensão de transformers e suas aplicações." },
+                { id: "ia-03", titulo: "Engenharia de Prompt", descricao: "Como interagir efetivamente com IAs generativas." },
+                { id: "ia-04", titulo: "Ética em IA", descricao: "Discussões sobre vieses e responsabilidade." }
             ]
         },
-        product_owner: {
-            id: "product_owner",
+        po: {
+            id: "po",
             titulo: "Product Owner Ágil",
-            descricao: "Lidere o desenvolvimento de produtos com agilidade.",
+            descricao: "Gerencie produtos digitais e lidere equipes com foco em resultados.",
             modulos: [
-                { id: "po-01", titulo: "Fundamentos de Produto", descricao: "O que é um produto digital e qual o papel do PO." }, // Conteúdo removido
-                { id: "po-02", titulo: "Metodologias Ágeis (Scrum)", descricao: "Trabalhando em ciclos curtos para entregar valor rapidamente." }, // Conteúdo removido
-                { id: "po-03", titulo: "Gestão de Backlog", descricao: "Priorizando o que precisa ser feito no produto." }, // Conteúdo removido
-                { id: "po-04", titulo: "Métricas e KPIs", descricao: "Medindo o sucesso e o progresso do produto." } // Conteúdo removido
+                { id: "po-01", titulo: "Fundamentos de Produto", descricao: "Ciclo de vida, visão e estratégia de produto." },
+                { id: "po-02", titulo: "Metodologias Ágeis (Scrum)", descricao: "Papéis, cerimônias e artefatos do Scrum." },
+                { id: "po-03", titulo: "Gestão de Backlog", descricao: "Priorização, escrita de User Stories e refinamento." },
+                { id: "po-04", titulo: "Métricas e KPIs", descricao: "Medindo o sucesso e o valor do produto." }
             ]
         }
     };
 
-    // --- Funções Auxiliares ---
-    // ... existing code ...
+    // --- Conteúdo Estático das Seções ---
+    const staticSectionContent = {
+        inicio: `
+            <h2>Bem-vindo ao TecnoClass!</h2>
+            <p>Sua plataforma PWA para aprender tecnologia de forma prática e acessível.</p>
+            <div class="card">
+                <h3>Explore Nossos Cursos</h3>
+                <p>Navegue pela seção 'Cursos' para encontrar trilhas de aprendizado em programação, cibersegurança, IA e gestão de produtos (Product Owner).</p>
+            </div>
+            <div class="card">
+                <h3>Acompanhe seu Progresso</h3>
+                <p>Marque módulos como concluídos e faça anotações diretamente no aplicativo. Seus dados ficam salvos no seu navegador.</p>
+            </div>
+             <div class="card">
+                <h3>Acesso Offline</h3>
+                <p>Como um Progressive Web App (PWA), o TecnoClass pode ser instalado e acessado mesmo sem conexão com a internet (após o primeiro carregamento e registro do Service Worker).</p>
+            </div>
+        `,
+        perfil: `
+            <h2>Perfil do Aluno</h2>
+            <p>Gerencie seus dados salvos localmente.</p>
+            <div class="card">
+                <h3>Progresso e Anotações</h3>
+                <p>Todo o seu progresso nos módulos e suas anotações são salvos automaticamente no armazenamento local do seu navegador.</p>
+            </div>
+             <div class="card">
+                <h3>Limpar Dados Locais</h3>
+                <p><strong>Atenção:</strong> Esta ação removerá permanentemente todas as suas anotações e o status de conclusão dos módulos salvos neste navegador.</p>
+                <button id="clear-storage-btn" class="button-danger" aria-label="Limpar todos os dados salvos do TecnoClass">Limpar Dados Salvos</button>
+            </div>
+        `
+    };
 
-    // --- Estado da Aplicação ---
-    // ... existing code ...
+    // --- Funções Utilitárias (LocalStorage) ---
+    const storage = {
+        get: (key, defaultValue = null) => {
+            try {
+                const item = localStorage.getItem(key);
+                // Verifica se o item existe e não é 'undefined' (string)
+                return item !== null && item !== 'undefined' ? JSON.parse(item) : defaultValue;
+            } catch (e) {
+                console.error(`Erro ao ler do localStorage (chave: ${key}):`, e);
+                return defaultValue;
+            }
+        },
+        set: (key, value) => {
+            try {
+                if (value === undefined) {
+                    console.warn(`Tentativa de salvar valor 'undefined' para a chave ${key}. Removendo a chave.`);
+                    localStorage.removeItem(key);
+                } else {
+                    localStorage.setItem(key, JSON.stringify(value));
+                }
+            } catch (e) {
+                console.error(`Erro ao salvar no localStorage (chave: ${key}):`, e);
+                // Considerar notificar o usuário se o armazenamento estiver cheio
+                if (e.name === 'QuotaExceededError') {
+                    alert('Erro: Não foi possível salvar os dados. O armazenamento local está cheio.');
+                }
+            }
+        },
+        remove: (key) => {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.error(`Erro ao remover do localStorage (chave: ${key}):`, e);
+            }
+        },
+        // Limpa apenas os dados específicos desta aplicação
+        clearAllAppData: () => {
+            if (confirm("Tem certeza que deseja apagar TODO o seu progresso e anotações salvos neste navegador? Esta ação não pode ser desfeita.")) {
+                Object.values(STORAGE_KEYS).forEach(key => storage.remove(key));
+                console.log("Dados do TecnoClass removidos do localStorage.");
+                alert("Todos os dados de progresso e anotações foram removidos!");
+                // Recarrega o estado local e a visualização
+                loadInitialState();
+                loadContent('perfil'); // Recarrega a seção de perfil
+            }
+        }
+    };
 
-    /** Carrega o estado inicial do localStorage */
-    // ... existing code ...
+    // --- Estado da Aplicação (Carregado do Storage) ---
+    let state = {
+        notes: {},
+        completion: {}
+    };
 
+    function loadInitialState() {
+        state.notes = storage.get(STORAGE_KEYS.NOTES, {});
+        state.completion = storage.get(STORAGE_KEYS.COMPLETION, {});
+    }
 
     // --- Funções de Renderização ---
 
-    /** Gera o HTML para um único módulo dentro de um <details> (Simplificado) */
-    function renderModule(module, cursoId) {
+    /** Gera o HTML para um único módulo dentro de <details> */
+    function renderModule(module) {
         const moduleId = module.id;
-        // const currentNote = state.notes[moduleId] || ''; // Removido - Não precisamos mais das notas
         const isCompleted = state.completion[moduleId] || false;
+        const currentNote = state.notes[moduleId] || '';
+        // Sanitizar IDs para uso em atributos HTML se necessário (aqui parece seguro)
+        const noteTextareaId = `notes-${moduleId}`;
         const completionCheckboxId = `completion-${moduleId}`;
-
-        // Não precisamos mais de detailedContent, a descrição já está no summary
-        // const detailedContent = module.conteudo ? ... : ...; // Removido
 
         return `
             <details class="module-details ${isCompleted ? 'completed' : ''}" data-module-id="${moduleId}">
-                <summary class="module-summary">
-                    <span class="module-title">${module.titulo}</span>
-                    <span class="completion-indicator">${isCompleted ? '✔' : ''}</span>
-                    <span class="module-short-desc">${module.descricao}</span> {/* Descrição agora é a explicação principal */}
+                <summary class="module-summary" aria-expanded="false" aria-controls="module-content-${moduleId}">
+                    ${module.titulo}
                 </summary>
-                <div class="module-content">
-                    {/* Área de conteúdo detalhado e notas removida */}
+                <div class="module-content" id="module-content-${moduleId}" role="region">
+                    <h4>${module.titulo}</h4>
+                    <p>${module.descricao}</p>
+                    <div class="module-notes">
+                        <label for="${noteTextareaId}">Minhas Anotações:</label>
+                        <textarea
+                            id="${noteTextareaId}"
+                            data-module-id="${moduleId}"
+                            aria-label="Anotações para o módulo ${module.titulo}"
+                            rows="4"
+                        >${currentNote}</textarea>
+                    </div>
                     <div class="module-actions">
                         <input
                             type="checkbox"
@@ -102,7 +191,7 @@
                             aria-labelledby="completion-label-${moduleId}"
                             ${isCompleted ? 'checked' : ''}
                         >
-                        <label for="${completionCheckboxId}" id="completion-label-${moduleId}">Marcar como entendido</label> {/* Texto do label atualizado */}
+                        <label for="${completionCheckboxId}" id="completion-label-${moduleId}">Marcar como concluído</label>
                     </div>
                 </div>
             </details>
@@ -112,19 +201,18 @@
     /** Gera o HTML para a seção de Cursos */
     function renderCursosSection() {
         let html = '<h2>Nossos Cursos</h2>';
-        html += '<div class="cursos-grid">'; // Grid para os cards de curso
+        html += '<div class="cursos-grid">'; // Container para os cards dos cursos
 
         for (const cursoId in cursosData) {
             const curso = cursosData[cursoId];
             html += `
                 <div class="card curso-card">
                     <h3>${curso.titulo}</h3>
-                    <p>${curso.descricao}</p>
                     <h4>Módulos:</h4>
             `;
             if (curso.modulos && curso.modulos.length > 0) {
                 curso.modulos.forEach(module => {
-                    html += renderModule(module, cursoId); // Passa o ID do curso se necessário
+                    html += renderModule(module); // Renderiza cada módulo
                 });
             } else {
                 html += '<p><em>Módulos em breve.</em></p>';
@@ -135,82 +223,44 @@
         return html;
     }
 
-    /** Gera o HTML para a seção de Início */
-    function renderInicioSection() {
-        return `
-            <h2>Bem-vindo(a) ao TecnoClass!</h2>
-            <p>Sua plataforma PWA para aprender sobre tecnologia de forma prática e acessível, onde quer que você esteja.</p>
-            <p>Explore nossos cursos de <strong>Programação</strong>, <strong>Cibersegurança</strong>, <strong>Inteligência Artificial</strong> e <strong>Gestão de Produtos</strong>.</p>
-            <p>Navegue pelas seções usando o menu acima. Suas anotações e progresso ficam salvos diretamente no seu navegador!</p>
-            <div class="card">
-                <h3>Recursos Principais:</h3>
-                <ul>
-                    <li>Conteúdo didático e direto ao ponto.</li>
-                    <li>Anotações por módulo salvas localmente.</li>
-                    <li>Acompanhamento de módulos concluídos.</li>
-                    <li>Funciona offline após o primeiro acesso (PWA).</li>
-                    <li>Interface limpa e responsiva.</li>
-                </ul>
-            </div>
-        `;
-    }
-
-    /** Gera o HTML para a seção de Perfil (simples) */
-    function renderPerfilSection() {
-        const totalModules = Object.values(cursosData).reduce((sum, curso) => sum + curso.modulos.length, 0);
-        const completedModules = Object.values(state.completion).filter(Boolean).length;
-        const progress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
-
-        return `
-            <h2>Meu Perfil</h2>
-            <div class="card">
-                <h3>Progresso Geral</h3>
-                <p>Você completou <strong>${completedModules}</strong> de <strong>${totalModules}</strong> módulos (${progress}%).</p>
-                <progress max="100" value="${progress}" aria-label="Progresso geral nos cursos"></progress>
-            </div>
-             <div class="card">
-                <h3>Gerenciamento de Dados</h3>
-                <p>Suas anotações e progresso são salvos apenas neste navegador.</p>
-                <button id="clear-storage-btn" class="btn btn-danger">Limpar Todos os Dados Salvos</button>
-                <p><small><strong>Atenção:</strong> Esta ação é irreversível e apagará todas as suas anotações e progresso de conclusão.</small></p>
-            </div>
-        `;
-    }
-
-
     /** Carrega o conteúdo da seção solicitada no elemento #content */
     function loadContent(sectionId) {
-        console.log(`Carregando seção: ${sectionId}`);
-        let htmlContent = '';
+        let contentToLoad = '';
 
         switch (sectionId) {
-            case 'cursos':
-                htmlContent = renderCursosSection();
-                break;
-            case 'perfil':
-                htmlContent = renderPerfilSection();
-                break;
             case 'inicio':
-            default:
-                sectionId = 'inicio'; // Garante que 'inicio' seja o padrão
-                htmlContent = renderInicioSection();
+            case 'perfil':
+                contentToLoad = staticSectionContent[sectionId];
                 break;
+            case 'cursos':
+                contentToLoad = renderCursosSection();
+                break;
+            default:
+                console.warn(`Seção desconhecida: ${sectionId}. Carregando Início.`);
+                sectionId = 'inicio'; // Volta para o início se a seção for inválida
+                contentToLoad = staticSectionContent.inicio;
         }
 
-        contentElement.innerHTML = htmlContent;
+        if (!contentElement) {
+            console.error("Elemento #content não encontrado no DOM.");
+            return;
+        }
+
+        contentElement.innerHTML = contentToLoad;
         updateActiveNav(sectionId);
-        storage.set(STORAGE_KEYS.CURRENT_SECTION, sectionId); // Salva a seção atual
-        addDynamicListeners(sectionId); // Adiciona listeners para elementos dinâmicos
+        storage.set(STORAGE_KEYS.CURRENT_SECTION, sectionId);
+
+        // Adiciona listeners aos elementos dinâmicos APÓS serem inseridos no DOM
+        addDynamicListeners(sectionId);
     }
 
-    /** Atualiza a classe 'active' na navegação */
+    /** Atualiza a classe 'active' e aria-current na navegação */
     function updateActiveNav(activeSectionId) {
-        if (!mainNav) return;
-        const links = mainNav.querySelectorAll('.nav-link');
-        links.forEach(link => {
+        const navLinks = mainNav.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
             if (link.dataset.section === activeSectionId) {
                 link.classList.add('active');
-                link.setAttribute('aria-current', 'page'); // Indica a página atual para acessibilidade
+                link.setAttribute('aria-current', 'page');
             } else {
                 link.classList.remove('active');
                 link.removeAttribute('aria-current');
@@ -218,57 +268,71 @@
         });
     }
 
-    // --- Manipuladores de Eventos ---
+    // --- Handlers de Eventos ---
 
-    /** Lida com cliques na navegação principal */
+    /** Lida com cliques na navegação principal (usando delegação) */
     function handleNavClick(event) {
-        event.preventDefault(); // Previne a navegação padrão do link '#'
-        const link = event.target.closest('a.nav-link'); // Garante que pegamos o link mesmo clicando em algo dentro dele
+        const link = event.target.closest('.nav-link'); // Encontra o link clicado
         if (link && link.dataset.section) {
+            event.preventDefault();
             const sectionId = link.dataset.section;
             loadContent(sectionId);
+            // Foca no início do conteúdo principal para acessibilidade
+            contentElement.focus(); // Pode precisar de tabindex="-1" no #content se não for naturalmente focável
         }
     }
 
-    /** Lida com eventos de input/change/click em elementos dinâmicos (delegação no #content) */
+    /** Debounce para salvar notas */
+    let noteSaveTimeout;
+    function debounceSaveNote(moduleId, value) {
+        clearTimeout(noteSaveTimeout);
+        noteSaveTimeout = setTimeout(() => {
+            state.notes[moduleId] = value;
+            storage.set(STORAGE_KEYS.NOTES, state.notes);
+            // console.log(`Nota salva para ${moduleId}`); // Para debug
+        }, NOTE_SAVE_DEBOUNCE_MS);
+    }
+
+    /** Lida com eventos de input/change em elementos dinâmicos (delegação no #content) */
     function handleContentInteraction(event) {
         const target = event.target;
-        const moduleId = target.dataset.moduleId;
 
+        // Salvar Anotações (no input)
+        if (target.matches('.module-notes textarea')) {
+            const moduleId = target.dataset.moduleId;
+            if (moduleId) {
+                debounceSaveNote(moduleId, target.value);
+            }
+        }
         // Marcar Conclusão (na mudança do checkbox)
-        if (target.matches('.module-actions input[type="checkbox"]') && moduleId) { // Condição simplificada
-            const isCompleted = target.checked;
-            state.completion[moduleId] = isCompleted;
-            storage.set(STORAGE_KEYS.COMPLETION, state.completion);
-
-            // Atualiza visual do <details> pai e do indicador no <summary>
-            const detailsElement = target.closest('.module-details');
-            if (detailsElement) {
-                detailsElement.classList.toggle('completed', isCompleted);
-                const indicator = detailsElement.querySelector('.module-summary .completion-indicator');
-                if (indicator) {
-                    indicator.textContent = isCompleted ? '✔' : '';
+        else if (target.matches('.module-actions input[type="checkbox"]')) {
+            const moduleId = target.dataset.moduleId;
+            if (moduleId) {
+                const isCompleted = target.checked;
+                state.completion[moduleId] = isCompleted;
+                storage.set(STORAGE_KEYS.COMPLETION, state.completion);
+                // Atualiza visual do <details> pai
+                const detailsElement = target.closest('.module-details');
+                if (detailsElement) {
+                    detailsElement.classList.toggle('completed', isCompleted);
                 }
             }
         }
         // Limpar Storage (no clique do botão)
         else if (target.matches('#clear-storage-btn')) {
-            if (confirm("Tem certeza que deseja apagar TODO o seu progresso? Esta ação não pode ser desfeita.")) { // Texto do confirm atualizado
-                storage.clearAllAppData();
-            }
+            storage.clearAllAppData();
         }
     }
 
-
     /** Adiciona listeners aos elementos dinâmicos (usando delegação no #content) */
     function addDynamicListeners(sectionId) {
-        // Remove listener anterior para evitar duplicação
-        contentElement.removeEventListener('input', handleContentInteraction); // Listener de input não é mais necessário
+        // Remove listener anterior para evitar duplicação (embora a delegação minimize isso)
+        contentElement.removeEventListener('input', handleContentInteraction);
         contentElement.removeEventListener('change', handleContentInteraction);
         contentElement.removeEventListener('click', handleContentInteraction);
 
         // Adiciona listeners delegados ao container #content
-        // contentElement.addEventListener('input', handleContentInteraction); // Removido
+        contentElement.addEventListener('input', handleContentInteraction); // Para textareas
         contentElement.addEventListener('change', handleContentInteraction); // Para checkboxes
         contentElement.addEventListener('click', handleContentInteraction); // Para botões (como o de limpar)
     }
