@@ -1,53 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#4a90e2">
-    <meta name="description" content="TecnoClass - Sua plataforma PWA de aprendizado em tecnologia.">
-    <link rel="manifest" href="manifest.json">
-    <!-- Ícones (substitua pelos seus) -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="images/icon-192x192.png">
-
-    <title>TecnoClass - Aprendizado Tech</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4a90e2" />
+  <title>TecnoClass</title>
+  <!-- Manifesto PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <!-- Favicon e ícone PWA -->
+  <link rel="icon" type="image/png" href="images/icon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/png" href="images/icon-192x192.png" sizes="192x192" />
+  <!-- Arquivo de estilo CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
-    <header>
-        <div class="container">
-            <h1>TecnoClass</h1>
-        </div>
-    </header>
-
-    <nav>
-        <div class="container">
-            <ul id="main-nav">
-                <li><a href="#" data-section="inicio" class="nav-link active" aria-current="page" aria-label="Ir para a seção Início">Início</a></li>
-                <li><a href="#" data-section="cursos" class="nav-link" aria-label="Ir para a seção Cursos">Cursos</a></li>
-                <li><a href="#" data-section="perfil" class="nav-link" aria-label="Ir para a seção Perfil">Perfil</a></li>
-            </ul>
-        </div>
+  <header>
+    <!-- Link para pular navegação (acessibilidade) -->
+    <a href="#content" class="skip-link">Ir para conteúdo</a>
+    <!-- Nome da aplicação -->
+    <h1 class="branding">TecnoClass</h1>
+    <!-- Navegação principal -->
+    <nav aria-label="Navegação principal">
+      <ul>
+        <li><a href="#inicio">Início</a></li>
+        <li><a href="#cursos">Cursos</a></li>
+        <li><a href="#perfil">Perfil</a></li>
+      </ul>
     </nav>
+  </header>
 
-    <main id="main-content">
-        <div class="container">
-            <div id="content" role="region" aria-live="polite">
-                <!-- Conteúdo carregado dinamicamente -->
-            </div>
-        </div>
-    </main>
+  <!-- Conteúdo principal dinâmico -->
+  <main id="content" tabindex="-1">
+    <!-- O conteúdo das seções Início, Cursos e Perfil será inserido aqui via script -->
+  </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <span id="current-year"></span> TecnoClass. Todos os direitos reservados.</p>
-        </div>
-    </footer>
+  <footer>
+    <!-- Rodapé com ano atual via JS -->
+    &copy; <span id="year"></span> TecnoClass
+  </footer>
 
-    <!-- Script principal carregado no final -->
-    <script src="script.js" defer></script>
+  <!-- Script principal da aplicação -->
+  <script src="script.js" defer></script>
 </body>
 </html>
