@@ -1,70 +1,91 @@
-<!-- index.html completo, educacional, com login, abas, quizzes e perfil -->
-<!-- Criado para funcionar offline, sem dependências externas -->
+<!-- index.html COMPLETO — EduTech App -->
+<!-- Design moderno, responsivo e funcional OFFLINE -->
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EduTech App</title>
+  <title>TecnoClass App</title>
   <meta name="theme-color" content="#2c3e50" />
   <style>
+    :root {
+      --dark: #2c3e50;
+      --mid: #34495e;
+      --accent: #1abc9c;
+      --light: #ecf0f1;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; }
     body {
       font-family: sans-serif;
       margin: 0;
-      background: #ecf0f1;
-      color: #2c3e50;
+      background: var(--light);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     header, footer {
-      background: #2c3e50;
-      color: white;
+      background: var(--dark);
+      color: var(--white);
       text-align: center;
       padding: 1em;
     }
     nav {
       display: flex;
-      justify-content: space-around;
-      background: #34495e;
+      flex-wrap: wrap;
+      background: var(--mid);
     }
     nav button {
       flex: 1;
+      min-width: 100px;
       padding: 1em;
       border: none;
-      background: #34495e;
-      color: white;
+      background: var(--mid);
+      color: var(--white);
       font-weight: bold;
       cursor: pointer;
     }
-    nav button.active {
-      background: #1abc9c;
-    }
+    nav button.active { background: var(--accent); }
     .tab {
       display: none;
       padding: 1em;
     }
     .visible { display: block; }
-
-    .quiz-question {
-      margin-bottom: 1em;
-    }
-    .quiz-question p {
-      margin-bottom: 0.5em;
-    }
+    .quiz-question { margin-bottom: 1em; }
+    .quiz-question p { margin-bottom: 0.5em; }
     .correct { background: #2ecc71; color: white; padding: 0.5em; }
     .wrong { background: #e74c3c; color: white; padding: 0.5em; }
-
-    input[type="file"] { margin-top: 10px; }
-
-    #login, #app { display: none; }
+    #login, #app { flex: 1; padding: 2em; }
+    #login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #login h2 { margin-bottom: 1em; }
     input, select {
-      padding: 0.6em;
+      padding: 0.8em;
       margin: 0.5em 0;
       width: 100%;
-      box-sizing: border-box;
+      max-width: 400px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
     button {
-      margin-top: 10px;
+      padding: 0.8em 1.2em;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5em;
     }
+    button:hover { background: #16a085; }
     .profile-img {
       width: 100px;
       height: 100px;
@@ -72,7 +93,15 @@
       object-fit: cover;
       background: #bdc3c7;
       display: block;
-      margin-bottom: 10px;
+      margin: 1em 0;
+    }
+    form label { display: block; margin: 0.4em 0; }
+    @media (max-width: 600px) {
+      nav button { flex: 100%; }
+      #login {
+        padding-top: 10vh;
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -88,7 +117,7 @@
   <button onclick="login()">Entrar</button>
 </div>
 
-<div id="app">
+<div id="app" style="display:none">
   <nav>
     <button onclick="showTab('programacao')" id="btn-programacao">Programação</button>
     <button onclick="showTab('cyber')" id="btn-cyber">Cybersegurança</button>
@@ -97,33 +126,10 @@
     <button onclick="showTab('perfil')" id="btn-perfil">Perfil</button>
   </nav>
 
-  <div id="programacao" class="tab">
-    <h2>Programação</h2>
-    <p>Aprenda os fundamentos do desenvolvimento web: HTML, CSS, JavaScript, e lógica de programação. Explore conceitos de back-end com Node.js e bancos de dados.</p>
-    <button onclick="startQuiz('programacao')">Iniciar o Quiz</button>
-    <div id="quiz-programacao"></div>
-  </div>
-
-  <div id="cyber" class="tab">
-    <h2>Cybersegurança</h2>
-    <p>A cibersegurança protege dados, sistemas e redes contra ataques. É vital para empresas e usuários individuais. Aprenda conceitos como firewalls, phishing e senhas fortes.</p>
-    <button onclick="startQuiz('cyber')">Iniciar o Quiz</button>
-    <div id="quiz-cyber"></div>
-  </div>
-
-  <div id="ia" class="tab">
-    <h2>Inteligência Artificial</h2>
-    <p>IA impacta o desenvolvimento pessoal ao automatizar tarefas, melhorar decisões e abrir novas oportunidades. Conheça redes neurais, LLMs, e o futuro da automação.</p>
-    <button onclick="startQuiz('ia')">Iniciar o Quiz</button>
-    <div id="quiz-ia"></div>
-  </div>
-
-  <div id="po" class="tab">
-    <h2>Product Owner</h2>
-    <p>PO é o responsável por maximizar o valor do produto. Ele define prioridades, escreve histórias de usuário e atua como ponte entre clientes e equipe técnica.</p>
-    <button onclick="startQuiz('po')">Iniciar o Quiz</button>
-    <div id="quiz-po"></div>
-  </div>
+  <div id="programacao" class="tab"></div>
+  <div id="cyber" class="tab"></div>
+  <div id="ia" class="tab"></div>
+  <div id="po" class="tab"></div>
 
   <div id="perfil" class="tab">
     <h2>Meu Perfil</h2>
@@ -152,7 +158,7 @@
       ["Node.js é:", ["Linguagem", "Framework", "Runtime JavaScript", "Editor"], 2],
       ["Função do banco de dados:", ["Processar CSS", "Renderizar HTML", "Salvar dados", "Interagir com usuário"], 2],
       ["console.log serve para:", ["Salvar dados", "Mostrar alertas", "Depurar código", "Criar elementos"], 2],
-      ["Qual é uma linguagem tipada:", ["Python", "JavaScript", "Java", "HTML"], 2],
+      ["Qual é uma linguagem tipada:", ["Python", "JavaScript", "Java", "HTML"], 2]
     ],
     cyber: [
       ["Firewall serve para:", ["Bloquear propagandas", "Proteger contra acessos não autorizados", "Armazenar dados", "Instalar antivírus"], 1],
@@ -164,7 +170,7 @@
       ["Backup serve para:", ["Acelerar sistema", "Atualizar apps", "Recuperar dados", "Impedir vírus"], 2],
       ["Autenticação de dois fatores:", ["Exige 2 logins", "Exige SMS ou app extra", "É obrigatória", "É automática"], 1],
       ["Importância da segurança digital:", ["Evita crimes cibernéticos", "Evita compras", "Evita atualizações", "Evita senhas"], 0],
-      ["Ransomware faz:", ["Melhora o sistema", "Vaza dados", "Criptografa dados e cobra resgate", "Corrige erros"], 2],
+      ["Ransomware faz:", ["Melhora o sistema", "Vaza dados", "Criptografa dados e cobra resgate", "Corrige erros"], 2]
     ],
     ia: [
       ["IA significa:", ["Inteligência Avançada", "Inteligência Artificial", "Interface Autônoma", "Item Ativo"], 1],
@@ -176,7 +182,7 @@
       ["IA pode melhorar:", ["Autonomia", "Criatividade", "Produtividade", "Todas"], 3],
       ["Vieses em IA são:", ["Defeitos físicos", "Preconceitos nos dados", "Erros do usuário", "Falhas da câmera"], 1],
       ["IA generativa cria:", ["Planilhas", "Dados aleatórios", "Conteúdo novo", "Backups"], 2],
-      ["Impacto da IA no trabalho:", ["Remove empregos", "Aumenta eficiência", "Reduz salários", "Cria dependência"], 1],
+      ["Impacto da IA no trabalho:", ["Remove empregos", "Aumenta eficiência", "Reduz salários", "Cria dependência"], 1]
     ],
     po: [
       ["PO significa:", ["Project Officer", "Product Owner", "Process Operator", "Principal Operator"], 1],
@@ -188,18 +194,26 @@
       ["Scrum Master é:", ["Supervisor", "Dono do Produto", "Facilitador", "Programador"], 2],
       ["PO trabalha com:", ["Designers", "Time de desenvolvimento", "CEO", "Todos"], 3],
       ["KPI mede:", ["Código", "Desempenho", "Animação", "Tamanho do app"], 1],
-      ["Objetivo do PO:", ["Falar com clientes", "Gerar valor", "Testar códigos", "Criar layout"], 1],
+      ["Objetivo do PO:", ["Falar com clientes", "Gerar valor", "Testar códigos", "Criar layout"], 1]
     ]
   };
 
   function showTab(id) {
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("visible"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("visible"));
     document.getElementById(id).classList.add("visible");
-    document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
     document.getElementById("btn-" + id).classList.add("active");
   }
 
   function startQuiz(topic) {
+    const container = document.getElementById(topic);
+    const data = quizzes[topic];
+    let html = `<h2>${topic.toUpperCase()}</h2><p>Leia o conteúdo acima e clique para iniciar o quiz:</p>`;
+    html += `<button onclick="renderQuiz('${topic}')">Iniciar o Quiz</button><div id="quiz-${topic}"></div>`;
+    container.innerHTML = html;
+  }
+
+  function renderQuiz(topic) {
     const container = document.getElementById("quiz-" + topic);
     const data = quizzes[topic];
     let html = "<form id='form-" + topic + "'>";
@@ -245,6 +259,7 @@
     document.getElementById("nomePerfil").value = name;
     carregarFoto();
     atualizarProgresso();
+    ["programacao", "cyber", "ia", "po"].forEach(startQuiz);
     showTab('programacao');
   }
 
@@ -286,12 +301,12 @@
       document.getElementById("nomePerfil").value = user;
       carregarFoto();
       atualizarProgresso();
+      ["programacao", "cyber", "ia", "po"].forEach(startQuiz);
       showTab('programacao');
     } else {
-      document.getElementById("login").style.display = "block";
+      document.getElementById("login").style.display = "flex";
     }
   };
 </script>
-
 </body>
 </html>
