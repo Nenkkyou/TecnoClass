@@ -49,11 +49,24 @@ const quizzes = {
   ]
 };
 
+// Conteúdo didático do Campo de Estudo
+const campoDeEstudo = `
+  <h2>Campo de Estudo</h2>
+  <div class="card"><h3>Programação</h3><p>Programação é o processo de escrever instruções para o computador executar. Usamos linguagens como HTML, CSS e JavaScript para criar sites, aplicativos e sistemas. Um bom programador aprende lógica, resolve problemas e estrutura código de forma organizada.</p></div>
+  <div class="card"><h3>Cibersegurança</h3><p>Cibersegurança envolve proteger dispositivos, redes e dados contra ataques. É essencial usar senhas fortes, backups e entender ameaças como phishing e ransomware. Especialistas garantem que sistemas estejam seguros e que dados não sejam acessados por criminosos.</p></div>
+  <div class="card"><h3>Inteligência Artificial</h3><p>IA é a simulação da inteligência humana por máquinas. Com ela, sistemas aprendem com dados, criam textos, imagens e tomam decisões. Modelos como redes neurais e LLMs são usados em chatbots, carros autônomos e muito mais.</p></div>
+  <div class="card"><h3>Product Owner</h3><p>O Product Owner (PO) é responsável por guiar o desenvolvimento de um produto. Ele define o que deve ser feito, prioriza tarefas e garante que a equipe entenda as metas. Trabalha com métodos ágeis como Scrum e usa métricas para medir sucesso.</p></div>
+`;
+
 function showTab(id) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("visible"));
   document.getElementById(id).classList.add("visible");
   document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
   document.getElementById("btn-" + id).classList.add("active");
+
+  if (id === "estudo") {
+    document.getElementById("estudo").innerHTML = campoDeEstudo;
+  }
 }
 
 function startQuiz(topic) {
