@@ -265,8 +265,9 @@ input:focus {
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   border-left: 5px solid var(--primary);
-  transition: transform 0.3s ease;
   color: var(--text);
+  position: relative;
+  transition: transform 0.3s ease;
 }
 
 #estudo .card:hover {
@@ -282,6 +283,23 @@ input:focus {
   color: var(--text-light);
   line-height: 1.6;
   font-size: 1rem;
+  transition: max-height 0.3s ease;
+}
+
+/* VER MAIS / VER MENOS */
+.ver-mais-btn {
+  background: none;
+  color: var(--primary);
+  font-weight: bold;
+  border: none;
+  margin-top: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.ver-mais-btn:hover {
+  color: var(--primary-hover);
 }
 
 /* ANIMAÇÕES */
