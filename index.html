@@ -21,12 +21,17 @@
 
 <div id="app" style="display:none">
   <nav>
+    <button onclick="showTab('estudo')" id="btn-estudo">Campo de Estudo</button>
     <button onclick="showTab('programacao')" id="btn-programacao">Programação</button>
     <button onclick="showTab('cyber')" id="btn-cyber">Cybersegurança</button>
     <button onclick="showTab('ia')" id="btn-ia">IA</button>
     <button onclick="showTab('po')" id="btn-po">Product Owner</button>
     <button onclick="showTab('perfil')" id="btn-perfil">Perfil</button>
   </nav>
+
+  <div id="estudo" class="tab">
+    <!-- Conteúdo do Campo de Estudo será carregado via script.js -->
+  </div>
 
   <div id="programacao" class="tab"></div>
   <div id="cyber" class="tab"></div>
