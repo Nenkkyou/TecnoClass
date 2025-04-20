@@ -49,44 +49,161 @@ const quizzes = {
   ]
 };
 
-// Conteúdo com botão "ver mais" e função de exibição
-
-const estudoConteudos = {
-  programacao: `Programação é o processo de criar instruções formais que um computador pode interpretar e executar. Em vez de falar com ele em português ou gritar “FUNCIONA, MALDITO!”, usamos linguagens específicas... Já CSS cuida do visual e JavaScript dá vida ao site. Além disso, um bom programador precisa pensar como um computador, com lógica, paciência e organização.`,
-  cyber: `Cibersegurança é o conjunto de práticas que protege nossos dados e dispositivos contra ataques digitais. Isso inclui entender ameaças como phishing, usar senhas seguras e manter backups. Os profissionais da área são os ninjas invisíveis da era digital, que garantem que nossos sistemas estejam protegidos.`,
-  ia: `Inteligência Artificial (IA) é quando máquinas simulam a capacidade humana de pensar. Ela aprende com dados e é usada em carros autônomos, chatbots e recomendadores de vídeo. Não é mágica — é pura matemática, estatística e algoritmos em ação.`,
-  po: `O Product Owner (PO) é o responsável por definir o que deve ser feito em um produto digital. Ele organiza tarefas, prioriza funcionalidades e representa a voz do cliente. Trabalha com metodologias ágeis, como Scrum, e precisa manter tudo sob controle mesmo quando tudo pega fogo.`
-};
-
-// Gera os cards do campo de estudo
+// Conteúdo didático do Campo de Estudo
 const campoDeEstudo = `
   <h2>Campo de Estudo</h2>
-  ${Object.entries(estudoConteudos).map(([key, texto]) => {
-    const resumo = texto.split('.').slice(0, 2).join('.') + '.';
-    return `
-      <div class="card expandable">
-        <h3>${formatarTitulo(key)}</h3>
-        <p id="${key}-texto">${resumo}</p>
-        <button class="ver-mais-btn" onclick="toggleExpand('${key}', \`${texto}\`)">Ver mais</button>
-      </div>
-    `;
-  }).join('')}
+
+  <div class="card"><h3>Programação</h3>
+    <p>Programação é o processo de criar instruções formais que um computador pode interpretar e executar. Em vez de falar com ele em português ou gritar “FUNCIONA, MALDITO!”, usamos linguagens específicas, cada uma com sua função e estrutura. Linguagens como HTML (HyperText Markup Language) definem a estrutura de páginas na web, como se fossem o esqueleto de um site. Já CSS (Cascading Style Sheets) cuida do visual: cores, espaçamentos, fontes — basicamente, é o estilista do código. Por fim, JavaScript é a linguagem que dá vida e interatividade às páginas, permitindo animações, validações de formulários, botões que reagem e, claro, bugs em tempo real.
+
+    Além das linguagens, um bom programador precisa desenvolver lógica de programação, que é a habilidade de pensar como um computador: com passos bem definidos, condições claras e muita paciência. Também é fundamental saber resolver problemas, testar soluções diferentes e manter o código organizado, legível e funcional — porque um dia, alguém (possivelmente o próprio programador) vai precisar entender aquele código de novo… e ele provavelmente vai estar com sono.
+
+    Em resumo, programar é menos sobre saber decorar comandos e mais sobre entender como pensar de forma estruturada, analítica e criativa ao mesmo tempo. É tipo montar um quebra-cabeça onde as peças mudam de forma toda hora e o manual está em binário.</p>
+  </div>
+
+  <div class="card"><h3>Cibersegurança</h3>
+    <p>Cibersegurança envolve proteger dispositivos, redes e dados contra ataques. É essencial usar senhas fortes, backups e entender ameaças como phishing e ransomware. Cibersegurança é o conjunto de práticas, tecnologias e processos utilizados para proteger dispositivos (como computadores, smartphones e até geladeiras inteligentes, infelizmente). Em um mundo onde até a sua escova de dentes pode ter Wi-Fi, a proteção digital nunca foi tão importante — nem tão absurda.
+
+    Os ataques mais comuns incluem phishing, que são armadilhas disfarçadas de e-mails ou mensagens aparentemente legítimas que tentam enganar você para que revele senhas ou clique em links perigosos. Também temos o famigerado ransomware, que é basicamente sequestro digital: os dados são criptografados e os criminosos exigem resgate para devolvê-los — como um sequestro, mas sem o drama de novela.
+
+    A base da cibersegurança está em práticas simples e eficazes: usar senhas fortes (não, “123456” não é forte — é só patético), manter backups atualizados (porque o computador não vai chorar por você quando tudo sumir) e entender os riscos, ou seja, não sair clicando em tudo que brilha.
+
+    Os profissionais da área — conhecidos como especialistas em segurança da informação, ou como eu gosto de chamá-los, “os ninjas invisíveis da era digital” — são responsáveis por garantir que sistemas estejam protegidos, vulnerabilidades sejam corrigidas e que ninguém esteja espionando a vida alheia por pura diversão criminosa.
+
+    Em resumo, cibersegurança é como um antivírus social: previne tragédias digitais e faz você parecer mais inteligente só por saber o básico.</p>
+  </div>
+
+  <div class="card"><h3>Inteligência Artificial</h3>
+    <p>Inteligência Artificial (IA) é o ato de fazer uma máquina agir como se tivesse cérebro — o que é ao mesmo tempo fascinante e, dependendo do contexto, aterrorizante. Ao invés de apenas seguir ordens, sistemas com IA são capazes de aprender com dados, adaptar comportamentos e gerar respostas cada vez mais sofisticadas (e, às vezes, mais espertas que o próprio usuário).
+
+    Modelos como redes neurais e LLMs (Large Language Models) são a base de ferramentas como ChatGPT, assistentes virtuais, carros autônomos, filtros de spam, reconhecimento facial... e claro, aquelas sugestões absurdamente precisas de vídeos que fazem você perder 3 horas no YouTube.
+
+    O processo por trás da IA envolve treinar modelos com grandes volumes de dados — muitos mesmo — e ajustar os parâmetros até que o sistema “entenda” padrões e consiga fazer previsões ou gerar conteúdo. Isso inclui desde criar uma poesia triste em 0,3 segundos até detectar fraude bancária antes mesmo do golpista acordar.
+
+    Em resumo: IA não é mágica (ainda), mas parece. É matemática, estatística, lógica, e um pouco de caos controlado — tudo isso dentro de um servidor que provavelmente está mais acordado do que você.</p>
+  </div>
+
+  <div class="card"><h3>Product Owner</h3>
+    <p>O Product Owner (ou PO para os íntimos) é a pessoa responsável por garantir que um produto digital — como um app, um site ou até aquele sistema tosco da empresa — seja desenvolvido com foco em valor. E o que é valor? É aquilo que resolve o problema do cliente antes que ele desista e vá para o concorrente.
+
+    O PO é quem define o que será feito, quando será feito, e por quê. Ele mantém o backlog (a lista sagrada de tarefas), organiza prioridades, conversa com o time de desenvolvimento, stakeholders, usuários... e ainda tem que fingir que dorme em paz à noite.
+
+    Trabalhando com metodologias ágeis (como Scrum), o PO participa de sprints, refinamentos, plannings, reviews e retrospectivas. É basicamente um malabarista que equilibra demandas técnicas, expectativas de negócios e limitações de tempo sem deixar nada cair — ou pelo menos tentando parecer calmo enquanto tudo pega fogo.
+
+    Em resumo, o Product Owner é a ponte entre o caos e o cliente. Um tradutor de ideias em funcionalidades reais, que nem sempre são perfeitas, mas precisam ser entregues. Porque no fim das contas, o botão pode até estar feio... mas se funcionar, já é meio caminho andado.</p>
+  </div>
 `;
 
-function formatarTitulo(categoria) {
-  switch (categoria) {
-    case 'programacao': return 'Programação';
-    case 'cyber': return 'Cibersegurança';
-    case 'ia': return 'Inteligência Artificial';
-    case 'po': return 'Product Owner';
-    default: return categoria;
+function showTab(id) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("visible"));
+  document.getElementById(id).classList.add("visible");
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-" + id).classList.add("active");
+
+  if (id === "estudo") {
+    document.getElementById("estudo").innerHTML = campoDeEstudo;
   }
 }
 
-function toggleExpand(id, textoCompleto) {
-  const p = document.getElementById(id + '-texto');
-  const btn = p.nextElementSibling;
-  const expanded = p.classList.toggle('expanded');
-  p.innerHTML = expanded ? textoCompleto : textoCompleto.split('.').slice(0, 2).join('.') + '.';
-  btn.textContent = expanded ? 'Ver menos' : 'Ver mais';
+function startQuiz(topic) {
+  const container = document.getElementById(topic);
+  const data = quizzes[topic];
+  let html = `<h2>${topic.toUpperCase()}</h2><p>Leia o conteúdo acima e clique para iniciar o quiz:</p>`;
+  html += `<button onclick="renderQuiz('${topic}')">Iniciar o Quiz</button><div id="quiz-${topic}"></div>`;
+  container.innerHTML = html;
 }
+
+function renderQuiz(topic) {
+  const container = document.getElementById("quiz-" + topic);
+  const data = quizzes[topic];
+  let html = "<form id='form-" + topic + "'>";
+  data.forEach((q, i) => {
+    html += `<div class='quiz-question'><p><strong>${i + 1}.</strong> ${q[0]}</p>`;
+    q[1].forEach((opt, j) => {
+      html += `<label><input type="radio" name="q${i}" value="${j}" /> ${opt}</label><br>`;
+    });
+    html += "</div>";
+  });
+  html += `<button type="button" onclick="checkQuiz('${topic}')">CONFERIR RESULTADO</button></form>`;
+  container.innerHTML = html;
+}
+
+function checkQuiz(topic) {
+  const form = document.getElementById("form-" + topic);
+  const data = quizzes[topic];
+  let progresso = 0;
+  data.forEach((q, i) => {
+    const chosen = form["q" + i].value;
+    const correct = q[2];
+    const block = form.querySelectorAll(".quiz-question")[i];
+    if (chosen == correct) {
+      block.className = "quiz-question correct";
+      progresso++;
+    } else {
+      block.className = "quiz-question wrong";
+      const correcao = document.createElement("p");
+      correcao.innerText = "Resposta correta: " + q[1][correct];
+      block.appendChild(correcao);
+    }
+  });
+  localStorage.setItem("progresso-" + topic, progresso);
+  atualizarProgresso();
+}
+
+function login() {
+  const name = document.getElementById("username").value;
+  if (!name) return alert("Digite seu nome!");
+  localStorage.setItem("usuario", name);
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("nomePerfil").value = name;
+  carregarFoto();
+  atualizarProgresso();
+  ["programacao", "cyber", "ia", "po"].forEach(startQuiz);
+  showTab('programacao');
+}
+
+function salvarPerfil() {
+  const nome = document.getElementById("nomePerfil").value;
+  localStorage.setItem("usuario", nome);
+  alert("Perfil salvo!");
+}
+
+function uploadFoto(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    localStorage.setItem("fotoPerfil", reader.result);
+    carregarFoto();
+  };
+  reader.readAsDataURL(file);
+}
+
+function carregarFoto() {
+  const foto = localStorage.getItem("fotoPerfil");
+  if (foto) document.getElementById("fotoPerfil").src = foto;
+}
+
+function atualizarProgresso() {
+  const list = document.getElementById("progressoList");
+  list.innerHTML = "";
+  Object.keys(quizzes).forEach(k => {
+    const score = localStorage.getItem("progresso-" + k) || 0;
+    list.innerHTML += `<li>${k.toUpperCase()}: ${score}/10</li>`;
+  });
+}
+
+window.onload = () => {
+  const user = localStorage.getItem("usuario");
+  if (user) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("nomePerfil").value = user;
+    carregarFoto();
+    atualizarProgresso();
+    ["programacao", "cyber", "ia", "po"].forEach(startQuiz);
+    showTab('programacao');
+  } else {
+    document.getElementById("login").style.display = "flex";
+  }
+};
