@@ -1,46 +1,297 @@
+<!-- index.html completo, educacional, com login, abas, quizzes e perfil -->
+<!-- Criado para funcionar offline, sem dependências externas -->
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#4a90e2" />
-  <title>TecnoClass</title>
-  <!-- Manifesto PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <!-- Favicon e ícone PWA -->
-  <link rel="icon" type="image/png" href="images/icon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/png" href="images/icon-192x192.png" sizes="192x192" />
-  <!-- Arquivo de estilo CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <title>EduTech App</title>
+  <meta name="theme-color" content="#2c3e50" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #ecf0f1;
+      color: #2c3e50;
+    }
+    header, footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #34495e;
+    }
+    nav button {
+      flex: 1;
+      padding: 1em;
+      border: none;
+      background: #34495e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    nav button.active {
+      background: #1abc9c;
+    }
+    .tab {
+      display: none;
+      padding: 1em;
+    }
+    .visible { display: block; }
+
+    .quiz-question {
+      margin-bottom: 1em;
+    }
+    .quiz-question p {
+      margin-bottom: 0.5em;
+    }
+    .correct { background: #2ecc71; color: white; padding: 0.5em; }
+    .wrong { background: #e74c3c; color: white; padding: 0.5em; }
+
+    input[type="file"] { margin-top: 10px; }
+
+    #login, #app { display: none; }
+    input, select {
+      padding: 0.6em;
+      margin: 0.5em 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+    }
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #bdc3c7;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
-  <header>
-    <!-- Link para pular navegação (acessibilidade) -->
-    <a href="#content" class="skip-link">Ir para conteúdo</a>
-    <!-- Nome da aplicação -->
-    <h1 class="branding">TecnoClass</h1>
-    <!-- Navegação principal -->
-    <nav aria-label="Navegação principal">
-      <ul>
-        <li><a href="#inicio">Início</a></li>
-        <li><a href="#cursos">Cursos</a></li>
-        <li><a href="#perfil">Perfil</a></li>
-      </ul>
-    </nav>
-  </header>
+<header>
+  <h1>EduTech App</h1>
+</header>
 
-  <!-- Conteúdo principal dinâmico -->
-  <main id="content" tabindex="-1">
-    <!-- O conteúdo das seções Início, Cursos e Perfil será inserido aqui via script -->
-  </main>
+<div id="login">
+  <h2>Faça login para continuar</h2>
+  <input id="username" placeholder="Seu nome" />
+  <button onclick="login()">Entrar</button>
+</div>
 
-  <footer>
-    <!-- Rodapé com ano atual via JS -->
-    &copy; <span id="year"></span> TecnoClass
-  </footer>
+<div id="app">
+  <nav>
+    <button onclick="showTab('programacao')" id="btn-programacao">Programação</button>
+    <button onclick="showTab('cyber')" id="btn-cyber">Cybersegurança</button>
+    <button onclick="showTab('ia')" id="btn-ia">IA</button>
+    <button onclick="showTab('po')" id="btn-po">Product Owner</button>
+    <button onclick="showTab('perfil')" id="btn-perfil">Perfil</button>
+  </nav>
 
-  <!-- Script principal da aplicação -->
-  <script src="script.js" defer></script>
+  <div id="programacao" class="tab">
+    <h2>Programação</h2>
+    <p>Aprenda os fundamentos do desenvolvimento web: HTML, CSS, JavaScript, e lógica de programação. Explore conceitos de back-end com Node.js e bancos de dados.</p>
+    <button onclick="startQuiz('programacao')">Iniciar o Quiz</button>
+    <div id="quiz-programacao"></div>
+  </div>
+
+  <div id="cyber" class="tab">
+    <h2>Cybersegurança</h2>
+    <p>A cibersegurança protege dados, sistemas e redes contra ataques. É vital para empresas e usuários individuais. Aprenda conceitos como firewalls, phishing e senhas fortes.</p>
+    <button onclick="startQuiz('cyber')">Iniciar o Quiz</button>
+    <div id="quiz-cyber"></div>
+  </div>
+
+  <div id="ia" class="tab">
+    <h2>Inteligência Artificial</h2>
+    <p>IA impacta o desenvolvimento pessoal ao automatizar tarefas, melhorar decisões e abrir novas oportunidades. Conheça redes neurais, LLMs, e o futuro da automação.</p>
+    <button onclick="startQuiz('ia')">Iniciar o Quiz</button>
+    <div id="quiz-ia"></div>
+  </div>
+
+  <div id="po" class="tab">
+    <h2>Product Owner</h2>
+    <p>PO é o responsável por maximizar o valor do produto. Ele define prioridades, escreve histórias de usuário e atua como ponte entre clientes e equipe técnica.</p>
+    <button onclick="startQuiz('po')">Iniciar o Quiz</button>
+    <div id="quiz-po"></div>
+  </div>
+
+  <div id="perfil" class="tab">
+    <h2>Meu Perfil</h2>
+    <img id="fotoPerfil" class="profile-img" alt="Foto de perfil" />
+    <input type="file" onchange="uploadFoto(event)" accept="image/*" />
+    <input id="nomePerfil" placeholder="Seu nome" />
+    <button onclick="salvarPerfil()">Salvar Perfil</button>
+    <h3>Progresso:</h3>
+    <ul id="progressoList"></ul>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 EduTech</p>
+</footer>
+
+<script>
+  const quizzes = {
+    programacao: [
+      ["Qual linguagem é usada para estilizar páginas web?", ["HTML", "CSS", "Java", "PHP"], 1],
+      ["O que significa DOM?", ["Data Object Model", "Document Object Model", "Desktop Online Mode", "Download Open Manager"], 1],
+      ["Qual linguagem roda no navegador?", ["PHP", "Java", "C++", "JavaScript"], 3],
+      ["Back-end é associado a:", ["Estilo", "Interação", "Servidor", "Layout"], 2],
+      ["HTML serve para:", ["Programar lógica", "Adicionar estilos", "Estruturar páginas", "Armazenar dados"], 2],
+      ["CSS é:", ["Linguagem de programação", "Ferramenta de banco de dados", "Linguagem de estilo", "Framework"], 2],
+      ["Node.js é:", ["Linguagem", "Framework", "Runtime JavaScript", "Editor"], 2],
+      ["Função do banco de dados:", ["Processar CSS", "Renderizar HTML", "Salvar dados", "Interagir com usuário"], 2],
+      ["console.log serve para:", ["Salvar dados", "Mostrar alertas", "Depurar código", "Criar elementos"], 2],
+      ["Qual é uma linguagem tipada:", ["Python", "JavaScript", "Java", "HTML"], 2],
+    ],
+    cyber: [
+      ["Firewall serve para:", ["Bloquear propagandas", "Proteger contra acessos não autorizados", "Armazenar dados", "Instalar antivírus"], 1],
+      ["Senha forte deve conter:", ["Somente letras", "Números repetidos", "Mistura de caracteres", "Data de nascimento"], 2],
+      ["Phishing é:", ["Vírus", "Roubo de identidade", "Acesso remoto", "Ataque físico"], 1],
+      ["Cibersegurança visa proteger:", ["Aplicativos", "Sistemas e dados", "Hardware", "Usuários"], 1],
+      ["VPN é usada para:", ["Assistir vídeos", "Melhorar desempenho", "Conexão segura", "Download"], 2],
+      ["Ataque DDoS é:", ["Erro de sistema", "Queda de internet", "Ataque de sobrecarga", "Bug de app"], 2],
+      ["Backup serve para:", ["Acelerar sistema", "Atualizar apps", "Recuperar dados", "Impedir vírus"], 2],
+      ["Autenticação de dois fatores:", ["Exige 2 logins", "Exige SMS ou app extra", "É obrigatória", "É automática"], 1],
+      ["Importância da segurança digital:", ["Evita crimes cibernéticos", "Evita compras", "Evita atualizações", "Evita senhas"], 0],
+      ["Ransomware faz:", ["Melhora o sistema", "Vaza dados", "Criptografa dados e cobra resgate", "Corrige erros"], 2],
+    ],
+    ia: [
+      ["IA significa:", ["Inteligência Avançada", "Inteligência Artificial", "Interface Autônoma", "Item Ativo"], 1],
+      ["Rede neural simula:", ["Serviços", "Cérebro humano", "Banco de dados", "Nuvem"], 1],
+      ["LLM significa:", ["Large Language Model", "Light Logic Map", "Linear Language Mode", "Language List Module"], 0],
+      ["IA pode:", ["Criar conteúdo", "Gerar música", "Traduzir texto", "Todas acima"], 3],
+      ["Aprendizado de máquina requer:", ["Regras fixas", "Intuição", "Dados", "Emoção"], 2],
+      ["Prompt é:", ["Comando de entrada", "Resposta", "Erro", "App"], 0],
+      ["IA pode melhorar:", ["Autonomia", "Criatividade", "Produtividade", "Todas"], 3],
+      ["Vieses em IA são:", ["Defeitos físicos", "Preconceitos nos dados", "Erros do usuário", "Falhas da câmera"], 1],
+      ["IA generativa cria:", ["Planilhas", "Dados aleatórios", "Conteúdo novo", "Backups"], 2],
+      ["Impacto da IA no trabalho:", ["Remove empregos", "Aumenta eficiência", "Reduz salários", "Cria dependência"], 1],
+    ],
+    po: [
+      ["PO significa:", ["Project Officer", "Product Owner", "Process Operator", "Principal Operator"], 1],
+      ["PO lida com:", ["Infraestrutura", "Marketing", "Valor do Produto", "Design Gráfico"], 2],
+      ["Scrum é:", ["Idioma", "Metodologia Ágil", "Software", "Relatório"], 1],
+      ["User Story é:", ["História do usuário", "Requisito em linguagem simples", "Biografia", "Bug"], 1],
+      ["PO define:", ["Layout", "Missão da empresa", "Backlog", "Cores do app"], 2],
+      ["Sprint é:", ["Aplicativo", "Período de entrega", "Corrida", "Erro"], 1],
+      ["Scrum Master é:", ["Supervisor", "Dono do Produto", "Facilitador", "Programador"], 2],
+      ["PO trabalha com:", ["Designers", "Time de desenvolvimento", "CEO", "Todos"], 3],
+      ["KPI mede:", ["Código", "Desempenho", "Animação", "Tamanho do app"], 1],
+      ["Objetivo do PO:", ["Falar com clientes", "Gerar valor", "Testar códigos", "Criar layout"], 1],
+    ]
+  };
+
+  function showTab(id) {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("visible"));
+    document.getElementById(id).classList.add("visible");
+    document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+    document.getElementById("btn-" + id).classList.add("active");
+  }
+
+  function startQuiz(topic) {
+    const container = document.getElementById("quiz-" + topic);
+    const data = quizzes[topic];
+    let html = "<form id='form-" + topic + "'>";
+    data.forEach((q, i) => {
+      html += `<div class='quiz-question'><p><strong>${i + 1}.</strong> ${q[0]}</p>`;
+      q[1].forEach((opt, j) => {
+        html += `<label><input type="radio" name="q${i}" value="${j}" /> ${opt}</label><br>`;
+      });
+      html += "</div>";
+    });
+    html += `<button type="button" onclick="checkQuiz('${topic}')">CONFERIR RESULTADO</button></form>`;
+    container.innerHTML = html;
+  }
+
+  function checkQuiz(topic) {
+    const form = document.getElementById("form-" + topic);
+    const data = quizzes[topic];
+    let progresso = 0;
+    data.forEach((q, i) => {
+      const chosen = form["q" + i].value;
+      const correct = q[2];
+      const block = form.querySelectorAll(".quiz-question")[i];
+      if (chosen == correct) {
+        block.className = "quiz-question correct";
+        progresso++;
+      } else {
+        block.className = "quiz-question wrong";
+        const correcao = document.createElement("p");
+        correcao.innerText = "Resposta correta: " + q[1][correct];
+        block.appendChild(correcao);
+      }
+    });
+    localStorage.setItem("progresso-" + topic, progresso);
+    atualizarProgresso();
+  }
+
+  function login() {
+    const name = document.getElementById("username").value;
+    if (!name) return alert("Digite seu nome!");
+    localStorage.setItem("usuario", name);
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("nomePerfil").value = name;
+    carregarFoto();
+    atualizarProgresso();
+    showTab('programacao');
+  }
+
+  function salvarPerfil() {
+    const nome = document.getElementById("nomePerfil").value;
+    localStorage.setItem("usuario", nome);
+    alert("Perfil salvo!");
+  }
+
+  function uploadFoto(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      localStorage.setItem("fotoPerfil", reader.result);
+      carregarFoto();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function carregarFoto() {
+    const foto = localStorage.getItem("fotoPerfil");
+    if (foto) document.getElementById("fotoPerfil").src = foto;
+  }
+
+  function atualizarProgresso() {
+    const list = document.getElementById("progressoList");
+    list.innerHTML = "";
+    Object.keys(quizzes).forEach(k => {
+      const score = localStorage.getItem("progresso-" + k) || 0;
+      list.innerHTML += `<li>${k.toUpperCase()}: ${score}/10</li>`;
+    });
+  }
+
+  window.onload = () => {
+    const user = localStorage.getItem("usuario");
+    if (user) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      document.getElementById("nomePerfil").value = user;
+      carregarFoto();
+      atualizarProgresso();
+      showTab('programacao');
+    } else {
+      document.getElementById("login").style.display = "block";
+    }
+  };
+</script>
+
 </body>
 </html>
