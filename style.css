@@ -238,7 +238,12 @@ input:focus {
   font-weight: 500;
 }
 
-/* ABA CAMPO DE ESTUDO */
+/* CAMPO DE ESTUDO */
+#estudo h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+
 #estudo .card {
   background: var(--white);
   border-radius: 10px;
@@ -251,11 +256,6 @@ input:focus {
 
 #estudo .card:hover {
   transform: translateY(-4px);
-}
-
-#estudo h2 {
-  font-size: 1.6rem;
-  margin-bottom: 1.2rem;
 }
 
 #estudo h3 {
