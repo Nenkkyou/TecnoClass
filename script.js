@@ -52,22 +52,46 @@ const quizzes = {
 // Conteúdo didático do Campo de Estudo
 const campoDeEstudo = `
   <h2>Campo de Estudo</h2>
-  <div class="card"><h3>Programação</h3><p>Programação é o processo de criar instruções formais que um computador pode interpretar e executar. Em vez de falar com ele em português ou gritar “FUNCIONA, MALDITO!”, usamos linguagens específicas, cada uma com sua função e estrutura. Linguagens como HTML (HyperText Markup Language) definem a estrutura de páginas na web, como se fossem o esqueleto de um site. Já CSS (Cascading Style Sheets) cuida do visual: cores, espaçamentos, fontes — basicamente, é o estilista do código. Por fim, JavaScript é a linguagem que dá vida e interatividade às páginas, permitindo animações, validações de formulários, botões que reagem e, claro, bugs em tempo real.
 
-Além das linguagens, um bom programador precisa desenvolver lógica de programação, que é a habilidade de pensar como um computador: com passos bem definidos, condições claras e muita paciência. Também é fundamental saber resolver problemas, testar soluções diferentes e manter o código organizado, legível e funcional — porque um dia, alguém (possivelmente o próprio programador) vai precisar entender aquele código de novo… e ele provavelmente vai estar com sono.
+  <div class="card"><h3>Programação</h3>
+    <p>Programação é o processo de criar instruções formais que um computador pode interpretar e executar. Em vez de falar com ele em português ou gritar “FUNCIONA, MALDITO!”, usamos linguagens específicas, cada uma com sua função e estrutura. Linguagens como HTML (HyperText Markup Language) definem a estrutura de páginas na web, como se fossem o esqueleto de um site. Já CSS (Cascading Style Sheets) cuida do visual: cores, espaçamentos, fontes — basicamente, é o estilista do código. Por fim, JavaScript é a linguagem que dá vida e interatividade às páginas, permitindo animações, validações de formulários, botões que reagem e, claro, bugs em tempo real.
 
-Em resumo, programar é menos sobre saber decorar comandos e mais sobre entender como pensar de forma estruturada, analítica e criativa ao mesmo tempo. É tipo montar um quebra-cabeça onde as peças mudam de forma toda hora e o manual está em binário. </p></div>
-  <div class="card"><h3>Cibersegurança</h3><p>Cibersegurança envolve proteger dispositivos, redes e dados contra ataques. É essencial usar senhas fortes, backups e entender ameaças como phishing e ransomware. Cibersegurança é o conjunto de práticas, tecnologias e processos utilizados para proteger dispositivos (como computadores, smartphones e até geladeiras inteligentes, infelizmente),Em um mundo onde até a sua escova de dentes pode ter Wi-Fi, a proteção digital nunca foi tão importante — nem tão absurda.
+    Além das linguagens, um bom programador precisa desenvolver lógica de programação, que é a habilidade de pensar como um computador: com passos bem definidos, condições claras e muita paciência. Também é fundamental saber resolver problemas, testar soluções diferentes e manter o código organizado, legível e funcional — porque um dia, alguém (possivelmente o próprio programador) vai precisar entender aquele código de novo… e ele provavelmente vai estar com sono.
 
-Os ataques mais comuns incluem phishing, que são armadilhas disfarçadas de e-mails ou mensagens aparentemente legítimas que tentam enganar você para que revele senhas ou clique em links perigosos. Também temos o famigerado ransomware, que é basicamente sequestro digital: os dados são criptografados e os criminosos exigem resgate para devolvê-los — como um sequestro, mas sem o drama de novela.
+    Em resumo, programar é menos sobre saber decorar comandos e mais sobre entender como pensar de forma estruturada, analítica e criativa ao mesmo tempo. É tipo montar um quebra-cabeça onde as peças mudam de forma toda hora e o manual está em binário.</p>
+  </div>
 
-A base da cibersegurança está em práticas simples e eficazes: usar senhas fortes (não, “123456” não é forte — é só patético), manter backups atualizados (porque o computador não vai chorar por você quando tudo sumir) e entender os riscos, ou seja, não sair clicando em tudo que brilha.
+  <div class="card"><h3>Cibersegurança</h3>
+    <p>Cibersegurança envolve proteger dispositivos, redes e dados contra ataques. É essencial usar senhas fortes, backups e entender ameaças como phishing e ransomware. Cibersegurança é o conjunto de práticas, tecnologias e processos utilizados para proteger dispositivos (como computadores, smartphones e até geladeiras inteligentes, infelizmente). Em um mundo onde até a sua escova de dentes pode ter Wi-Fi, a proteção digital nunca foi tão importante — nem tão absurda.
 
-Os profissionais da área — conhecidos como especialistas em segurança da informação, ou como eu gosto de chamá-los, “os ninjas invisíveis da era digital” — são responsáveis por garantir que sistemas estejam protegidos, vulnerabilidades sejam corrigidas e que ninguém esteja espionando a vida alheia por pura diversão criminosa.
+    Os ataques mais comuns incluem phishing, que são armadilhas disfarçadas de e-mails ou mensagens aparentemente legítimas que tentam enganar você para que revele senhas ou clique em links perigosos. Também temos o famigerado ransomware, que é basicamente sequestro digital: os dados são criptografados e os criminosos exigem resgate para devolvê-los — como um sequestro, mas sem o drama de novela.
 
-Em resumo, cibersegurança é como um antivírus social: previne tragédias digitais e faz você parecer mais inteligente só por saber o básico.</p></div>
-  <div class="card"><h3>Inteligência Artificial</h3><p>IA é a simulação da inteligência humana por máquinas. Com ela, sistemas aprendem com dados, criam textos, imagens e tomam decisões. Modelos como redes neurais e LLMs são usados em chatbots, carros autônomos e muito mais.</p></div>
-  <div class="card"><h3>Product Owner</h3><p>O Product Owner (PO) é responsável por guiar o desenvolvimento de um produto. Ele define o que deve ser feito, prioriza tarefas e garante que a equipe entenda as metas. Trabalha com métodos ágeis como Scrum e usa métricas para medir sucesso.</p></div>
+    A base da cibersegurança está em práticas simples e eficazes: usar senhas fortes (não, “123456” não é forte — é só patético), manter backups atualizados (porque o computador não vai chorar por você quando tudo sumir) e entender os riscos, ou seja, não sair clicando em tudo que brilha.
+
+    Os profissionais da área — conhecidos como especialistas em segurança da informação, ou como eu gosto de chamá-los, “os ninjas invisíveis da era digital” — são responsáveis por garantir que sistemas estejam protegidos, vulnerabilidades sejam corrigidas e que ninguém esteja espionando a vida alheia por pura diversão criminosa.
+
+    Em resumo, cibersegurança é como um antivírus social: previne tragédias digitais e faz você parecer mais inteligente só por saber o básico.</p>
+  </div>
+
+  <div class="card"><h3>Inteligência Artificial</h3>
+    <p>Inteligência Artificial (IA) é o ato de fazer uma máquina agir como se tivesse cérebro — o que é ao mesmo tempo fascinante e, dependendo do contexto, aterrorizante. Ao invés de apenas seguir ordens, sistemas com IA são capazes de aprender com dados, adaptar comportamentos e gerar respostas cada vez mais sofisticadas (e, às vezes, mais espertas que o próprio usuário).
+
+    Modelos como redes neurais e LLMs (Large Language Models) são a base de ferramentas como ChatGPT, assistentes virtuais, carros autônomos, filtros de spam, reconhecimento facial... e claro, aquelas sugestões absurdamente precisas de vídeos que fazem você perder 3 horas no YouTube.
+
+    O processo por trás da IA envolve treinar modelos com grandes volumes de dados — muitos mesmo — e ajustar os parâmetros até que o sistema “entenda” padrões e consiga fazer previsões ou gerar conteúdo. Isso inclui desde criar uma poesia triste em 0,3 segundos até detectar fraude bancária antes mesmo do golpista acordar.
+
+    Em resumo: IA não é mágica (ainda), mas parece. É matemática, estatística, lógica, e um pouco de caos controlado — tudo isso dentro de um servidor que provavelmente está mais acordado do que você.</p>
+  </div>
+
+  <div class="card"><h3>Product Owner</h3>
+    <p>O Product Owner (ou PO para os íntimos) é a pessoa responsável por garantir que um produto digital — como um app, um site ou até aquele sistema tosco da empresa — seja desenvolvido com foco em valor. E o que é valor? É aquilo que resolve o problema do cliente antes que ele desista e vá para o concorrente.
+
+    O PO é quem define o que será feito, quando será feito, e por quê. Ele mantém o backlog (a lista sagrada de tarefas), organiza prioridades, conversa com o time de desenvolvimento, stakeholders, usuários... e ainda tem que fingir que dorme em paz à noite.
+
+    Trabalhando com metodologias ágeis (como Scrum), o PO participa de sprints, refinamentos, plannings, reviews e retrospectivas. É basicamente um malabarista que equilibra demandas técnicas, expectativas de negócios e limitações de tempo sem deixar nada cair — ou pelo menos tentando parecer calmo enquanto tudo pega fogo.
+
+    Em resumo, o Product Owner é a ponte entre o caos e o cliente. Um tradutor de ideias em funcionalidades reais, que nem sempre são perfeitas, mas precisam ser entregues. Porque no fim das contas, o botão pode até estar feio... mas se funcionar, já é meio caminho andado.</p>
+  </div>
 `;
 
 function showTab(id) {
