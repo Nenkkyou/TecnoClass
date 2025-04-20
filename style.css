@@ -1,16 +1,16 @@
 :root {
-  --bg-light: #ecf0f1;
+  --bg-light: #f4f7f9;
   --bg-dark: #2c3e50;
   --bg-mid: #34495e;
   --primary: #1abc9c;
   --primary-hover: #16a085;
   --text: #2c3e50;
-  --text-light: #666;
+  --text-light: #7f8c8d;
   --white: #ffffff;
   --danger: #e74c3c;
   --success: #2ecc71;
   --shadow: rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+  --transition: all 0.3s ease-in-out;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,9 +21,9 @@
     --primary: #1abc9c;
     --primary-hover: #16a085;
     --text: #ffffff;
-    --text-light: #bdc3c7;
+    --text-light: #dcdde1;
     --white: #2f3640;
-    --shadow: rgba(255, 255, 255, 0.05);
+    --shadow: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -45,22 +45,32 @@ body {
   transition: var(--transition);
 }
 
-/* HEADER / FOOTER */
-header, footer {
+/* HEADER */
+header {
   background: var(--bg-dark);
-  color: var(--white);
+  padding: 2rem 1rem;
   text-align: center;
-  padding: 1.2rem;
-  box-shadow: 0 2px 8px var(--shadow);
+  box-shadow: 0 2px 10px var(--shadow);
+  border-bottom: 3px solid var(--primary);
 }
 
 header h1 {
-  font-size: 1.8rem;
+  color: var(--primary);
+  font-size: 2rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
   letter-spacing: 1px;
 }
 
-footer p {
+/* FOOTER */
+footer {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  text-align: center;
+  padding: 1rem;
   font-size: 0.9rem;
+  box-shadow: 0 -2px 8px var(--shadow);
 }
 
 /* LOGIN */
@@ -79,7 +89,7 @@ footer p {
   margin-bottom: 1.2rem;
 }
 
-/* APP CONTAINER */
+/* APP */
 #app {
   flex: 1;
   padding: 1.2rem;
@@ -100,8 +110,9 @@ nav button {
   padding: 1rem;
   background: transparent;
   border: none;
-  color: var(--white);
+  color: #fff;
   font-weight: bold;
+  font-size: 1rem;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -123,6 +134,7 @@ nav button.active {
   box-shadow: 0 2px 10px var(--shadow);
   padding: 2rem;
   animation: fadeIn 0.4s ease-in-out;
+  color: var(--text);
 }
 
 .visible {
@@ -134,15 +146,16 @@ nav button.active {
   margin-bottom: 1.5rem;
   padding: 1.2rem;
   border-radius: 8px;
-  background: #fdfdfd;
+  background: var(--white);
   border-left: 5px solid var(--primary);
-  transition: var(--transition);
   box-shadow: 0 1px 6px var(--shadow);
+  transition: var(--transition);
 }
 
 .quiz-question p {
   font-weight: 600;
   margin-bottom: 0.6rem;
+  color: var(--text);
 }
 
 .correct {
@@ -242,6 +255,7 @@ input:focus {
 #estudo h2 {
   font-size: 1.6rem;
   margin-bottom: 1.2rem;
+  color: var(--text);
 }
 
 #estudo .card {
@@ -252,6 +266,7 @@ input:focus {
   margin-bottom: 1.5rem;
   border-left: 5px solid var(--primary);
   transition: transform 0.3s ease;
+  color: var(--text);
 }
 
 #estudo .card:hover {
