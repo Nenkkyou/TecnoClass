@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TecnoClass - Aplicativo educacional para estudos de tecnologia">
+    <meta name="theme-color" content="#1abc9c">
+    <title>TecnoClass - Aplicativo Educacional</title>
+    
+    <!-- Manifesto PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Ícones -->
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles/theme.css">
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- Preload de recursos críticos -->
+    <link rel="preload" href="scripts/core/app.js" as="script">
+    <link rel="preload" href="scripts/core/router.js" as="script">
+</head>
+<body>
+    <!-- Cabeçalho da aplicação -->
+    <header class="app-header">
+        <div class="container">
+            <div class="logo">
+                <img src="assets/icons/icon-192x192.png" alt="TecnoClass Logo" width="40" height="40">
+                <h1>TecnoClass</h1>
+            </div>
+            <nav class="main-nav">
+                <button id="menu-toggle" aria-label="Menu" class="menu-toggle">
+                    <span class="menu-icon"></span>
+                </button>
+                <ul class="nav-list">
+                    <li><a href="/" data-nav="home" class="nav-link">Início</a></li>
+                    <li><a href="/cursos" data-nav="cursos" class="nav-link">Cursos</a></li>
+                    <li><a href="/quizzes" data-nav="quizzes" class="nav-link">Quizzes</a></li>
+                    <li><a href="/perfil" data-nav="perfil" class="nav-link">Perfil</a></li>
+                </ul>
+            </nav>
+            <div class="app-actions">
+                <button id="theme-toggle" aria-label="Alternar tema" class="theme-toggle">
+                    <span class="theme-icon"></span>
+                </button>
+                <div class="language-selector">
+                    <select id="language-select" aria-label="Selecionar idioma">
+                        <option value="pt-BR">PT</option>
+                        <option value="en">EN</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Indicador de status online/offline -->
+    <div id="connection-status" class="connection-status" aria-live="polite"></div>
+    
+    <!-- Conteúdo principal -->
+    <main id="app-content" class="app-content">
+        <!-- Tela de login (visível inicialmente) -->
+        <section id="login-screen" class="screen">
+            <div class="container">
+                <div class="auth-card">
+                    <h2>Bem-vindo ao TecnoClass</h2>
+                    <p>Faça login para continuar seus estudos</p>
+                    
+                    <form id="login-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="username">Nome de usuário</label>
+                            <input type="text" id="username" name="username" required 
+                                   placeholder="Seu nome de usuário" autocomplete="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Senha</label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Sua senha" autocomplete="current-password">
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Entrar</button>
+                            <button type="button" id="guest-login" class="btn btn-secondary">Continuar como convidado</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Tela inicial (oculta inicialmente) -->
+        <section id="home-screen" class="screen hidden">
+            <div class="container">
+                <div class="welcome-banner">
+                    <h2>Olá, <span id="user-name">Estudante</span>!</h2>
+                    <p>Continue seus estudos de onde parou</p>
+                </div>
+                
+                <div class="progress-overview">
+                    <h3>Seu progresso</h3>
+                    <div class="progress-bar">
+                        <div id="progress-indicator" class="progress-indicator" style="width: 0%"></div>
+                    </div>
+                    <p><span id="progress-percentage">0%</span> concluído</p>
+                </div>
+                
+                <div class="categories-grid">
+                    <div class="category-card" data-category="programacao">
+                        <div class="category-icon">
+                            <span class="icon-code"></span>
+                        </div>
+                        <h3>Programação</h3>
+                        <p>Aprenda linguagens e conceitos de desenvolvimento</p>
+                    </div>
+                    
+                    <div class="category-card" data-category="cyber">
+                        <div class="category-icon">
+                            <span class="icon-shield"></span>
+                        </div>
+                        <h3>Cybersegurança</h3>
+                        <p>Proteja sistemas e dados contra ameaças</p>
+                    </div>
+                    
+                    <div class="category-card" data-category="ia">
+                        <div class="category-icon">
+                            <span class="icon-brain"></span>
+                        </div>
+                        <h3>Inteligência Artificial</h3>
+                        <p>Explore o mundo dos sistemas inteligentes</p>
+                    </div>
+                    
+                    <div class="category-card" data-category="po">
+                        <div class="category-icon">
+                            <span class="icon-chart"></span>
+                        </div>
+                        <h3>Product Owner</h3>
+                        <p>Gerencie produtos digitais com metodologias ágeis</p>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Atividade recente</h3>
+                    <ul id="activity-list" class="activity-list">
+                        <!-- Preenchido via JavaScript -->
+                        <li class="activity-placeholder">Carregando atividades recentes...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Outras telas serão carregadas dinamicamente -->
+    </main>
+    
+    <!-- Rodapé da aplicação -->
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 TecnoClass - Aplicativo Educacional</p>
+            <div class="footer-links">
+                <a href="/sobre">Sobre</a>
+                <a href="/termos">Termos de Uso</a>
+                <a href="/privacidade">Privacidade</a>
+            </div>
+            <div class="app-version">
+                <span>Versão 1.0.0</span>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Tela de instalação PWA -->
+    <div id="pwa-install-prompt" class="pwa-prompt hidden">
+        <div class="pwa-prompt-content">
+            <h3>Instalar TecnoClass</h3>
+            <p>Instale o aplicativo para acesso rápido e uso offline</p>
+            <div class="pwa-prompt-actions">
+                <button id="pwa-install-button" class="btn btn-primary">Instalar</button>
+                <button id="pwa-dismiss-button" class="btn btn-secondary">Agora não</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tela de atualização disponível -->
+    <div id="update-prompt" class="update-prompt hidden">
+        <div class="update-prompt-content">
+            <h3>Nova versão disponível</h3>
+            <p>Uma atualização está disponível para o TecnoClass</p>
+            <div class="update-prompt-actions">
+                <button id="update-button" class="btn btn-primary">Atualizar agora</button>
+                <button id="update-dismiss-button" class="btn btn-secondary">Mais tarde</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tela de offline -->
+    <template id="offline-template">
+        <div class="offline-screen">
+            <div class="offline-icon">
+                <span class="icon-wifi-off"></span>
+            </div>
+            <h2>Você está offline</h2>
+            <p>Mas não se preocupe, você ainda pode acessar o conteúdo salvo</p>
+            <button class="btn btn-primary" id="offline-continue">Continuar offline</button>
+        </div>
+    </template>
+    
+    <!-- Scripts -->
+    <script src="scripts/core/app.js" defer></script>
+    <script src="scripts/core/router.js" defer></script>
+    <script src="services/db/indexedDB.js" defer></script>
+    <script src="services/cache/cacheManager.js" defer></script>
+    <script src="services/auth/auth.js" defer></script>
+    <script src="utils/i18n/translations.js" defer></script>
+    
+    <!-- Registro do Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Falha ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
