@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecnoClass - Aplicativo Educacional</title>
+    <meta name="description" content="Aprenda tecnologia de forma interativa e moderna com o TecnoClass">
+    <link rel="stylesheet" href="tecnoclass-styles.css">
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3a86ff">
+    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/tecnoclass-logo.svg" alt="TecnoClass Logo">
+                <span class="logo-text">TecnoClass</span>
+            </div>
+            
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <nav class="nav">
+                <ul class="nav-list" id="navList">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Cursos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Quizzes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Perfil</a>
+                    </li>
+                    <li class="nav-item">
+                        <div class="theme-toggle" id="themeToggle" data-theme="light">
+                            <div class="theme-toggle-track">
+                                <div class="theme-toggle-thumb"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <div class="d-flex">
+        <!-- Barra Lateral -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">Navegação</h3>
+            </div>
+            <div class="sidebar-body">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link active">
+                            <span class="sidebar-nav-icon">📚</span>
+                            Todos os Cursos
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">💻</span>
+                            Programação
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">🔒</span>
+                            Cybersegurança
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">🤖</span>
+                            Inteligência Artificial
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📊</span>
+                            Product Owner
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#" class="sidebar-nav-link">
+                            <span class="sidebar-nav-icon">📝</span>
+                            Minhas Anotações
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <select class="form-control">
+                    <option value="pt">PT</option>
+                    <option value="en">EN</option>
+                </select>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="container" style="margin-left: 250px; transition: margin-left 0.25s ease;">
+            <!-- Seção de Boas-vindas -->
+            <section class="mt-4 mb-5 slide-up">
+                <h1>Bem-vindo ao TecnoClass</h1>
+                
+                <!-- Área de Login (para usuários não logados) -->
+                <div class="card p-4 mb-4">
+                    <h2>Olá, Estudante!</h2>
+                    <p>Faça login para continuar seus estudos</p>
+                    
+                    <form class="mt-3">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Nome de usuário</label>
+                            <input type="text" id="username" class="form-control" placeholder="Seu nome de usuário">
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Senha</label>
+                            <input type="password" id="password" class="form-control" placeholder="Sua senha">
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-primary">Entrar</button>
+                            <button type="button" class="btn btn-outline">Continuar como convidado</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Progresso (para usuários logados) -->
+                <div class="card p-4 mb-4">
+                    <h2>Continue seus estudos de onde parou</h2>
+                    
+                    <div class="course-progress mt-3">
+                        <h3>Seu progresso</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 35%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>35% concluído</span>
+                            <span>3/8 cursos</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Cursos em Destaque -->
+            <section class="mb-5 fade-in">
+                <h2>Cursos em Destaque</h2>
+                
+                <div class="grid">
+                    <!-- Curso 1 -->
+                    <div class="card course-card" style="grid-column: span 4;">
+                        <img src="images/courses/programming.jpg" alt="Programação" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Programação</h3>
+                            <p class="card-text">Aprenda linguagens e conceitos de desenvolvimento</p>
+                            
+                            <div class="course-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>60% concluído</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary">Continuar</button>
+                            <span>12 módulos</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Curso 2 -->
+                    <div class="card course-card" style="grid-column: span 4;">
+                        <img src="images/courses/cybersecurity.jpg" alt="Cybersegurança" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Cybersegurança</h3>
+                            <p class="card-text">Proteja sistemas e dados contra ameaças</p>
+                            
+                            <div class="course-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%;"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>25% concluído</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary">Continuar</button>
+                            <span>8 módulos</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Curso 3 -->
+                    <div class="card course-card" style="grid-column: span 4;">
+                        <img src="images/courses/ai.jpg" alt="Inteligência Artificial" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Inteligência Artificial</h3>
+                            <p class="card-text">Explore o mundo dos sistemas inteligentes</p>
+                            
+                            <div class="course-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%;"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>10% concluído</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary">Continuar</button>
+                            <span>10 módulos</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Curso 4 -->
+                    <div class="card course-card" style="grid-column: span 4;">
+                        <img src="images/courses/product-owner.jpg" alt="Product Owner" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Product Owner</h3>
+                            <p class="card-text">Gerencie produtos digitais com metodologias ágeis</p>
+                            
+                            <div class="course-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>0% concluído</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary">Começar</button>
+                            <span>6 módulos</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Atividade Recente -->
+            <section class="mb-5 fade-in">
+                <h2>Atividade Recente</h2>
+                
+                <div class="card p-4">
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-nav-item">
+                            <div class="d-flex justify-content-between align-items-center p-2">
+                                <div>
+                                    <h4 class="mb-1">Quiz de JavaScript completado</h4>
+                                    <p class="text-secondary mb-0">Resultado: 85%</p>
+                                </div>
+                                <span class="text-secondary">Hoje</span>
+                            </div>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <div class="d-flex justify-content-between align-items-center p-2">
+                                <div>
+                                    <h4 class="mb-1">Módulo de Redes concluído</h4>
+                                    <p class="text-secondary mb-0">Curso: Cybersegurança</p>
+                                </div>
+                                <span class="text-secondary">Ontem</span>
+                            </div>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <div class="d-flex justify-content-between align-items-center p-2">
+                                <div>
+                                    <h4 class="mb-1">Anotação adicionada</h4>
+                                    <p class="text-secondary mb-0">Tópico: Algoritmos de Machine Learning</p>
+                                </div>
+                                <span class="text-secondary">3 dias atrás</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Instalação PWA -->
+            <section class="mb-5 fade-in">
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1">Instalar TecnoClass</h3>
+                            <p class="mb-0">Instale o aplicativo para acesso rápido e uso offline</p>
+                        </div>
+                        <button class="btn btn-primary" id="installPwa">Instalar</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navList = document.getElementById('navList');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('main');
+        
+        menuToggle.addEventListener('click', () => {
+            navList.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+        
+        // Tema Escuro/Claro
+        const themeToggle = document.getElementById('themeToggle');
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = themeToggle.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            themeToggle.setAttribute('data-theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // Salvar preferência
+            localStorage.setItem('theme', newTheme);
+        });
+        
+        // Verificar tema salvo
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            themeToggle.setAttribute('data-theme', savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        // Responsividade da barra lateral
+        function handleResize() {
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('sidebar-hidden');
+                mainContent.style.marginLeft = '0';
+            } else {
+                sidebar.classList.remove('sidebar-hidden');
+                mainContent.style.marginLeft = '250px';
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Executar na carga inicial
+        
+        // Animações de progresso
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            
+            setTimeout(() => {
+                progressBars.forEach(bar => {
+                    const targetWidth = bar.style.width;
+                    bar.style.width = '0';
+                    
+                    setTimeout(() => {
+                        bar.style.width = targetWidth;
+                    }, 300);
+                });
+            }, 500);
+        });
+        
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Falha ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

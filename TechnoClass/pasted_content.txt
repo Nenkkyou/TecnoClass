@@ -1,107 +1,108 @@
-📜 Prompt para Manus AI
-Você é um Desenvolvedor Fullstack Especialista em Aplicativos Educacionais Offline.
-Sua tarefa é acessar e analisar o repositório TecnoClass atual:
+✨ Objetivo
+Criar um novo frontend para o app educacional TecnoClass com:
 
-Repositório: https://github.com/Nenkkyou/TecnoClass
+Visual extremamente bonito
 
-Com base nesse repositório, recrie o aplicativo completamente do zero, porém:
+Navegação fluida e intuitiva
 
-Corrija todas as limitações atuais
+Design moderno, limpo e focado na experiência de estudo
 
-Mantenha a essência educacional e o estilo offline-first
+Totalmente responsivo (funcionar perfeitamente em desktop, tablet e celular)
 
-Transforme o app em uma aplicação PWA educacional de altíssimo nível profissional
+🎯 Especificações obrigatórias
+Estilo Visual:
 
-🎯 Especificações obrigatórias para o novo app
-Offline-First Real:
+Interface contemporânea inspirada em apps educacionais de ponta
 
-Service Worker configurado para fallback de páginas
+Paleta de cores suaves e inspiradoras (tons de azul, verde, areia e off-white)
 
-Cache inteligente (estratégia Cache First + Network Update)
+Modo escuro e modo claro com alternância suave
 
-IndexedDB estruturado para armazenar progresso do aluno
+Tipografia amigável e profissional (ex: fontes como Poppins, Inter, Nunito)
 
-LocalStorage apenas para configurações leves
+Componentes de Interface:
 
-Segurança de dados local:
+Cabeçalho moderno com menu hamburguer adaptável
 
-Sanitize e validar todos os dados do usuário
+Barra lateral elegante para navegação entre os cursos
 
-Proteger contra XSS, CSRF, e outras vulnerabilidades
+Cards de conteúdo com sombra leve e bordas arredondadas
 
-Frontend profissional:
+Botões minimalistas com animações sutis ao passar o mouse
 
-Interface moderna, responsiva e acessível
+Barra de progresso animada para acompanhar os estudos
 
-Navegação intuitiva para cursos, quizzes e materiais
+Áreas de quiz e anotações integradas visualmente
 
-Suporte completo a modo escuro e leitura offline
+Navegação:
 
-Arquitetura limpa e escalável:
+Layout fluido com grid responsivo
 
-Separação clara de responsabilidades (páginas, componentes, serviços)
+Scroll suave (smooth scrolling)
 
-Código organizado por pastas (components/, pages/, services/, utils/)
+Feedback visual em todas as ações do usuário (cliques, salvamentos, interações)
 
-Uso de Web App Manifest e Service Worker otimizados
+Acessibilidade (A11y):
 
-Funcionalidades adicionais sugeridas:
+Textos legíveis
 
-Barra de progresso dos estudos
+Contraste correto
 
-Sistema de favoritos e anotações locais
+Foco visível para navegação por teclado
 
-Mini-quizzes para reforço do aprendizado
+Performance:
 
-Suporte multilíngue básico (pelo menos português e inglês)
+Código leve e otimizado
 
-Exportação de anotações e progresso em arquivo .json
+Carregamento progressivo e sem bloqueios de renderização
 
-🎨 Diretrizes de estilo
-Paleta de cores educacional moderna (tons suaves, fundos claros, contrastes acessíveis)
+Arquitetura de Frontend:
 
-Tipografia focada em leitura confortável
+Separação em componentes reutilizáveis (ex: CardCurso, BotaoPrincipal, BarraProgresso)
 
-Ícones otimizados para uso mobile e desktop
+Estrutura de pastas organizada:
 
-📦 Tecnologias recomendadas
-Frontend: HTML5, CSS3 (com responsividade), JavaScript puro (pode usar pequenas bibliotecas minimalistas se justificável)
+bash
+Copiar
+Editar
+/components
+/pages
+/assets
+/styles
+/services
+/utils
+Animações usando CSS puro ou pequenas libs como Animate.css, apenas se necessário
 
-Offline/Storage: Service Worker + LocalStorage + IndexedDB
+📦 Tecnologias obrigatórias
+HTML5 Semântico
 
-Backend Simulado: Sem servidor, tudo offline
+CSS3 (puro ou com uso leve de TailwindCSS, se desejar)
 
-PWA: Manifesto completo, ícones em vários tamanhos, instalação otimizada
+JavaScript Vanilla (sem frameworks grandes)
 
-⚡ Critérios de sucesso
-O novo TecnoClass deve ser mil vezes melhor em:
+Padrão PWA (Progressive Web App)
 
-Performance
+💎 Qualidade esperada
+Design que cause "efeito wow" nos alunos
 
-Usabilidade
+Sensação de app nativo quando instalado no celular
 
-Robustez offline
+Facilidade de uso extrema: qualquer pessoa, de qualquer idade, deve conseguir navegar intuitivamente
 
-Organização de código
+🛡️ Restrições
+Sem frameworks pesados como React, Vue ou Angular
 
-Estilo visual e experiência do aluno
+Sem bibliotecas pesadas de UI (ex: Bootstrap, Material UI)
 
-O app deve poder ser instalado como PWA sem erros
-
-Deve funcionar perfeitamente offline
-
-Deve ter documentação mínima explicando como usar e como evoluir
-
-🛡️ Observações Finais
-Não usar frameworks pesados
-
-Priorizar o peso leve e a simplicidade
-
-Nunca deixar dados sensíveis expostos
+Foco máximo na leveza e performance
 
 ✅ Entrega esperada
-Código completo do novo app
+Frontend completo, modular e pronto para integrar ao backend local offline
 
-Estruturado, comentado e organizado
+Aplicação completamente responsiva, leve e linda
 
-Pronto para ser hospedado diretamente no GitHub Pages
+Código limpo, comentado e com ótimo padrão de escrita
+
+🚀 Observação extra:
+Se possível, aplique microinterações discretas que tragam vida à interface:
+ex: hover em botões, transições suaves de abas, animações em cards de curso.
