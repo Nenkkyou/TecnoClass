@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3a86ff">
+    <meta name="theme-color" content="#7c3aed">
     <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
 </head>
 <body>
@@ -142,210 +142,161 @@
         <!-- Conteúdo Principal -->
         <div class="content-wrapper">
             <main class="container">
-            <!-- Seção de Boas-vindas -->
-            <section class="welcome-section slide-up">
-                <h1>Bem-vindo ao TecnoClass</h1>
+                <!-- Seção de Boas-vindas -->
+                <section class="welcome-section slide-up">
+                    <h1>Bem-vindo ao TecnoClass</h1>
+                    
+                    <!-- Área de Login (para usuários não logados) -->
+                    <div class="welcome-card card">
+                        <div class="card-body">
+                            <h2 class="welcome-title">Olá, Estudante!</h2>
+                            <p class="welcome-text">Comece sua jornada de aprendizado hoje</p>
+                            <div class="welcome-actions">
+                                <a href="login.html" class="btn btn-primary">
+                                    Fazer Login
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M19 12H4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                                <button class="btn btn-secondary">Explorar como Convidado</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progresso (para usuários logados) -->
+                    <div class="progress-overview">
+                        <div class="progress-header">
+                            <h2 class="progress-title">Continue seus estudos</h2>
+                            <div class="progress-circle">35%</div>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 35%;"></div>
+                        </div>
+                        
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Cursos em Andamento</div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="stat-value">8</div>
+                                <div class="stat-label">Total de Cursos</div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Horas Estudadas</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 
-                <!-- Área de Login (para usuários não logados) -->
-                <div class="welcome-card card">
-                    <div class="card-body">
-                        <h2 class="welcome-title">Olá, Estudante!</h2>
-                        <p class="welcome-text">Comece sua jornada de aprendizado hoje</p>
-                        <div class="welcome-actions">
-                            <a href="login.html" class="btn btn-primary">
-                                Fazer Login
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M19 12H4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </a>
-                            <button class="btn btn-secondary">Explorar como Convidado</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Progresso (para usuários logados) -->
-                <div class="progress-overview">
-                    <div class="progress-header">
-                        <h2 class="progress-title">Continue seus estudos</h2>
-                        <div class="progress-circle">35%</div>
+                <!-- Cursos em Destaque -->
+                <section class="course-section fade-in">
+                    <div class="course-header">
+                        <h2 class="course-title">Cursos em Destaque</h2>
+                        <a href="#" class="view-all">
+                            Ver todos
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
                     </div>
                     
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 35%;"></div>
-                    </div>
-                    
-                    <div class="progress-stats">
-                        <div class="progress-stat">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Cursos em Andamento</div>
-                        </div>
-                        <div class="progress-stat">
-                            <div class="stat-value">8</div>
-                            <div class="stat-label">Total de Cursos</div>
-                        </div>
-                        <div class="progress-stat">
-                            <div class="stat-value">12</div>
-                            <div class="stat-label">Horas Estudadas</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Cursos em Destaque -->
-            <section class="course-section fade-in">
-                <div class="course-header">
-                    <h2 class="course-title">Cursos em Destaque</h2>
-                    <a href="#" class="view-all">
-                        Ver todos
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-                
-                <div class="course-grid">
-                    <!-- Curso 1 -->
-                    <div class="course-card">
-                        <div class="course-image" role="img" aria-label="Programação"></div>
-                        <div class="course-content">
-                            <span class="course-category">Desenvolvimento</span>
-                            <h3 class="course-name">Programação</h3>
-                            <p class="course-description">Aprenda linguagens e conceitos de desenvolvimento</p>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%;"></div>
-                            </div>
-                            
-                            <div class="course-meta">
-                                <div class="course-progress">
-                                    <div class="progress-circle">60%</div>
-                                    <span class="course-status">12 módulos</span>
+                    <div class="course-grid">
+                        <!-- Curso 1 -->
+                        <div class="course-card">
+                            <div class="course-image" role="img" aria-label="Programação"></div>
+                            <div class="course-content">
+                                <span class="course-category">Desenvolvimento</span>
+                                <h3 class="course-name">Programação</h3>
+                                <p class="course-description">Aprenda linguagens e conceitos de desenvolvimento</p>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
                                 </div>
-                                <button class="btn btn-primary">Continuar</button>
+                                
+                                <div class="course-meta">
+                                    <div class="course-progress">
+                                        <div class="progress-circle">60%</div>
+                                        <span class="course-status">12 módulos</span>
+                                    </div>
+                                    <button class="btn btn-primary">Continuar</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Curso 2 -->
-                    <div class="course-card">
-                        <div class="course-image" role="img" aria-label="Cybersegurança"></div>
-                        <div class="course-content">
-                            <span class="course-category">Segurança</span>
-                            <h3 class="course-name">Cybersegurança</h3>
-                            <p class="course-description">Proteja sistemas e dados contra ameaças</p>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 25%;"></div>
-                            </div>
-                            
-                            <div class="course-meta">
-                                <div class="course-progress">
-                                    <div class="progress-circle">25%</div>
-                                    <span class="course-status">8 módulos</span>
+                        
+                        <!-- Curso 2 -->
+                        <div class="course-card">
+                            <div class="course-image" role="img" aria-label="Cybersegurança"></div>
+                            <div class="course-content">
+                                <span class="course-category">Segurança</span>
+                                <h3 class="course-name">Cybersegurança</h3>
+                                <p class="course-description">Proteja sistemas e dados contra ameaças</p>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%;"></div>
                                 </div>
-                                <button class="btn btn-primary">Continuar</button>
+                                
+                                <div class="course-meta">
+                                    <div class="course-progress">
+                                        <div class="progress-circle">25%</div>
+                                        <span class="course-status">8 módulos</span>
+                                    </div>
+                                    <button class="btn btn-primary">Continuar</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Curso 3 -->
-                    <div class="course-card">
-                        <div class="course-image" role="img" aria-label="Inteligência Artificial"></div>
-                        <div class="course-content">
-                            <span class="course-category">Tecnologia</span>
-                            <h3 class="course-name">Inteligência Artificial</h3>
-                            <p class="course-description">Explore o mundo dos sistemas inteligentes</p>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 10%;"></div>
-                            </div>
-                            
-                            <div class="course-meta">
-                                <div class="course-progress">
-                                    <div class="progress-circle">10%</div>
-                                    <span class="course-status">10 módulos</span>
+                        
+                        <!-- Curso 3 -->
+                        <div class="course-card">
+                            <div class="course-image" role="img" aria-label="Inteligência Artificial"></div>
+                            <div class="course-content">
+                                <span class="course-category">Tecnologia</span>
+                                <h3 class="course-name">Inteligência Artificial</h3>
+                                <p class="course-description">Explore o mundo dos sistemas inteligentes</p>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%;"></div>
                                 </div>
-                                <button class="btn btn-primary">Continuar</button>
+                                
+                                <div class="course-meta">
+                                    <div class="course-progress">
+                                        <div class="progress-circle">10%</div>
+                                        <span class="course-status">10 módulos</span>
+                                    </div>
+                                    <button class="btn btn-primary">Continuar</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Curso 4 -->
+                        <div class="course-card">
+                            <div class="course-image" role="img" aria-label="Product Owner"></div>
+                            <div class="course-content">
+                                <span class="course-category">Gestão</span>
+                                <h3 class="course-name">Product Owner</h3>
+                                <p class="course-description">Gerencie produtos digitais com metodologias ágeis</p>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                
+                                <div class="course-meta">
+                                    <div class="course-progress">
+                                        <div class="progress-circle">0%</div>
+                                        <span class="course-status">6 módulos</span>
+                                    </div>
+                                    <button class="btn btn-primary">Começar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Curso 4 -->
-                    <div class="course-card">
-                        <div class="course-image" role="img" aria-label="Product Owner"></div>
-                        <div class="course-content">
-                            <span class="course-category">Gestão</span>
-                            <h3 class="course-name">Product Owner</h3>
-                            <p class="course-description">Gerencie produtos digitais com metodologias ágeis</p>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%;"></div>
-                            </div>
-                            
-                            <div class="course-meta">
-                                <div class="course-progress">
-                                    <div class="progress-circle">0%</div>
-                                    <span class="course-status">6 módulos</span>
-                                </div>
-                                <button class="btn btn-primary">Começar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Atividade Recente -->
-            <section class="mb-5 fade-in">
-                <h2>Atividade Recente</h2>
-                
-                <div class="card p-4">
-                    <ul class="sidebar-nav">
-                        <li class="sidebar-nav-item">
-                            <div class="d-flex justify-content-between align-items-center p-2">
-                                <div>
-                                    <h4 class="mb-1">Quiz de JavaScript completado</h4>
-                                    <p class="text-secondary mb-0">Resultado: 85%</p>
-                                </div>
-                                <span class="text-secondary">Hoje</span>
-                            </div>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <div class="d-flex justify-content-between align-items-center p-2">
-                                <div>
-                                    <h4 class="mb-1">Módulo de Redes concluído</h4>
-                                    <p class="text-secondary mb-0">Curso: Cybersegurança</p>
-                                </div>
-                                <span class="text-secondary">Ontem</span>
-                            </div>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <div class="d-flex justify-content-between align-items-center p-2">
-                                <div>
-                                    <h4 class="mb-1">Anotação adicionada</h4>
-                                    <p class="text-secondary mb-0">Tópico: Algoritmos de Machine Learning</p>
-                                </div>
-                                <span class="text-secondary">3 dias atrás</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- Instalação PWA -->
-            <section class="mb-5 fade-in">
-                <div class="card p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-1">Instalar TecnoClass</h3>
-                            <p class="mb-0">Instale o aplicativo para acesso rápido e uso offline</p>
-                        </div>
-                        <button class="btn btn-primary" id="installPwa">Instalar</button>
-                    </div>
-                </div>
-            </section>
+                </section>
             </main>
         </div>
+    </div>
 
     <!-- Scripts -->
     <script src="app.js"></script>
