@@ -1,0 +1,226 @@
+/* Login page styles */
+:root {
+  --card-width: 450px;
+  --input-height: 50px;
+  --border-radius: 16px;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, 
+    var(--gradient-start) 0%,
+    var(--gradient-end) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  animation: pulse 15s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  padding: 3rem;
+  width: 100%;
+  max-width: var(--card-width);
+  position: relative;
+  z-index: 1;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-header p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.auth-form {
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-actions {
+  margin-top: 2rem;
+}
+
+.form-actions .btn {
+  width: 100%;
+  height: var(--input-height);
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+}
+
+.auth-footer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 2rem;
+}
+
+.auth-footer a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding-bottom: 2px;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.auth-footer a:hover {
+  color: var(--accent-color);
+}
+
+/* Glassmorphism effect for inputs on hover/focus */
+.form-group input:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.form-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem;
+  }
+
+  .form-group input,
+  .form-actions .btn {
+    height: 45px;
+  }
+
+  :root {
+    --card-width: 100%;
+  }
+}
+
+/* Loading animation for button */
+.btn-primary.loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-primary.loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-right-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hover effects */
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Focus styles */
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+}
+
+/* Error state */
+.form-group.error input {
+  border-color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.form-group.error .error-message {
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}

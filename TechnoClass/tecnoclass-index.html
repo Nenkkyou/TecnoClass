@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TecnoClass - Aplicativo Educacional</title>
     <meta name="description" content="Aprenda tecnologia de forma interativa e moderna com o TecnoClass">
+    <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="tecnoclass-styles.css">
+    <link rel="stylesheet" href="course-styles.css">
+    <link rel="stylesheet" href="responsive-styles.css">
     <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,15 +23,15 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <img src="images/tecnoclass-logo.svg" alt="TecnoClass Logo">
+                <div class="logo-icon">TC</div>
                 <span class="logo-text">TecnoClass</span>
             </div>
             
-            <div class="menu-toggle" id="menuToggle">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
             
             <nav class="nav">
                 <ul class="nav-list" id="navList">
@@ -67,37 +70,62 @@
                 <ul class="sidebar-nav">
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link active">
-                            <span class="sidebar-nav-icon">📚</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 016.5 2h11A2.5 2.5 0 0120 4.5v15a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 19.5z"/>
+                                    <path d="M8 7h8M8 11h8M8 15h5"/>
+                                </svg>
+                            </span>
                             Todos os Cursos
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link">
-                            <span class="sidebar-nav-icon">💻</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)">
+                                    <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21"/>
+                                </svg>
+                            </span>
                             Programação
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link">
-                            <span class="sidebar-nav-icon">🔒</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)">
+                                    <path d="M12 15V17M6 21H18C19.1046 21 20 20.1046 20 19V13C20 11.8954 19.1046 11 18 11H6C4.89543 11 4 11.8954 4 13V19C4 20.1046 4.89543 21 6 21ZM16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11H16Z"/>
+                                </svg>
+                            </span>
                             Cybersegurança
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link">
-                            <span class="sidebar-nav-icon">🤖</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)">
+                                    <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
+                                </svg>
+                            </span>
                             Inteligência Artificial
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link">
-                            <span class="sidebar-nav-icon">📊</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--secondary-light)">
+                                    <path d="M16 8V16M12 11V16M8 14V16M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z"/>
+                                </svg>
+                            </span>
                             Product Owner
                         </a>
                     </li>
                     <li class="sidebar-nav-item">
                         <a href="#" class="sidebar-nav-link">
-                            <span class="sidebar-nav-icon">📝</span>
+                            <span class="sidebar-nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)">
+                                    <path d="M11 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20H18C18.5523 20 19 19.5523 19 19V12M17.5858 3.58579C18.3668 2.80474 19.6332 2.80474 20.4142 3.58579C21.1953 4.36683 21.1953 5.63316 20.4142 6.41421L11.8284 15H9L9 12.1716L17.5858 3.58579Z"/>
+                                </svg>
+                            </span>
                             Minhas Anotações
                         </a>
                     </li>
@@ -112,139 +140,156 @@
         </aside>
 
         <!-- Conteúdo Principal -->
-        <main class="container" style="margin-left: 250px; transition: margin-left 0.25s ease;">
+        <div class="content-wrapper">
+            <main class="container">
             <!-- Seção de Boas-vindas -->
-            <section class="mt-4 mb-5 slide-up">
+            <section class="welcome-section slide-up">
                 <h1>Bem-vindo ao TecnoClass</h1>
                 
                 <!-- Área de Login (para usuários não logados) -->
-                <div class="card p-4 mb-4">
-                    <h2>Olá, Estudante!</h2>
-                    <p>Faça login para continuar seus estudos</p>
-                    
-                    <form class="mt-3">
-                        <div class="form-group">
-                            <label for="username" class="form-label">Nome de usuário</label>
-                            <input type="text" id="username" class="form-control" placeholder="Seu nome de usuário">
+                <div class="welcome-card card">
+                    <div class="card-body">
+                        <h2 class="welcome-title">Olá, Estudante!</h2>
+                        <p class="welcome-text">Comece sua jornada de aprendizado hoje</p>
+                        <div class="welcome-actions">
+                            <a href="login.html" class="btn btn-primary">
+                                Fazer Login
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M19 12H4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <button class="btn btn-secondary">Explorar como Convidado</button>
                         </div>
-                        <div class="form-group">
-                            <label for="password" class="form-label">Senha</label>
-                            <input type="password" id="password" class="form-control" placeholder="Sua senha">
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <button type="submit" class="btn btn-primary">Entrar</button>
-                            <button type="button" class="btn btn-outline">Continuar como convidado</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
                 
                 <!-- Progresso (para usuários logados) -->
-                <div class="card p-4 mb-4">
-                    <h2>Continue seus estudos de onde parou</h2>
+                <div class="progress-overview">
+                    <div class="progress-header">
+                        <h2 class="progress-title">Continue seus estudos</h2>
+                        <div class="progress-circle">35%</div>
+                    </div>
                     
-                    <div class="course-progress mt-3">
-                        <h3>Seu progresso</h3>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 35%;"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%;"></div>
+                    </div>
+                    
+                    <div class="progress-stats">
+                        <div class="progress-stat">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Cursos em Andamento</div>
                         </div>
-                        <div class="progress-text">
-                            <span>35% concluído</span>
-                            <span>3/8 cursos</span>
+                        <div class="progress-stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Total de Cursos</div>
+                        </div>
+                        <div class="progress-stat">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Horas Estudadas</div>
                         </div>
                     </div>
                 </div>
             </section>
             
             <!-- Cursos em Destaque -->
-            <section class="mb-5 fade-in">
-                <h2>Cursos em Destaque</h2>
+            <section class="course-section fade-in">
+                <div class="course-header">
+                    <h2 class="course-title">Cursos em Destaque</h2>
+                    <a href="#" class="view-all">
+                        Ver todos
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
                 
-                <div class="grid">
+                <div class="course-grid">
                     <!-- Curso 1 -->
-                    <div class="card course-card" style="grid-column: span 4;">
-                        <img src="images/courses/programming.jpg" alt="Programação" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Programação</h3>
-                            <p class="card-text">Aprenda linguagens e conceitos de desenvolvimento</p>
+                    <div class="course-card">
+                        <div class="course-image" role="img" aria-label="Programação"></div>
+                        <div class="course-content">
+                            <span class="course-category">Desenvolvimento</span>
+                            <h3 class="course-name">Programação</h3>
+                            <p class="course-description">Aprenda linguagens e conceitos de desenvolvimento</p>
                             
-                            <div class="course-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 60%;"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span>60% concluído</span>
-                                </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-primary">Continuar</button>
-                            <span>12 módulos</span>
+                            
+                            <div class="course-meta">
+                                <div class="course-progress">
+                                    <div class="progress-circle">60%</div>
+                                    <span class="course-status">12 módulos</span>
+                                </div>
+                                <button class="btn btn-primary">Continuar</button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Curso 2 -->
-                    <div class="card course-card" style="grid-column: span 4;">
-                        <img src="images/courses/cybersecurity.jpg" alt="Cybersegurança" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Cybersegurança</h3>
-                            <p class="card-text">Proteja sistemas e dados contra ameaças</p>
+                    <div class="course-card">
+                        <div class="course-image" role="img" aria-label="Cybersegurança"></div>
+                        <div class="course-content">
+                            <span class="course-category">Segurança</span>
+                            <h3 class="course-name">Cybersegurança</h3>
+                            <p class="course-description">Proteja sistemas e dados contra ameaças</p>
                             
-                            <div class="course-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 25%;"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span>25% concluído</span>
-                                </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 25%;"></div>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-primary">Continuar</button>
-                            <span>8 módulos</span>
+                            
+                            <div class="course-meta">
+                                <div class="course-progress">
+                                    <div class="progress-circle">25%</div>
+                                    <span class="course-status">8 módulos</span>
+                                </div>
+                                <button class="btn btn-primary">Continuar</button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Curso 3 -->
-                    <div class="card course-card" style="grid-column: span 4;">
-                        <img src="images/courses/ai.jpg" alt="Inteligência Artificial" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Inteligência Artificial</h3>
-                            <p class="card-text">Explore o mundo dos sistemas inteligentes</p>
+                    <div class="course-card">
+                        <div class="course-image" role="img" aria-label="Inteligência Artificial"></div>
+                        <div class="course-content">
+                            <span class="course-category">Tecnologia</span>
+                            <h3 class="course-name">Inteligência Artificial</h3>
+                            <p class="course-description">Explore o mundo dos sistemas inteligentes</p>
                             
-                            <div class="course-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 10%;"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span>10% concluído</span>
-                                </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 10%;"></div>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-primary">Continuar</button>
-                            <span>10 módulos</span>
+                            
+                            <div class="course-meta">
+                                <div class="course-progress">
+                                    <div class="progress-circle">10%</div>
+                                    <span class="course-status">10 módulos</span>
+                                </div>
+                                <button class="btn btn-primary">Continuar</button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Curso 4 -->
-                    <div class="card course-card" style="grid-column: span 4;">
-                        <img src="images/courses/product-owner.jpg" alt="Product Owner" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Product Owner</h3>
-                            <p class="card-text">Gerencie produtos digitais com metodologias ágeis</p>
+                    <div class="course-card">
+                        <div class="course-image" role="img" aria-label="Product Owner"></div>
+                        <div class="course-content">
+                            <span class="course-category">Gestão</span>
+                            <h3 class="course-name">Product Owner</h3>
+                            <p class="course-description">Gerencie produtos digitais com metodologias ágeis</p>
                             
-                            <div class="course-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 0%;"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span>0% concluído</span>
-                                </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-primary">Começar</button>
-                            <span>6 módulos</span>
+                            
+                            <div class="course-meta">
+                                <div class="course-progress">
+                                    <div class="progress-circle">0%</div>
+                                    <span class="course-status">6 módulos</span>
+                                </div>
+                                <button class="btn btn-primary">Começar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -299,85 +344,10 @@
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
+            </main>
+        </div>
 
     <!-- Scripts -->
-    <script>
-        // Menu Toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const navList = document.getElementById('navList');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.querySelector('main');
-        
-        menuToggle.addEventListener('click', () => {
-            navList.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-        });
-        
-        // Tema Escuro/Claro
-        const themeToggle = document.getElementById('themeToggle');
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = themeToggle.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            themeToggle.setAttribute('data-theme', newTheme);
-            document.documentElement.setAttribute('data-theme', newTheme);
-            
-            // Salvar preferência
-            localStorage.setItem('theme', newTheme);
-        });
-        
-        // Verificar tema salvo
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            themeToggle.setAttribute('data-theme', savedTheme);
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        }
-        
-        // Responsividade da barra lateral
-        function handleResize() {
-            if (window.innerWidth < 768) {
-                sidebar.classList.add('sidebar-hidden');
-                mainContent.style.marginLeft = '0';
-            } else {
-                sidebar.classList.remove('sidebar-hidden');
-                mainContent.style.marginLeft = '250px';
-            }
-        }
-        
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Executar na carga inicial
-        
-        // Animações de progresso
-        document.addEventListener('DOMContentLoaded', () => {
-            const progressBars = document.querySelectorAll('.progress-fill');
-            
-            setTimeout(() => {
-                progressBars.forEach(bar => {
-                    const targetWidth = bar.style.width;
-                    bar.style.width = '0';
-                    
-                    setTimeout(() => {
-                        bar.style.width = targetWidth;
-                    }, 300);
-                });
-            }, 500);
-        });
-        
-        // Registro do Service Worker para PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registrado com sucesso:', registration);
-                    })
-                    .catch(error => {
-                        console.log('Falha ao registrar Service Worker:', error);
-                    });
-            });
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

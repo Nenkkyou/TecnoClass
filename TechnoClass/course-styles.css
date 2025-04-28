@@ -1,0 +1,212 @@
+/* Course Images */
+.course-image {
+    width: 100%;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Programming Course */
+.course-card:nth-child(1) .course-image {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+}
+
+.course-card:nth-child(1) .course-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.1) 0px,
+        rgba(255, 255, 255, 0.1) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+}
+
+/* Cybersecurity Course */
+.course-card:nth-child(2) .course-image {
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+}
+
+.course-card:nth-child(2) .course-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.1) 2px,
+        transparent 2px
+    );
+    background-size: 12px 12px;
+}
+
+/* AI Course */
+.course-card:nth-child(3) .course-image {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+}
+
+.course-card:nth-child(3) .course-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 1px,
+        transparent 1px
+    ),
+    linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.1) 1px,
+        transparent 1px
+    );
+    background-size: 10px 10px;
+}
+
+/* Product Owner Course */
+.course-card:nth-child(4) .course-image {
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary-color));
+}
+
+.course-card:nth-child(4) .course-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.1) 5px,
+        transparent 5px,
+        transparent 10px
+    );
+}
+
+/* Course Cards */
+.course-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.course-content {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+.course-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.course-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    flex: 1;
+}
+
+.course-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+}
+
+.course-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.course-status {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+/* Course Grid */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .course-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-image {
+        height: 140px;
+    }
+}

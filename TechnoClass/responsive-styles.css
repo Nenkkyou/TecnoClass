@@ -1,0 +1,110 @@
+/* Menu Toggle Button */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  padding: 0;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: white;
+  margin: 4px auto;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .content-wrapper {
+    margin-left: 0;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .header-container {
+    padding-right: 4rem;
+  }
+  
+  .welcome-card {
+    padding: 2rem;
+  }
+  
+  .progress-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .welcome-text {
+    font-size: 1rem;
+  }
+  
+  .progress-stat {
+    padding: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+  }
+  
+  .header {
+    padding: 0.5rem 0;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .menu-toggle {
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+  }
+}
